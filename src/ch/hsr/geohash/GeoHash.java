@@ -105,7 +105,7 @@ public final class GeoHash {
 
 	@Override
 	public String toString() {
-		return String.format("%s -> (%d,%d)", longToBitString(bits), 0, 0);
+		return String.format("%s -> [%s,%s]", longToBitString(bits), boundingBox[0], boundingBox[1]);
 	}
 
 	/**

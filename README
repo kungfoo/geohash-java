@@ -3,7 +3,7 @@ java code for geohashes
 
 This code implements the geohash library as seen in many other projects.
 
-We will try to keep compliant to the spec such as defined here, wherever that is possible.
+We will try to keep compliant to the spec such as defined here[geoash, wikipedia], wherever that is possible.
 This library uses longs internally, so hashes can no longer be only multiples of 5 bits long. One can easily create a 11-bit bounding box and find 
 neighbouring bounding boxes of it.
 
