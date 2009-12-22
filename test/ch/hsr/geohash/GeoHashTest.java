@@ -57,6 +57,33 @@ public class GeoHashTest {
 	}
 
 	@Test
+	public void testDecode() {
+		//for all lat/lon pairs check decoded point is in the same bbox as the geohash formed by encoder
+		//TODO could possibly be less brute-force here and be more scientific about possible failure points
+		for (double lat=-90;lat<=90;lat++) {
+			for (double lng=-180;lng<=180;lng++) {				
+				for (int precisionChars = 2; precisionChars <= 12; precisionChars++){
+					GeoHash gh = GeoHash.withCharacterPrecision(lat, lng, precisionChars);
+					WGS84Point[] bbox = gh.getBoundingBoxPoints();
+					GeoHash decodedGh=GeoHash.fromGeohashString(gh.toBase32());
+					WGS84Point decodedCenter = decodedGh.getBoundingBoxCenterPoint();
+					Assert.assertTrue("Decoded position should be within bounds of original", 
+							(decodedCenter.latitude>=bbox[0].latitude)
+							&&
+							(decodedCenter.longitude>=bbox[0].longitude)
+							&&
+							(decodedCenter.latitude<=bbox[1].latitude)
+							&&
+							(decodedCenter.longitude<=bbox[1].longitude)
+					
+					);
+				}
+			}
+		}			
+	}
+
+
+	@Test
 	public void testWithin() {
 		hash.bits = 0x6ff0414000000000l;
 		hash.significantBits = 25;
