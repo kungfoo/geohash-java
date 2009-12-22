@@ -1,5 +1,8 @@
 package ch.hsr.geohash;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class GeoHash {
 	private static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
 	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6',
