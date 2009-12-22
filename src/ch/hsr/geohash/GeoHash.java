@@ -6,6 +6,16 @@ public final class GeoHash {
 			'7', '8', '9', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm',
 			'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
+
+	//Taken from Lucene contrib spatial
+	private final static Map<Character, Integer> _decodemap = new HashMap<Character, Integer>();
+	static {
+		int sz = base32.length;
+		for (int i = 0; i < sz; i++ ){
+			_decodemap.put(base32[i], i);
+		}
+	}
+
 	protected long bits = 0;
 	private WGS84Point point;
 	private WGS84Point[] boundingBox;
@@ -37,9 +47,54 @@ public final class GeoHash {
 	}
 
 	public static GeoHash fromGeohashString(String geohash) {
-		return null;
+		double[] points=decode(geohash);
+		return GeoHash.withCharacterPrecision(points[0], points[1], geohash.length());
 	}
+	
+	//Adapted from Lucene contrib's spatial
+	public static double[] decode (String geohash){
+		double[] lat_interval = {-90.0 , 90.0};
+		double[] lon_interval = {-180.0, 180.0};
+		
+		double lat_err =  90.0;
+		double lon_err = 180.0;
+		boolean is_even = true;
+		int sz = geohash.length();
+		int[] bits = {16, 8, 4, 2, 1};
+		int bsz = bits.length;
+		double latitude, longitude;
+		for (int i = 0; i < sz; i++){
+			
+			int cd = _decodemap.get(geohash.charAt(i));
+			
+			for (int z = 0; z< bsz; z++){
+				int mask = bits[z];
+				if (is_even){
+					lon_err /= 2;
+					if ((cd & mask) != 0){
+						lon_interval[0] = (lon_interval[0]+lon_interval[1])/2;
+					} else {
+						lon_interval[1] = (lon_interval[0]+lon_interval[1])/2;
+					}
+					
+				} else {
+					lat_err /=2;
+				
+					if ( (cd & mask) != 0){
+						lat_interval[0] = (lat_interval[0]+lat_interval[1])/2;
+					} else {
+						lat_interval[1] = (lat_interval[0]+lat_interval[1])/2;
+					}
+				}
+				is_even = is_even ? false : true;
+			}
+		
+		}
+		latitude  = (lat_interval[0] + lat_interval[1]) / 2;
+		longitude = (lon_interval[0] + lon_interval[1]) / 2;
 
+		return new double []{latitude, longitude, lat_err, lon_err};
+	}		
 	public GeoHash getNeighbour(int direction, int length) {
 		return null;
 	}
