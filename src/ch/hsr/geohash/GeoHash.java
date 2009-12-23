@@ -89,7 +89,7 @@ public final class GeoHash {
 						lat_interval[1] = (lat_interval[0]+lat_interval[1])/2;
 					}
 				}
-				is_even = is_even ? false : true;
+				is_even = !is_even;
 			}
 		
 		}
