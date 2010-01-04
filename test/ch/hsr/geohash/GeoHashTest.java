@@ -219,13 +219,16 @@ public class GeoHashTest {
 	}
 
 	@Test
-	public void testEquals() {
+	public void testEqualsAndHashCode() {
 		GeoHash hash1 = GeoHash.withBitPrecision(30, 30, 24);
 		GeoHash hash2 = GeoHash.withBitPrecision(30, 30, 24);
 		GeoHash hash3 = GeoHash.withBitPrecision(30, 30, 10);
 
 		assertTrue(hash1.equals(hash2) && hash2.equals(hash1));
 		assertFalse(hash1.equals(hash3) && hash3.equals(hash1));
+		
+		assertEquals(hash1.hashCode(), hash2.hashCode());
+		assertFalse(hash1.hashCode() == hash3.hashCode());
 	}
 
 	@Test

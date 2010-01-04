@@ -352,6 +352,14 @@ public final class GeoHash {
 		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		int f = 17;
+		f = 31 * f + (int) (bits ^ (bits >>> 32));
+		f = 31 * f + significantBits;
+		return f;
+	}
+
 	/**
 	 * a hash cannot have more than 64 bits right now, so we cap the desired
 	 * number of bits there.
