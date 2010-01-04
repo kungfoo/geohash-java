@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -63,19 +64,24 @@ public class GeoHashTest {
 		// geohash formed by encoder
 		// TODO could possibly be less brute-force here and be more scientific
 		// about possible failure points
-		for (double lat = -90; lat <= 90; lat += 1) {
-			for (double lon = -180; lon <= 180; lon += 1) {
+		Random rand = new Random();
+		for (double lat = -90; lat <= 90; lat += rand.nextDouble() + 0.5) {
+			for (double lon = -180; lon <= 180; lon += rand.nextDouble() + 0.5) {
 				for (int precisionChars = 2; precisionChars <= 12; precisionChars++) {
 					GeoHash gh = GeoHash.withCharacterPrecision(lat, lon, precisionChars);
 					WGS84Point[] bbox = gh.getBoundingBoxPoints();
-					GeoHash decodedGh = GeoHash.fromGeohashString(gh.toBase32());
-					WGS84Point decodedCenter = decodedGh.getBoundingBoxCenterPoint();
+					GeoHash decodedHash = GeoHash.fromGeohashString(gh.toBase32());
+					WGS84Point decodedCenter = decodedHash.getBoundingBoxCenterPoint();
 					assertTrue("Decoded position should be within bounds of original",
 							(decodedCenter.latitude >= bbox[0].latitude)
 									&& (decodedCenter.longitude >= bbox[0].longitude)
 									&& (decodedCenter.latitude <= bbox[1].latitude)
-									&& (decodedCenter.longitude <= bbox[1].longitude)
-					);
+									&& (decodedCenter.longitude <= bbox[1].longitude));
+
+					// they should now actually have the same bounding box.
+					WGS84Point[] decodedBoundingBox = decodedHash.getBoundingBoxPoints();
+					assertEquals(bbox[0], decodedBoundingBox[0]);
+					assertEquals(bbox[1], decodedBoundingBox[1]);
 				}
 			}
 		}
@@ -223,20 +229,23 @@ public class GeoHashTest {
 	}
 
 	@Test
-	public void testMovingAroundWorldOnHashStrips() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException{
-		String[] directions = {"Northern", "Eastern", "Southern", "Western"};
-		for(String direction : directions){
+	public void testMovingAroundWorldOnHashStrips() throws SecurityException, NoSuchMethodException,
+			IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		String[] directions = { "Northern", "Eastern", "Southern", "Western" };
+		for (String direction : directions) {
 			checkMoveAroundStrip(direction);
 		}
 	}
-	
-	public void checkMoveAroundStrip(String direction) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+
+	public void checkMoveAroundStrip(String direction) throws SecurityException, NoSuchMethodException,
+			IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		for (int bits = 2; bits < 12; bits++) {
 			// this divides the range by 2^bits
 			GeoHash hash = GeoHash.withBitPrecision(10, 10, bits);
 			Method method = hash.getClass().getDeclaredMethod("get" + direction + "Neighbour");
 			GeoHash result = hash;
-			// moving this direction 2^bits times should yield the same hash again
+			// moving this direction 2^bits times should yield the same hash
+			// again
 			for (int i = 0; i < Math.pow(2, bits); i++) {
 				result = (GeoHash) method.invoke(result);
 			}
@@ -248,11 +257,12 @@ public class GeoHashTest {
 	public void testIssue1() {
 		double lat = 40.390943;
 		double lon = -75.9375;
-
 		GeoHash hash = GeoHash.withCharacterPrecision(lat, lon, 12);
-		String base32 = hash.toBase32();
-		System.out.println(base32);
-		assertEquals("dr4jb0bn2180", base32);
+
+		GeoHash fromRef = GeoHash.fromGeohashString("dr4jb0bn2180");
+		System.out.println(hash);
+		System.out.println(fromRef);
+		assertEquals(hash, fromRef);
 	}
 
 	private void printBoundingBox(GeoHash hash) {
