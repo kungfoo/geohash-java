@@ -5,16 +5,14 @@ import java.util.Map;
 
 public final class GeoHash {
 	private static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
-	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6',
-			'7', '8', '9', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm',
-			'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f',
+			'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
-
-	//Taken from Lucene contrib spatial
+	// Taken from Lucene contrib spatial
 	private final static Map<Character, Integer> _decodemap = new HashMap<Character, Integer>();
 	static {
 		int sz = base32.length;
-		for (int i = 0; i < sz; i++ ){
+		for (int i = 0; i < sz; i++) {
 			_decodemap.put(base32[i], i);
 		}
 	}
@@ -33,10 +31,8 @@ public final class GeoHash {
 	 * value. The hash can only be 64bits long, thus a maximum precision of 12
 	 * characters can be achieved.
 	 */
-	public static GeoHash withCharacterPrecision(double latitude,
-			double longitude, int numberOfCharacters) {
-		int desiredPrecision = (numberOfCharacters * 5 <= 60) ? numberOfCharacters * 5
-				: 60;
+	public static GeoHash withCharacterPrecision(double latitude, double longitude, int numberOfCharacters) {
+		int desiredPrecision = (numberOfCharacters * 5 <= 60) ? numberOfCharacters * 5 : 60;
 		return new GeoHash(latitude, longitude, desiredPrecision);
 	}
 
@@ -44,60 +40,56 @@ public final class GeoHash {
 	 * create a new {@link GeoHash} with the given number of bits accuracy. This
 	 * at the same time defines this hash's bounding box.
 	 */
-	public static GeoHash withBitPrecision(double latitude, double longitude,
-			int numberOfBits) {
+	public static GeoHash withBitPrecision(double latitude, double longitude, int numberOfBits) {
 		return new GeoHash(latitude, longitude, numberOfBits);
 	}
 
 	public static GeoHash fromGeohashString(String geohash) {
-		double[] points=decode(geohash);
-		return GeoHash.withCharacterPrecision(points[0], points[1], geohash.length());
-	}
-	
-	//Adapted from Lucene contrib's spatial
-	public static double[] decode (String geohash){
-		double[] lat_interval = {-90.0 , 90.0};
-		double[] lon_interval = {-180.0, 180.0};
+		double[] lat_interval = { -90.0, 90.0 };
+		double[] lon_interval = { -180.0, 180.0 };
 		
-		double lat_err =  90.0;
+		double lat_err = 90.0;
 		double lon_err = 180.0;
 		boolean is_even = true;
 		int sz = geohash.length();
-		int[] bits = {16, 8, 4, 2, 1};
+		int[] bits = { 16, 8, 4, 2, 1 };
 		int bsz = bits.length;
 		double latitude, longitude;
-		for (int i = 0; i < sz; i++){
-			
+		for (int i = 0; i < sz; i++) {
+		
 			int cd = _decodemap.get(geohash.charAt(i));
-			
-			for (int z = 0; z< bsz; z++){
+		
+			for (int z = 0; z < bsz; z++) {
 				int mask = bits[z];
-				if (is_even){
+				if (is_even) {
 					lon_err /= 2;
-					if ((cd & mask) != 0){
-						lon_interval[0] = (lon_interval[0]+lon_interval[1])/2;
+					if ((cd & mask) != 0) {
+						lon_interval[0] = (lon_interval[0] + lon_interval[1]) / 2;
 					} else {
-						lon_interval[1] = (lon_interval[0]+lon_interval[1])/2;
+						lon_interval[1] = (lon_interval[0] + lon_interval[1]) / 2;
 					}
-					
+		
 				} else {
-					lat_err /=2;
-				
-					if ( (cd & mask) != 0){
-						lat_interval[0] = (lat_interval[0]+lat_interval[1])/2;
+					lat_err /= 2;
+		
+					if ((cd & mask) != 0) {
+						lat_interval[0] = (lat_interval[0] + lat_interval[1]) / 2;
 					} else {
-						lat_interval[1] = (lat_interval[0]+lat_interval[1])/2;
+						lat_interval[1] = (lat_interval[0] + lat_interval[1]) / 2;
 					}
 				}
 				is_even = !is_even;
 			}
 		
 		}
-		latitude  = (lat_interval[0] + lat_interval[1]) / 2;
+		latitude = (lat_interval[0] + lat_interval[1]) / 2;
 		longitude = (lon_interval[0] + lon_interval[1]) / 2;
+		double[] points = new double[] { latitude, longitude, lat_err, lon_err };
+		
+		// TODO: replace duplicate decoding/encoding.
+		return GeoHash.withCharacterPrecision(points[0], points[1], geohash.length());
+	}
 
-		return new double []{latitude, longitude, lat_err, lon_err};
-	}		
 	public GeoHash getNeighbour(int direction, int length) {
 		return null;
 	}
@@ -186,24 +178,24 @@ public final class GeoHash {
 		latitudeBits[0] = maskLastNBits(latitudeBits[0], latitudeBits[1]);
 		return recombineLatLonBitsToHash(latitudeBits, longitudeBits);
 	}
-	
-	protected GeoHash getSouthernNeighbour(){
+
+	protected GeoHash getSouthernNeighbour() {
 		long[] latBits = getRightAlignedLatitudeBits();
 		long[] lonBits = getRightAlignedLongitudeBits();
 		latBits[0] += 1;
 		latBits[0] = maskLastNBits(latBits[0], latBits[1]);
 		return recombineLatLonBitsToHash(latBits, lonBits);
 	}
-	
-	protected GeoHash getEasternNeighbour(){
+
+	protected GeoHash getEasternNeighbour() {
 		long[] latBits = getRightAlignedLatitudeBits();
 		long[] lonBits = getRightAlignedLongitudeBits();
 		lonBits[0] += 1;
 		lonBits[0] = maskLastNBits(lonBits[0], lonBits[1]);
 		return recombineLatLonBitsToHash(latBits, lonBits);
 	}
-	
-	protected GeoHash getWesternNeighbour(){
+
+	protected GeoHash getWesternNeighbour() {
 		long[] latBits = getRightAlignedLatitudeBits();
 		long[] lonBits = getRightAlignedLongitudeBits();
 		lonBits[0] -= 1;
@@ -340,8 +332,7 @@ public final class GeoHash {
 			isEvenBit = !isEvenBit;
 		}
 
-		boundingBox = new WGS84Point[] {
-				new WGS84Point(latitudeRange[0], longitudeRange[0]),
+		boundingBox = new WGS84Point[] { new WGS84Point(latitudeRange[0], longitudeRange[0]),
 				new WGS84Point(latitudeRange[1], longitudeRange[1]) };
 
 		bits <<= (64 - desiredPrecision);
