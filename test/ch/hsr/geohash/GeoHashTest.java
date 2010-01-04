@@ -2,6 +2,9 @@ package ch.hsr.geohash;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -72,7 +75,6 @@ public class GeoHashTest {
 									&& (decodedCenter.longitude >= bbox[0].longitude)
 									&& (decodedCenter.latitude <= bbox[1].latitude)
 									&& (decodedCenter.longitude <= bbox[1].longitude)
-
 					);
 				}
 			}
@@ -221,14 +223,22 @@ public class GeoHashTest {
 	}
 
 	@Test
-	public void testMoveAroundWorldOnLongitudeStrip() {
+	public void testMovingAroundWorldOnHashStrips() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException{
+		String[] directions = {"Northern", "Eastern", "Southern", "Western"};
+		for(String direction : directions){
+			checkMoveAroundStrip(direction);
+		}
+	}
+	
+	public void checkMoveAroundStrip(String direction) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		for (int bits = 2; bits < 12; bits++) {
-			// this divides the longitude range by 2^bits
+			// this divides the range by 2^bits
 			GeoHash hash = GeoHash.withBitPrecision(10, 10, bits);
+			Method method = hash.getClass().getDeclaredMethod("get" + direction + "Neighbour");
 			GeoHash result = hash;
-			// moving east 2^bits times should yield the same hash again
+			// moving this direction 2^bits times should yield the same hash again
 			for (int i = 0; i < Math.pow(2, bits); i++) {
-				result = result.getEasternNeighbour();
+				result = (GeoHash) method.invoke(result);
 			}
 			assertEquals(hash, result);
 		}
