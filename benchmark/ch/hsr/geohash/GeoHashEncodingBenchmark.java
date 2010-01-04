@@ -24,7 +24,7 @@ public class GeoHashEncodingBenchmark {
 		}
 	}
 
-	@Benchmark(times = 20)
+	@Benchmark(times = 10)
 	public void benchmarkGeoHashEncoding() {
 		for (int i = 0; i < NUMBER_OF_HASHES; i++) {
 			hashes[i] = GeoHash.withBitPrecision(latitudes[i], longitudes[i], 60);
