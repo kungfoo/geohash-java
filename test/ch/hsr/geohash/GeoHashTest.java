@@ -153,6 +153,9 @@ public class GeoHashTest {
 
 		hash = GeoHash.withCharacterPrecision(-76.5110040642321, 39.0247389581054, 4);
 		assertEquals("hf7u", hash.toBase32());
+		
+		hash = GeoHash.withCharacterPrecision(39.0247389581054, -76.5110040642321, 12);
+		assertEquals("dqcw4bnrs6s7", hash.toBase32());
 	}
 
 	@Test

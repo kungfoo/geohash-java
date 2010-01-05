@@ -19,7 +19,10 @@ public final class GeoHash {
 
 	protected long bits = 0;
 	private WGS84Point point;
-	private WGS84Point[] boundingBox;
+
+	// bounding box corners.
+	private WGS84Point upperLeft;
+	private WGS84Point lowerRight;
 
 	protected byte significantBits = 0;
 
@@ -92,10 +95,6 @@ public final class GeoHash {
 		return GeoHash.withCharacterPrecision(points[0], points[1], geohash.length());
 	}
 
-	public GeoHash getNeighbour(int direction, int length) {
-		return null;
-	}
-
 	/**
 	 * returns the 8 adjacent hashes for this one. They are in the following
 	 * order:<br>
@@ -156,8 +155,8 @@ public final class GeoHash {
 	 */
 	// TODO: make sure this method works as intented for corner cases!
 	public WGS84Point getBoundingBoxCenterPoint() {
-		double centerLatitude = (boundingBox[0].latitude + boundingBox[1].latitude) / 2;
-		double centerLongitude = (boundingBox[0].longitude + boundingBox[1].longitude) / 2;
+		double centerLatitude = (upperLeft.latitude + lowerRight.latitude) / 2;
+		double centerLongitude = (upperLeft.longitude + lowerRight.longitude) / 2;
 		return new WGS84Point(centerLatitude, centerLongitude);
 	}
 
@@ -166,12 +165,26 @@ public final class GeoHash {
 	 *         the bounding box.
 	 */
 	public WGS84Point[] getBoundingBoxPoints() {
-		return boundingBox;
+		return new WGS84Point[] { upperLeft, lowerRight };
+	}
+
+	/**
+	 * @return an array containing all four corners of the bounding box.<br>
+	 *         upper left, upper right, lower left, lower right.
+	 */
+	public WGS84Point[] getFourBoundingBoxPoints() {
+		WGS84Point upperRight = new WGS84Point(upperLeft.latitude, lowerRight.longitude);
+		WGS84Point lowerLeft = new WGS84Point(lowerRight.latitude, upperLeft.longitude);
+		return new WGS84Point[] { upperLeft, upperRight, lowerLeft, lowerRight };
+	}
+
+	public boolean enclosesCircleAroundPoint(WGS84Point point, double radius) {
+		return false;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%s -> %s", longToBitString(bits), boundingBox != null ? boundingBox : "null");
+		return String.format("%s -> %s,%s", longToBitString(bits), upperLeft, lowerRight);
 	}
 
 	/**
@@ -348,8 +361,8 @@ public final class GeoHash {
 			isEvenBit = !isEvenBit;
 		}
 
-		boundingBox = new WGS84Point[] { new WGS84Point(latitudeRange[0], longitudeRange[0]),
-				new WGS84Point(latitudeRange[1], longitudeRange[1]) };
+		upperLeft = new WGS84Point(latitudeRange[0], longitudeRange[0]);
+		lowerRight = new WGS84Point(latitudeRange[1], longitudeRange[1]);
 
 		bits <<= (64 - desiredPrecision);
 	}
