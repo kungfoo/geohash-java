@@ -10,12 +10,11 @@ public final class GeoHash {
 	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f',
 			'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
-	// Taken from Lucene contrib spatial
-	private final static Map<Character, Integer> _decodemap = new HashMap<Character, Integer>();
+	private final static Map<Character, Integer> decodeMap = new HashMap<Character, Integer>();
 	static {
 		int sz = base32.length;
 		for (int i = 0; i < sz; i++) {
-			_decodemap.put(base32[i], i);
+			decodeMap.put(base32[i], i);
 		}
 	}
 
@@ -64,7 +63,7 @@ public final class GeoHash {
 		GeoHash hash = new GeoHash();
 
 		for (int i = 0; i < sz; i++) {
-			int cd = _decodemap.get(geohash.charAt(i));
+			int cd = decodeMap.get(geohash.charAt(i));
 
 			for (int z = 0; z < bsz; z++) {
 				int mask = bits[z];
@@ -306,12 +305,6 @@ public final class GeoHash {
 		return hash;
 	}
 
-	private long maskLastNBits(long value, long n) {
-		long mask = 0xffffffffffffffffl;
-		mask >>>= (64 - n);
-		return value & mask;
-	}
-
 	protected long[] getRightAlignedLatitudeBits() {
 		long value = 0;
 		long copyOfBits = bits;
@@ -396,6 +389,12 @@ public final class GeoHash {
 		f = 31 * f + (int) (bits ^ (bits >>> 32));
 		f = 31 * f + significantBits;
 		return f;
+	}
+
+	private long maskLastNBits(long value, long n) {
+		long mask = 0xffffffffffffffffl;
+		mask >>>= (64 - n);
+		return value & mask;
 	}
 
 	/**
