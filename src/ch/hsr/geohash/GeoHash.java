@@ -41,6 +41,8 @@ public final class GeoHash {
 	 * at the same time defines this hash's bounding box.
 	 */
 	public static GeoHash withBitPrecision(double latitude, double longitude, int numberOfBits) {
+		if (Math.abs(latitude) > 90.0 || Math.abs(longitude) > 180.0)
+			throw new IllegalArgumentException("Can't have lat/lon values out of (-90,90)/(-180/180)");
 		return new GeoHash(latitude, longitude, numberOfBits);
 	}
 
@@ -92,6 +94,20 @@ public final class GeoHash {
 
 	public GeoHash getNeighbour(int direction, int length) {
 		return null;
+	}
+
+	/**
+	 * returns the 8 adjacent hashes for this one. They are in the following
+	 * order:<br>
+	 * N, NE, E, SE, S, SW, W, NW
+	 */
+	public GeoHash[] getAdjacent() {
+		GeoHash northern = getNorthernNeighbour();
+		GeoHash eastern = getEasternNeighbour();
+		GeoHash southern = getSouthernNeighbour();
+		GeoHash western = getWesternNeighbour();
+		return new GeoHash[] { northern, northern.getEasternNeighbour(), eastern, southern.getEasternNeighbour(),
+				southern, southern.getWesternNeighbour(), western, northern.getWesternNeighbour() };
 	}
 
 	/**
@@ -286,9 +302,9 @@ public final class GeoHash {
 		bits <<= 1;
 	}
 
-	protected static String longToBitString(long value) {
-		StringBuffer buf = new StringBuffer();
-		for (int i = 64; i > 0; i--) {
+	protected String longToBitString(long value) {
+		StringBuilder buf = new StringBuilder();
+		for (int i = significantBits; i > 0; i--) {
 			long bit = value & FIRST_BIT_FLAGGED;
 			if (bit == FIRST_BIT_FLAGGED) {
 				buf.append('1');

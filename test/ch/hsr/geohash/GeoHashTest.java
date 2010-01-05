@@ -43,13 +43,6 @@ public class GeoHashTest {
 	}
 
 	@Test
-	public void testLongToBitString() {
-		hash.bits = 0x5555555555555555l;
-		assertEquals("0101010101010101010101010101010101010101010101010101010101010101", GeoHash
-				.longToBitString(hash.bits));
-	}
-
-	@Test
 	public void testToBase32() {
 		hash.bits = 0x6ff0414000000000l;
 		hash.significantBits = 25;
@@ -226,9 +219,36 @@ public class GeoHashTest {
 
 		assertTrue(hash1.equals(hash2) && hash2.equals(hash1));
 		assertFalse(hash1.equals(hash3) && hash3.equals(hash1));
-		
+
 		assertEquals(hash1.hashCode(), hash2.hashCode());
 		assertFalse(hash1.hashCode() == hash3.hashCode());
+	}
+
+	@Test
+	public void testAdjacentHashes() {
+		GeoHash[] adjacent = GeoHash.fromGeohashString("dqcw4").getAdjacent();
+		assertEquals(8, adjacent.length);
+	}
+	
+	@Test
+	public void testMovingInCircle(){
+		// moving around hashes in a circle should be possible
+		checkMovingInCircle(34.2, -45.123);
+		// this should also work at the "back" of the earth
+		checkMovingInCircle(45, 180);
+		checkMovingInCircle(90, 180);
+		checkMovingInCircle(0, -180);
+	}
+
+	private void checkMovingInCircle(double latitude, double longitude) {
+		GeoHash start;
+		GeoHash end;
+		start = GeoHash.withCharacterPrecision(latitude, longitude, 12);
+		end = start.getEasternNeighbour();
+		end = end.getSouthernNeighbour();
+		end = end.getWesternNeighbour();
+		end = end.getNorthernNeighbour();
+		assertEquals(start, end);
 	}
 
 	@Test
@@ -240,7 +260,7 @@ public class GeoHashTest {
 		}
 	}
 
-	public void checkMoveAroundStrip(String direction) throws SecurityException, NoSuchMethodException,
+	private void checkMoveAroundStrip(String direction) throws SecurityException, NoSuchMethodException,
 			IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		for (int bits = 2; bits < 12; bits++) {
 			// this divides the range by 2^bits
