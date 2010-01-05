@@ -75,6 +75,8 @@ public class GeoHashTest {
 					WGS84Point[] decodedBoundingBox = decodedHash.getBoundingBoxPoints();
 					assertEquals(bbox[0], decodedBoundingBox[0]);
 					assertEquals(bbox[1], decodedBoundingBox[1]);
+					
+					assertEquals(gh, decodedHash);
 				}
 			}
 		}
