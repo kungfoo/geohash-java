@@ -3,6 +3,8 @@ package ch.hsr.geohash;
 import java.util.HashMap;
 import java.util.Map;
 
+import sun.awt.geom.AreaOp.AddOp;
+
 public final class GeoHash {
 	private static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
 	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f',
@@ -50,49 +52,94 @@ public final class GeoHash {
 	}
 
 	public static GeoHash fromGeohashString(String geohash) {
-		double[] lat_interval = { -90.0, 90.0 };
-		double[] lon_interval = { -180.0, 180.0 };
+		double[] latitudeRange = { -90.0, 90.0 };
+		double[] longitudeRange = { -180.0, 180.0 };
 
-		double lat_err = 90.0;
-		double lon_err = 180.0;
-		boolean is_even = true;
+		boolean isEvenBit = true;
 		int sz = geohash.length();
 		int[] bits = { 16, 8, 4, 2, 1 };
 		int bsz = bits.length;
-		double latitude, longitude;
-		for (int i = 0; i < sz; i++) {
+		double mid;
+		
+		GeoHash hash = new GeoHash();
 
+		for (int i = 0; i < sz; i++) {
 			int cd = _decodemap.get(geohash.charAt(i));
 
 			for (int z = 0; z < bsz; z++) {
 				int mask = bits[z];
-				if (is_even) {
-					lon_err /= 2;
+				if (isEvenBit) {
+					mid = (longitudeRange[0] + longitudeRange[1]) / 2;
 					if ((cd & mask) != 0) {
-						lon_interval[0] = (lon_interval[0] + lon_interval[1]) / 2;
+						hash.addOnBitToEnd();
+						longitudeRange[0] = mid;
 					} else {
-						lon_interval[1] = (lon_interval[0] + lon_interval[1]) / 2;
+						hash.addOffBitToEnd();
+						longitudeRange[1] = mid;
 					}
 
 				} else {
-					lat_err /= 2;
-
+					mid = (latitudeRange[0] + latitudeRange[1]) / 2;
 					if ((cd & mask) != 0) {
-						lat_interval[0] = (lat_interval[0] + lat_interval[1]) / 2;
+						hash.addOnBitToEnd();
+						latitudeRange[0] = mid;
 					} else {
-						lat_interval[1] = (lat_interval[0] + lat_interval[1]) / 2;
+						hash.addOffBitToEnd();
+						latitudeRange[1] = mid;
 					}
 				}
-				is_even = !is_even;
+				isEvenBit = !isEvenBit;
 			}
 
 		}
-		latitude = (lat_interval[0] + lat_interval[1]) / 2;
-		longitude = (lon_interval[0] + lon_interval[1]) / 2;
-		double[] points = new double[] { latitude, longitude, lat_err, lon_err };
+		
+		double latitude = (latitudeRange[0] + latitudeRange[1]) / 2;
+		double longitude = (longitudeRange[0] + longitudeRange[1]) / 2;
+		
+		hash.point = new WGS84Point(latitude, longitude);
+		hash.upperLeft = new WGS84Point(latitudeRange[0], longitudeRange[0]);
+		hash.lowerRight = new WGS84Point(latitudeRange[1], longitudeRange[1]);
+		return hash;
+	}
 
-		// TODO: replace duplicate decoding/encoding.
-		return GeoHash.withCharacterPrecision(points[0], points[1], geohash.length());
+	private GeoHash(double latitude, double longitude, int desiredPrecision) {
+		point = new WGS84Point(latitude, longitude);
+		highCapDesiredPrecision(desiredPrecision);
+	
+		boolean isEvenBit = true;
+		double[] latitudeRange = { -90, 90 };
+		double[] longitudeRange = { -180, 180 };
+		double mid;
+	
+		while (significantBits < desiredPrecision) {
+			System.out.println(String.format("lat: (%f,%f)", latitudeRange[0], latitudeRange[1])
+					+ String.format(" lon: (%f,%f)", longitudeRange[0], longitudeRange[1]));
+			if (isEvenBit) {
+				mid = (longitudeRange[0] + longitudeRange[1]) / 2;
+				if (longitude > mid) {
+					addOnBitToEnd();
+					longitudeRange[0] = mid;
+				} else {
+					addOffBitToEnd();
+					longitudeRange[1] = mid;
+				}
+			} else {
+				mid = (latitudeRange[0] + latitudeRange[1]) / 2;
+				if (latitude > mid) {
+					addOnBitToEnd();
+					latitudeRange[0] = mid;
+				} else {
+					addOffBitToEnd();
+					latitudeRange[1] = mid;
+				}
+			}
+			isEvenBit = !isEvenBit;
+		}
+	
+		upperLeft = new WGS84Point(latitudeRange[0], longitudeRange[0]);
+		lowerRight = new WGS84Point(latitudeRange[1], longitudeRange[1]);
+	
+		bits <<= (64 - desiredPrecision);
 	}
 
 	/**
@@ -120,7 +167,7 @@ public final class GeoHash {
 	 * get the base32 string for this geohash.
 	 */
 	public String toBase32() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		long firstFiveBitsMask = 0xf800000000000000l;
 		long bitsCopy = bits;
@@ -327,44 +374,6 @@ public final class GeoHash {
 			value <<= 1;
 		}
 		return buf.toString();
-	}
-
-	private GeoHash(double latitude, double longitude, int desiredPrecision) {
-		point = new WGS84Point(latitude, longitude);
-		highCapDesiredPrecision(desiredPrecision);
-
-		boolean isEvenBit = true;
-		double[] latitudeRange = { -90, 90 };
-		double[] longitudeRange = { -180, 180 };
-		double mid;
-
-		while (significantBits < desiredPrecision) {
-			if (isEvenBit) {
-				mid = (longitudeRange[0] + longitudeRange[1]) / 2;
-				if (longitude > mid) {
-					addOnBitToEnd();
-					longitudeRange[0] = mid;
-				} else {
-					addOffBitToEnd();
-					longitudeRange[1] = mid;
-				}
-			} else {
-				mid = (latitudeRange[0] + latitudeRange[1]) / 2;
-				if (latitude > mid) {
-					addOnBitToEnd();
-					latitudeRange[0] = mid;
-				} else {
-					addOffBitToEnd();
-					latitudeRange[1] = mid;
-				}
-			}
-			isEvenBit = !isEvenBit;
-		}
-
-		upperLeft = new WGS84Point(latitudeRange[0], longitudeRange[0]);
-		lowerRight = new WGS84Point(latitudeRange[1], longitudeRange[1]);
-
-		bits <<= (64 - desiredPrecision);
 	}
 
 	@Override
