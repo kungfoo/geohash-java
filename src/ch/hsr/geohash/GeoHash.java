@@ -111,8 +111,6 @@ public final class GeoHash {
 		double mid;
 	
 		while (significantBits < desiredPrecision) {
-			System.out.println(String.format("lat: (%f,%f)", latitudeRange[0], latitudeRange[1])
-					+ String.format(" lon: (%f,%f)", longitudeRange[0], longitudeRange[1]));
 			if (isEvenBit) {
 				mid = (longitudeRange[0] + longitudeRange[1]) / 2;
 				if (longitude > mid) {
@@ -137,7 +135,6 @@ public final class GeoHash {
 	
 		upperLeft = new WGS84Point(latitudeRange[0], longitudeRange[0]);
 		lowerRight = new WGS84Point(latitudeRange[1], longitudeRange[1]);
-	
 		bits <<= (64 - desiredPrecision);
 	}
 
