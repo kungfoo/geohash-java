@@ -287,10 +287,14 @@ public class GeoHashTest {
 		double lon = -75.9375;
 		GeoHash hash = GeoHash.withCharacterPrecision(lat, lon, 12);
 
-		GeoHash fromRef = GeoHash.fromGeohashString("dr4jb0bn2180");
-		System.out.println(hash);
-		System.out.println(fromRef);
+		String base32 = "dr4jb0bn2180";
+		GeoHash fromRef = GeoHash.fromGeohashString(base32);
 		assertEquals(hash, fromRef);
+		assertEquals(base32, hash.toBase32());
+		assertEquals(base32, fromRef.toBase32());
+		
+		hash = GeoHash.withCharacterPrecision(lat, lon, 10);
+		assertEquals("dr4jb0bn21", hash.toBase32());
 	}
 
 	private void printBoundingBox(GeoHash hash) {
