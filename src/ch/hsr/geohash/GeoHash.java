@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class GeoHash {
+	private static final int[] BITS = { 16, 8, 4, 2, 1 };
+	private static final int BASE32_BITS = 5;
 	private static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
-	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f',
-			'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k',
+			'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
 	private final static Map<Character, Integer> decodeMap = new HashMap<Character, Integer>();
 	static {
@@ -53,20 +55,16 @@ public final class GeoHash {
 		double[] longitudeRange = { -180.0, 180.0 };
 
 		boolean isEvenBit = true;
-		int sz = geohash.length();
-		int[] bits = { 16, 8, 4, 2, 1 };
-		int bsz = bits.length;
-
 		GeoHash hash = new GeoHash();
 
-		for (int i = 0; i < sz; i++) {
+		for (int i = 0; i < geohash.length(); i++) {
 			int cd = decodeMap.get(geohash.charAt(i));
-			for (int z = 0; z < bsz; z++) {
-				int mask = bits[z];
+			for (int j = 0; j < BASE32_BITS; j++) {
+				int mask = BITS[j];
 				if (isEvenBit) {
-					divideRange(hash, longitudeRange, (cd & mask) != 0);
+					divideRangeDecode(hash, longitudeRange, (cd & mask) != 0);
 				} else {
-					divideRange(hash, latitudeRange, (cd & mask) != 0);
+					divideRangeDecode(hash, latitudeRange, (cd & mask) != 0);
 				}
 				isEvenBit = !isEvenBit;
 			}
@@ -78,6 +76,7 @@ public final class GeoHash {
 		hash.point = new WGS84Point(latitude, longitude);
 		hash.upperLeft = new WGS84Point(latitudeRange[0], longitudeRange[0]);
 		hash.lowerRight = new WGS84Point(latitudeRange[1], longitudeRange[1]);
+		hash.bits <<= (64 - hash.significantBits);
 		return hash;
 	}
 
@@ -114,7 +113,7 @@ public final class GeoHash {
 		}
 	}
 
-	private static void divideRange(GeoHash hash, double[] range, boolean b) {
+	private static void divideRangeDecode(GeoHash hash, double[] range, boolean b) {
 		double mid = (range[0] + range[1]) / 2;
 		if (b) {
 			hash.addOnBitToEnd();
@@ -135,8 +134,8 @@ public final class GeoHash {
 		GeoHash eastern = getEasternNeighbour();
 		GeoHash southern = getSouthernNeighbour();
 		GeoHash western = getWesternNeighbour();
-		return new GeoHash[] { northern, northern.getEasternNeighbour(), eastern, southern.getEasternNeighbour(),
-				southern, southern.getWesternNeighbour(), western, northern.getWesternNeighbour() };
+		return new GeoHash[] { northern, northern.getEasternNeighbour(), eastern, southern.getEasternNeighbour(), southern,
+				southern.getWesternNeighbour(), western, northern.getWesternNeighbour() };
 	}
 
 	/**
