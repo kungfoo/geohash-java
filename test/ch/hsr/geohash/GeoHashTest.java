@@ -76,7 +76,9 @@ public class GeoHashTest {
 					assertEquals(bbox[0], decodedBoundingBox[0]);
 					assertEquals(bbox[1], decodedBoundingBox[1]);
 					
+					// the two hashes should also be equal
 					assertEquals(gh, decodedHash);
+					assertEquals(gh.toBase32(), decodedHash.toBase32());
 				}
 			}
 		}

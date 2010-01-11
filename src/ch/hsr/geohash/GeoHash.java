@@ -50,6 +50,11 @@ public final class GeoHash {
 		return new GeoHash(latitude, longitude, numberOfBits);
 	}
 
+	/**
+	 * build a new {@link GeoHash} from a base32-encoded {@link String}.<br>
+	 * This will also set up the hashes bounding box and other values, so it can
+	 * also be used with functions like within().
+	 */
 	public static GeoHash fromGeohashString(String geohash) {
 		double[] latitudeRange = { -90.0, 90.0 };
 		double[] longitudeRange = { -180.0, 180.0 };
@@ -139,14 +144,14 @@ public final class GeoHash {
 	}
 
 	/**
-	 * how many singificant bits are there in this hash?
+	 * how many significant bits are there in this {@link GeoHash}?
 	 */
 	public int significantBits() {
 		return (int) significantBits;
 	}
 
 	/**
-	 * get the base32 string for this geohash.
+	 * get the base32 string for this {@link GeoHash}.
 	 */
 	public String toBase32() {
 		StringBuilder buf = new StringBuilder();
@@ -171,8 +176,9 @@ public final class GeoHash {
 	}
 
 	/**
-	 * returns the {@link WGS84Point} that was originally used to set up this
-	 * {@link GeoHash}
+	 * returns the {@link WGS84Point} that was originally used to set up this.<br>
+	 * If it was built from a base32-{@link String}, this is the center point of
+	 * the bounding box.
 	 */
 	public WGS84Point getPoint() {
 		return point;
@@ -219,7 +225,7 @@ public final class GeoHash {
 	/**
 	 * return a long mask for this hashes significant bits.
 	 */
-	public final long mask() {
+	private final long mask() {
 		if (significantBits == 0) {
 			return 0;
 		} else {
@@ -380,10 +386,6 @@ public final class GeoHash {
 		return value & mask;
 	}
 
-	/**
-	 * a hash cannot have more than 64 bits right now, so we cap the desired
-	 * number of bits there.
-	 */
 	private void highCapDesiredPrecision(int desiredPrecision) {
 		if (desiredPrecision > 64)
 			desiredPrecision = 64;
