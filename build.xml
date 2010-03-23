@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="geohash-java" default="test" basedir=".">
+	<property name="build.dir" location="bin" />
+	<property name="src.dir" location="src" />
+	<property name="test.dir" location="test" />
+	<property name="vendor.dir" location="vendor" />
+	<property name="build.prod.dir" location="${build.dir}/prod" />
+	<property name="build.test.dir" location="${build.dir}/test" />
+	<property name="test.report.dir" location="${build.dir}/test-reports" />
+
+	<path id="project.classpath">
+		<pathelement location="${build.prod.dir}" />
+		<pathelement location="${build.test.dir}" />
+
+		<fileset dir="${vendor.dir}">
+			<include name="*.jar" />
+		</fileset>
+
+	</path>
+
+	<!-- clean -->
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<target name="prepare" depends="clean">
+		<mkdir dir="${build.prod.dir}" />
+		<mkdir dir="${build.test.dir}" />
+	</target>
+
+	<target name="compile" depends="prepare">
+		<javac srcdir="${src.dir}" destdir="${build.prod.dir}">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<target name="compile-tests" depends="compile">
+		<javac srcdir="${test.dir}" destdir="${build.test.dir}">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<target name="test" depends="compile-tests">
+		<delete dir="${test.report.dir}" />
+		<mkdir dir="${test.report.dir}" />
+		<junit errorproperty="test.failed" failureproperty="test.failed">
+			<classpath refid="project.classpath" />
+			<formatter type="brief" usefile="false" />
+			<formatter type="xml" usefile="true" />
+			<batchtest todir="${test.report.dir}">
+
+				<fileset dir="${build.test.dir}" includes="**/*Test.class" />
+			</batchtest>
+		</junit>
+		<fail message="one or more tests failed!" if="test.failed" />
+	</target>
+
+	<!-- release related ant stuff -->
+
+	<property name="version" value="0.2" />
+	<property name="release" value="${ant.project.name}-${version}" />
+
+	<property name="dist.dir" location="release" />
+	<property name="jar.name" value="${ant.project.name}.jar" />
+	<property name="jar.path" location="${dist.dir}/${jar.name}" />
+	<property name="zip.name" value="${release}.zip" />
+	<property name="zip.path" location="${dist.dir}/${zip.name}" />
+
+	<!-- here come the targets... -->
+
+	<target name="prepare-release">
+		<delete dir="${dist.dir}" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<target name="jar" depends="test,prepare-release">
+		<jar destfile="${jar.path}" basedir="${build.prod.dir}">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="zip" depends="jar">
+		<zip destfile="${zip.path}">
+			<zipfileset file="${jar.path}" prefix="${release}" />
+			<zipfileset dir="${basedir}" prefix="${release}/sources">
+				<include name="src/**/*.java" />
+				<include name="test/**/*.java" />
+				<include name="build.xml" />
+				<include name="vendor/**/*.jar"/>
+			</zipfileset>
+		</zip>
+	</target>
+</project>

@@ -79,8 +79,7 @@ public final class GeoHash {
 		double longitude = (longitudeRange[0] + longitudeRange[1]) / 2;
 
 		hash.point = new WGS84Point(latitude, longitude);
-		hash.upperLeft = new WGS84Point(latitudeRange[0], longitudeRange[0]);
-		hash.lowerRight = new WGS84Point(latitudeRange[1], longitudeRange[1]);
+		setBoundingBox(hash, latitudeRange, longitudeRange);
 		hash.bits <<= (64 - hash.significantBits);
 		return hash;
 	}
@@ -102,9 +101,13 @@ public final class GeoHash {
 			isEvenBit = !isEvenBit;
 		}
 
-		upperLeft = new WGS84Point(latitudeRange[0], longitudeRange[0]);
-		lowerRight = new WGS84Point(latitudeRange[1], longitudeRange[1]);
+		setBoundingBox(this, latitudeRange, longitudeRange);
 		bits <<= (64 - desiredPrecision);
+	}
+
+	private static void setBoundingBox(GeoHash hash, double[] latitudeRange, double[] longitudeRange) {
+		hash.upperLeft = new WGS84Point(latitudeRange[0], longitudeRange[0]);
+		hash.lowerRight = new WGS84Point(latitudeRange[1], longitudeRange[1]);
 	}
 
 	private void divideRangeEncode(double value, double[] range) {
@@ -217,22 +220,27 @@ public final class GeoHash {
 		return false;
 	}
 
-	@Override
-	public String toString() {
-		return String.format("%s -> %s,%s", longToBitString(bits), upperLeft, lowerRight);
-	}
-
-	/**
-	 * return a long mask for this hashes significant bits.
-	 */
-	private final long mask() {
-		if (significantBits == 0) {
-			return 0;
-		} else {
-			long value = FIRST_BIT_FLAGGED;
-			value >>= (significantBits - 1);
-			return value;
+	protected GeoHash recombineLatLonBitsToHash(long[] latBits, long[] lonBits) {
+		GeoHash hash = new GeoHash();
+		boolean isEvenBit = false;
+		latBits[0] <<= (64 - latBits[1]);
+		lonBits[0] <<= (64 - lonBits[1]);
+		double[] latitudeRange = { -90.0, 90.0 };
+		double[] longitudeRange = { -180.0, 180.0 };
+		
+		for (int i = 0; i < latBits[1] + lonBits[1]; i++) {
+			if (isEvenBit) {
+				divideRangeDecode(hash, latitudeRange, (latBits[0] & FIRST_BIT_FLAGGED) == FIRST_BIT_FLAGGED);
+				latBits[0] <<= 1;
+			} else {
+				divideRangeDecode(hash, longitudeRange, (lonBits[0] & FIRST_BIT_FLAGGED) == FIRST_BIT_FLAGGED);
+				lonBits[0] <<= 1;
+			}
+			isEvenBit = !isEvenBit;
 		}
+		hash.bits <<= (64 - hash.significantBits);
+		setBoundingBox(hash, latitudeRange, longitudeRange);
+		return hash;
 	}
 
 	protected GeoHash getNorthernNeighbour() {
@@ -265,33 +273,6 @@ public final class GeoHash {
 		lonBits[0] -= 1;
 		lonBits[0] = maskLastNBits(lonBits[0], lonBits[1]);
 		return recombineLatLonBitsToHash(latBits, lonBits);
-	}
-
-	protected GeoHash recombineLatLonBitsToHash(long[] latBits, long[] lonBits) {
-		GeoHash hash = new GeoHash();
-		boolean isEvenBit = false;
-		latBits[0] <<= (64 - latBits[1]);
-		lonBits[0] <<= (64 - lonBits[1]);
-		for (int i = 0; i < latBits[1] + lonBits[1]; i++) {
-			if (isEvenBit) {
-				if ((latBits[0] & FIRST_BIT_FLAGGED) == FIRST_BIT_FLAGGED) {
-					hash.addOnBitToEnd();
-				} else {
-					hash.addOffBitToEnd();
-				}
-				latBits[0] <<= 1;
-			} else {
-				if ((lonBits[0] & FIRST_BIT_FLAGGED) == FIRST_BIT_FLAGGED) {
-					hash.addOnBitToEnd();
-				} else {
-					hash.addOffBitToEnd();
-				}
-				lonBits[0] <<= 1;
-			}
-			isEvenBit = !isEvenBit;
-		}
-		hash.bits <<= (64 - hash.significantBits);
-		return hash;
 	}
 
 	protected long[] getRightAlignedLatitudeBits() {
@@ -359,6 +340,11 @@ public final class GeoHash {
 	}
 
 	@Override
+	public String toString() {
+		return String.format("%s -> %s,%s", longToBitString(bits), upperLeft, lowerRight);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -378,6 +364,19 @@ public final class GeoHash {
 		f = 31 * f + (int) (bits ^ (bits >>> 32));
 		f = 31 * f + significantBits;
 		return f;
+	}
+
+	/**
+	 * return a long mask for this hashes significant bits.
+	 */
+	private final long mask() {
+		if (significantBits == 0) {
+			return 0;
+		} else {
+			long value = FIRST_BIT_FLAGGED;
+			value >>= (significantBits - 1);
+			return value;
+		}
 	}
 
 	private long maskLastNBits(long value, long n) {

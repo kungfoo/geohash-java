@@ -256,6 +256,7 @@ public class GeoHashTest {
 		end = end.getWesternNeighbour();
 		end = end.getNorthernNeighbour();
 		assertEquals(start, end);
+		assertArrayEquals(start.getBoundingBoxPoints(), end.getBoundingBoxPoints());
 	}
 
 	@Test
