@@ -11,16 +11,17 @@
 	<path id="project.classpath">
 		<pathelement location="${build.prod.dir}" />
 		<pathelement location="${build.test.dir}" />
-		
+
 		<fileset dir="${vendor.dir}">
 			<include name="*.jar" />
 		</fileset>
-		
+
 	</path>
-	
+
 	<!-- clean -->
 	<target name="clean">
 		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
 	</target>
 
 	<target name="prepare" depends="clean">
@@ -54,7 +55,7 @@
 		</junit>
 		<fail message="one or more tests failed!" if="test.failed" />
 	</target>
-	
+
 	<!-- release related ant stuff -->
 
 	<property name="version" value="0.2" />
@@ -68,8 +69,12 @@
 
 	<!-- here come the targets... -->
 
-	<target name="jar" depends="test">
+	<target name="prepare-release">
+		<delete dir="${dist.dir}" />
 		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<target name="jar" depends="test,prepare-release">
 		<jar destfile="${jar.path}" basedir="${build.prod.dir}">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
@@ -80,8 +85,13 @@
 
 	<target name="zip" depends="jar">
 		<zip destfile="${zip.path}">
-			<zipfileset dir="${basedir}" includes="src/**.*" prefix="src" />
-			<zipfileset dir="${dist.dir}" includes="test/**.*" prefix="src" />
+			<zipfileset file="${jar.path}" prefix="${release}" />
+			<zipfileset dir="${basedir}" prefix="${release}/sources">
+				<include name="src/**/*.java" />
+				<include name="test/**/*.java" />
+				<include name="build.xml" />
+				<include name="vendor/**/*.jar"/>
+			</zipfileset>
 		</zip>
 	</target>
 </project>
