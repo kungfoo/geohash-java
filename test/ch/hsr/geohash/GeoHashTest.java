@@ -143,26 +143,22 @@ public class GeoHashTest {
 
 	@Test
 	public void testByCharacterPrecision() {
-		hash = GeoHash.withCharacterPrecision(20, 31, 12);
-		assertEquals("sew1c2vs2q5r", hash.toBase32());
+		assertEncodingWithCharacterPrecision(new WGS84Point(20, 31), 12, "sew1c2vs2q5r");
+		assertEncodingWithCharacterPrecision(new WGS84Point(-20, 31), 12, "ksqn1rje83g2");
+		assertEncodingWithCharacterPrecision(new WGS84Point(-20.783236276, 31.9867127312312), 12, "ksq9zbs0b7vw");
 
-		hash = GeoHash.withCharacterPrecision(-20, 31, 12);
-		assertEquals("ksqn1rje83g2", hash.toBase32());
+		WGS84Point point = new WGS84Point(-76.5110040642321, 39.0247389581054);
+		String fullStringValue = "hf7u8p8gn747";
+		for (int characters = 12; characters > 1; characters--) {
+			assertEncodingWithCharacterPrecision(point, characters, fullStringValue.substring(0, characters));
+		}
 
-		hash = GeoHash.withCharacterPrecision(-20.783236276, 31.9867127312312, 12);
-		assertEquals("ksq9zbs0b7vw", hash.toBase32());
+		assertEncodingWithCharacterPrecision(new WGS84Point(39.0247389581054, -76.5110040642321), 12, "dqcw4bnrs6s7");
+	}
 
-		hash = GeoHash.withCharacterPrecision(-76.5110040642321, 39.0247389581054, 12);
-		assertEquals("hf7u8p8gn747", hash.toBase32());
-
-		hash = GeoHash.withCharacterPrecision(-76.5110040642321, 39.0247389581054, 8);
-		assertEquals("hf7u8p8g", hash.toBase32());
-
-		hash = GeoHash.withCharacterPrecision(-76.5110040642321, 39.0247389581054, 4);
-		assertEquals("hf7u", hash.toBase32());
-
-		hash = GeoHash.withCharacterPrecision(39.0247389581054, -76.5110040642321, 12);
-		assertEquals("dqcw4bnrs6s7", hash.toBase32());
+	private void assertEncodingWithCharacterPrecision(WGS84Point point, int numberOfCharacters, String stringValue) {
+		GeoHash hash = GeoHash.withCharacterPrecision(point.getLatitude(), point.getLongitude(), numberOfCharacters);
+		assertEquals(stringValue, hash.toBase32());
 	}
 
 	@Test
