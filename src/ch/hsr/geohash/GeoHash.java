@@ -253,27 +253,27 @@ public final class GeoHash {
 	}
 
 	public GeoHash getSouthernNeighbour() {
-		long[] latBits = getRightAlignedLatitudeBits();
-		long[] lonBits = getRightAlignedLongitudeBits();
-		latBits[0] += 1;
-		latBits[0] = maskLastNBits(latBits[0], latBits[1]);
-		return recombineLatLonBitsToHash(latBits, lonBits);
+		long[] latitudeBits = getRightAlignedLatitudeBits();
+		long[] longitudeBits = getRightAlignedLongitudeBits();
+		latitudeBits[0] += 1;
+		latitudeBits[0] = maskLastNBits(latitudeBits[0], latitudeBits[1]);
+		return recombineLatLonBitsToHash(latitudeBits, longitudeBits);
 	}
 
 	public GeoHash getEasternNeighbour() {
-		long[] latBits = getRightAlignedLatitudeBits();
-		long[] lonBits = getRightAlignedLongitudeBits();
-		lonBits[0] += 1;
-		lonBits[0] = maskLastNBits(lonBits[0], lonBits[1]);
-		return recombineLatLonBitsToHash(latBits, lonBits);
+		long[] latitudeBits = getRightAlignedLatitudeBits();
+		long[] longitudeBits = getRightAlignedLongitudeBits();
+		longitudeBits[0] += 1;
+		longitudeBits[0] = maskLastNBits(longitudeBits[0], longitudeBits[1]);
+		return recombineLatLonBitsToHash(latitudeBits, longitudeBits);
 	}
 
 	public GeoHash getWesternNeighbour() {
-		long[] latBits = getRightAlignedLatitudeBits();
-		long[] lonBits = getRightAlignedLongitudeBits();
-		lonBits[0] -= 1;
-		lonBits[0] = maskLastNBits(lonBits[0], lonBits[1]);
-		return recombineLatLonBitsToHash(latBits, lonBits);
+		long[] latitudeBits = getRightAlignedLatitudeBits();
+		long[] longitudeBits = getRightAlignedLongitudeBits();
+		longitudeBits[0] -= 1;
+		longitudeBits[0] = maskLastNBits(longitudeBits[0], longitudeBits[1]);
+		return recombineLatLonBitsToHash(latitudeBits, longitudeBits);
 	}
 
 	protected long[] getRightAlignedLatitudeBits() {
