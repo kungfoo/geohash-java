@@ -10,11 +10,17 @@ public class WGS84Point {
 	protected double latitude;
 	static final double equatorRadius = 6378137, poleRadius = 6356752.3142, f = 1 / 298.257223563;
 	static final double degToRad = 0.0174532925199433;
-	static final double equatorRadiusSquared = equatorRadius * equatorRadius, poleRadiusSquared = poleRadius * poleRadius;
+	static final double equatorRadiusSquared = equatorRadius * equatorRadius, poleRadiusSquared = poleRadius
+			* poleRadius;
 
 	public WGS84Point(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
+	}
+
+	public WGS84Point(WGS84Point other) {
+		latitude = other.latitude;
+		longitude = other.longitude;
 	}
 
 	public double getLatitude() {
@@ -59,14 +65,15 @@ public class WGS84Point {
 					* sinSigma
 					* (cos2SigmaM + B
 							/ 4
-							* (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) - B / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma)
-									* (-3 + 4 * cos2SigmaM * cos2SigmaM)));
+							* (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) - B / 6 * cos2SigmaM
+									* (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
 			sigmaP = sigma;
 			sigma = distanceInMeters / (b * A) + deltaSigma;
 		}
 
 		double tmp = sinU1 * sinSigma - cosU1 * cosSigma * cosAlpha1;
-		double lat2 = Math.atan2(sinU1 * cosSigma + cosU1 * sinSigma * cosAlpha1, (1 - f) * Math.sqrt(sinAlpha * sinAlpha + tmp * tmp));
+		double lat2 = Math.atan2(sinU1 * cosSigma + cosU1 * sinSigma * cosAlpha1, (1 - f)
+				* Math.sqrt(sinAlpha * sinAlpha + tmp * tmp));
 		double lambda = Math.atan2(sinSigma * sinAlpha1, cosU1 * cosSigma - sinU1 * sinSigma * cosAlpha1);
 		double C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha));
 		double L = lambda - (1 - C) * f * sinAlpha
@@ -89,8 +96,8 @@ public class WGS84Point {
 		double lambda = L, lambdaP, iterLimit = 20;
 		do {
 			double sinLambda = Math.sin(lambda), cosLambda = Math.cos(lambda);
-			sinSigma = Math.sqrt((cosU2 * sinLambda) * (cosU2 * sinLambda) + (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda)
-					* (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda));
+			sinSigma = Math.sqrt((cosU2 * sinLambda) * (cosU2 * sinLambda)
+					+ (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) * (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda));
 			if (sinSigma == 0)
 				return 0; // co-incident points
 			cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
@@ -102,7 +109,8 @@ public class WGS84Point {
 				cos2SigmaM = 0; // equatorial line: cosSqAlpha=0 (�6)
 			double C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha));
 			lambdaP = lambda;
-			lambda = L + (1 - C) * f * sinAlpha * (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
+			lambda = L + (1 - C) * f * sinAlpha
+					* (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
 		} while (Math.abs(lambda - lambdaP) > EPSILON && --iterLimit > 0);
 
 		if (iterLimit == 0)
@@ -114,8 +122,8 @@ public class WGS84Point {
 				* sinSigma
 				* (cos2SigmaM + B
 						/ 4
-						* (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) - B / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma)
-								* (-3 + 4 * cos2SigmaM * cos2SigmaM)));
+						* (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) - B / 6 * cos2SigmaM
+								* (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
 		double s = b * A * (sigma - deltaSigma);
 
 		return s;
@@ -137,5 +145,15 @@ public class WGS84Point {
 			return latitude == other.latitude && longitude == other.longitude;
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 42;
+		long latBits = Double.doubleToLongBits(latitude);
+		long lonBits = Double.doubleToLongBits(longitude);
+		result = 31 * result + (int) (latBits ^ (latBits >>> 32));
+		result = 31 * result + (int) (lonBits ^ (lonBits >>> 32));
+		return result;
 	}
 }

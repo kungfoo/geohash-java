@@ -98,6 +98,10 @@ public class GeoHashTest {
 		bbox.bits = 0x6ff0000000000000l;
 		bbox.significantBits = 12;
 
+		assertWithin(hash, bbox);
+	}
+
+	private void assertWithin(GeoHash hash, GeoHash bbox) {
 		assertTrue(hash.toBase32() + " should be within " + bbox.toBase32(), hash.within(bbox));
 	}
 
@@ -299,6 +303,13 @@ public class GeoHashTest {
 
 		hash = GeoHash.withCharacterPrecision(lat, lon, 10);
 		assertEquals("dr4jb0bn21", hash.toBase32());
+	}
+
+	@Test
+	public void testSimpleWithin() {
+		GeoHash hash = GeoHash.withBitPrecision(70, -120, 8);
+		GeoHash inside = GeoHash.withBitPrecision(74, -130, 64);
+		assertWithin(inside, hash);
 	}
 
 	private void printBoundingBox(GeoHash hash) {
