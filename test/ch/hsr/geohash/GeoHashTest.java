@@ -60,9 +60,9 @@ public class GeoHashTest {
 		// geohash formed by encoder
 		// TODO could possibly be less brute-force here and be more scientific
 		// about possible failure points
-		for (double lat = -90; lat <= 90; lat += rand.nextDouble() + 0.5) {
-			for (double lon = -180; lon <= 180; lon += rand.nextDouble() + 0.5) {
-				for (int precisionChars = 2; precisionChars <= 12; precisionChars++) {
+		for (double lat = -90; lat <= 90; lat += rand.nextDouble() + 0.85) {
+			for (double lon = -180; lon <= 180; lon += rand.nextDouble() + 0.85) {
+				for (int precisionChars = 6; precisionChars <= 12; precisionChars++) {
 					GeoHash gh = GeoHash.withCharacterPrecision(lat, lon, precisionChars);
 					BoundingBox bbox = gh.getBoundingBox();
 					GeoHash decodedHash = GeoHash.fromGeohashString(gh.toBase32());

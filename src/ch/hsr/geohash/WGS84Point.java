@@ -16,11 +16,13 @@ public class WGS84Point {
 	public WGS84Point(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
+		if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) {
+			throw new IllegalArgumentException("The supplied coordinates " + this + " are out of range.");
+		}
 	}
 
 	public WGS84Point(WGS84Point other) {
-		latitude = other.latitude;
-		longitude = other.longitude;
+		this(other.latitude, other.longitude);
 	}
 
 	public double getLatitude() {

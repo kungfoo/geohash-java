@@ -39,15 +39,9 @@ public class BoundingBox {
 		return 31 * (713 + upperLeft.hashCode()) + lowerRight.hashCode();
 	}
 
-	public double area() {
-		return (lowerRight.latitude - upperLeft.latitude) * (lowerRight.longitude - lowerRight.longitude);
-	}
-
 	public boolean contains(WGS84Point point) {
-	return (point.latitude >= upperLeft.latitude)
-		&& (point.longitude >= upperLeft.longitude)
-		&& (point.latitude <= lowerRight.latitude)
-		&& (point.longitude <= lowerRight.longitude);
+		return (point.latitude >= upperLeft.latitude) && (point.longitude >= upperLeft.longitude)
+				&& (point.latitude <= lowerRight.latitude) && (point.longitude <= lowerRight.longitude);
 	}
 
 	@Override

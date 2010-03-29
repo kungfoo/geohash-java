@@ -31,7 +31,18 @@ public class BoundingBoxTest {
 		assertFalse(a.equals(c));
 	}
 	
+	@Test
+	public void testContains(){
+		BoundingBox bbox = new BoundingBox(new WGS84Point(45, 120), new WGS84Point(46, 121));
+		assertContains(bbox, new WGS84Point(45.5, 120.5));
+		assertNotContains(bbox, new WGS84Point(90, 90));
+	}
+	
 	private void assertContains(BoundingBox box, WGS84Point p){
 		assertTrue(p + " should be in " + box, box.contains(p));
+	}
+	
+	private void assertNotContains(BoundingBox box, WGS84Point p){
+		assertFalse(p + " should NOT be in " + box, box.contains(p));
 	}
 }

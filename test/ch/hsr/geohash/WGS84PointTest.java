@@ -15,9 +15,9 @@ public class WGS84PointTest {
 
 	@Before
 	public void setUp() {
-		a = new WGS84Point(120, 15.7465465);
+		a = new WGS84Point(47.2342, 15.7465465);
 		b = new WGS84Point(a);
-		c = new WGS84Point(-120, b.getLongitude());
+		c = new WGS84Point(-47.234, b.getLongitude());
 		d = new WGS84Point(-32.9687253, 12.42334242);
 	}
 
@@ -63,5 +63,10 @@ public class WGS84PointTest {
 		assertFalse(a.hashCode() == c.hashCode());
 		assertFalse(d.hashCode() == c.hashCode());
 		assertFalse(d.hashCode() == new Integer(10).hashCode());
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testRangeCheck() {
+		WGS84Point p = new WGS84Point(180, 240);
 	}
 }
