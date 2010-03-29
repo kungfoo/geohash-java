@@ -1,10 +1,27 @@
 java code for geohashes
 --------------------------------
 
-This code implements the geohash library as seen in many other projects.
+An implementation of Geohashes in pure Java.
+The produced hashes, when using character precision (multiples of 5 bits) are compatible
+to the reference implementation geohash.org.
 
-We will try to keep compliant to the spec such as defined here[geoash, wikipedia], wherever that is possible.
-This library uses longs internally, so hashes can no longer be only multiples of 5 bits long. One can easily create a 11-bit bounding box and find 
-neighbouring bounding boxes of it.
+You can however also encode Geohashes down to the full available precision of long i.e. 64 bits.
 
-Currently heavily BETA and everything is still subject to change.
+TODO
+----
+
+Current development involves getting the following things to run:
+
+-	a method to find the n closest hashes to any given point.
+-	find all hashes within a bounding box (possibly including false positives)
+
+
+Last important changes
+----------------------
+
+-	Fixed issue #2 from Github:
+	- Neighbouring hashes can be calculated by using the getAdjacent() method, which yields a hashes 8 neighbors.
+	- northern, eastern, western and southern neighbours can be determined using the respective methods.
+
+-	Fixed issue #1 from Github:
+	- A bug caused different hashes to be yielded sometimes.
