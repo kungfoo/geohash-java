@@ -244,7 +244,7 @@ public final class GeoHash {
 		return hash;
 	}
 
-	protected GeoHash getNorthernNeighbour() {
+	public GeoHash getNorthernNeighbour() {
 		long[] latitudeBits = getRightAlignedLatitudeBits();
 		long[] longitudeBits = getRightAlignedLongitudeBits();
 		latitudeBits[0] -= 1;
@@ -252,7 +252,7 @@ public final class GeoHash {
 		return recombineLatLonBitsToHash(latitudeBits, longitudeBits);
 	}
 
-	protected GeoHash getSouthernNeighbour() {
+	public GeoHash getSouthernNeighbour() {
 		long[] latBits = getRightAlignedLatitudeBits();
 		long[] lonBits = getRightAlignedLongitudeBits();
 		latBits[0] += 1;
@@ -260,7 +260,7 @@ public final class GeoHash {
 		return recombineLatLonBitsToHash(latBits, lonBits);
 	}
 
-	protected GeoHash getEasternNeighbour() {
+	public GeoHash getEasternNeighbour() {
 		long[] latBits = getRightAlignedLatitudeBits();
 		long[] lonBits = getRightAlignedLongitudeBits();
 		lonBits[0] += 1;
@@ -268,7 +268,7 @@ public final class GeoHash {
 		return recombineLatLonBitsToHash(latBits, lonBits);
 	}
 
-	protected GeoHash getWesternNeighbour() {
+	public GeoHash getWesternNeighbour() {
 		long[] latBits = getRightAlignedLatitudeBits();
 		long[] lonBits = getRightAlignedLongitudeBits();
 		lonBits[0] -= 1;
