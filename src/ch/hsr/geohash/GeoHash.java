@@ -7,8 +7,8 @@ public final class GeoHash {
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
 	private static final int BASE32_BITS = 5;
 	private static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
-	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k',
-			'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f',
+			'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
 	private final static Map<Character, Integer> decodeMap = new HashMap<Character, Integer>();
 	static {
@@ -21,9 +21,7 @@ public final class GeoHash {
 	protected long bits = 0;
 	private WGS84Point point;
 
-	// bounding box corners.
-	private WGS84Point upperLeft;
-	private WGS84Point lowerRight;
+	private BoundingBox boundingBox;
 
 	protected byte significantBits = 0;
 
@@ -106,8 +104,8 @@ public final class GeoHash {
 	}
 
 	private static void setBoundingBox(GeoHash hash, double[] latitudeRange, double[] longitudeRange) {
-		hash.upperLeft = new WGS84Point(latitudeRange[0], longitudeRange[0]);
-		hash.lowerRight = new WGS84Point(latitudeRange[1], longitudeRange[1]);
+		hash.boundingBox = new BoundingBox(new WGS84Point(latitudeRange[0], longitudeRange[0]), new WGS84Point(
+				latitudeRange[1], longitudeRange[1]));
 	}
 
 	private void divideRangeEncode(double value, double[] range) {
@@ -142,8 +140,8 @@ public final class GeoHash {
 		GeoHash eastern = getEasternNeighbour();
 		GeoHash southern = getSouthernNeighbour();
 		GeoHash western = getWesternNeighbour();
-		return new GeoHash[] { northern, northern.getEasternNeighbour(), eastern, southern.getEasternNeighbour(), southern,
-				southern.getWesternNeighbour(), western, northern.getWesternNeighbour() };
+		return new GeoHash[] { northern, northern.getEasternNeighbour(), eastern, southern.getEasternNeighbour(),
+				southern, southern.getWesternNeighbour(), western, northern.getWesternNeighbour() };
 	}
 
 	/**
@@ -155,7 +153,8 @@ public final class GeoHash {
 
 	/**
 	 * get the base32 string for this {@link GeoHash}.<br>
-	 * this method only makes sense, if this hash has a multiple of 5 significant bits.
+	 * this method only makes sense, if this hash has a multiple of 5
+	 * significant bits.
 	 */
 	public String toBase32() {
 		StringBuilder buf = new StringBuilder();
@@ -194,17 +193,11 @@ public final class GeoHash {
 	 */
 	// TODO: make sure this method works as intented for corner cases!
 	public WGS84Point getBoundingBoxCenterPoint() {
-		double centerLatitude = (upperLeft.latitude + lowerRight.latitude) / 2;
-		double centerLongitude = (upperLeft.longitude + lowerRight.longitude) / 2;
-		return new WGS84Point(centerLatitude, centerLongitude);
+		return boundingBox.getCenterPoint();
 	}
 
-	/**
-	 * @return an array containing the two points: upper left, lower right of
-	 *         the bounding box.
-	 */
-	public WGS84Point[] getBoundingBoxPoints() {
-		return new WGS84Point[] { upperLeft, lowerRight };
+	public BoundingBox getBoundingBox() {
+		return boundingBox;
 	}
 
 	/**
@@ -212,9 +205,7 @@ public final class GeoHash {
 	 *         upper left, upper right, lower left, lower right.
 	 */
 	public WGS84Point[] getFourBoundingBoxPoints() {
-		WGS84Point upperRight = new WGS84Point(upperLeft.latitude, lowerRight.longitude);
-		WGS84Point lowerLeft = new WGS84Point(lowerRight.latitude, upperLeft.longitude);
-		return new WGS84Point[] { upperLeft, upperRight, lowerLeft, lowerRight };
+		return boundingBox.getFourBoundingBoxPoints();
 	}
 
 	public boolean enclosesCircleAroundPoint(WGS84Point point, double radius) {
@@ -228,7 +219,7 @@ public final class GeoHash {
 		lonBits[0] <<= (64 - lonBits[1]);
 		double[] latitudeRange = { -90.0, 90.0 };
 		double[] longitudeRange = { -180.0, 180.0 };
-		
+
 		for (int i = 0; i < latBits[1] + lonBits[1]; i++) {
 			if (isEvenBit) {
 				divideRangeDecode(hash, latitudeRange, (latBits[0] & FIRST_BIT_FLAGGED) == FIRST_BIT_FLAGGED);
@@ -328,7 +319,7 @@ public final class GeoHash {
 
 	@Override
 	public String toString() {
-		return String.format("%s -> %s,%s", Long.toBinaryString(bits), upperLeft, lowerRight);
+		return String.format("%s -> %s", Long.toBinaryString(bits), boundingBox);
 	}
 
 	@Override

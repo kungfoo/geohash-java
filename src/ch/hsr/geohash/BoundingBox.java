@@ -52,4 +52,16 @@ public class BoundingBox {
 	public String toString() {
 		return upperLeft + " -> " + lowerRight;
 	}
+
+	public WGS84Point[] getFourBoundingBoxPoints() {
+		WGS84Point upperRight = new WGS84Point(upperLeft.latitude, lowerRight.longitude);
+		WGS84Point lowerLeft = new WGS84Point(lowerRight.latitude, upperLeft.longitude);
+		return new WGS84Point[] { upperLeft, upperRight, lowerLeft, lowerRight };
+	}
+
+	public WGS84Point getCenterPoint() {
+		double centerLatitude = (upperLeft.latitude + lowerRight.latitude) / 2;
+		double centerLongitude = (upperLeft.longitude + lowerRight.longitude) / 2;
+		return new WGS84Point(centerLatitude, centerLongitude);
+	}
 }
