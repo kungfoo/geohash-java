@@ -1,8 +1,10 @@
 package ch.hsr.geohash;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Random;
 
@@ -11,10 +13,12 @@ import org.junit.Test;
 
 public class GeoHashTest {
 	private GeoHash hash;
+	private Random rand;
 
 	@Before
 	public void setUp() {
 		hash = new GeoHash();
+		rand = new Random();
 	}
 
 	@Test
@@ -57,7 +61,6 @@ public class GeoHashTest {
 		// geohash formed by encoder
 		// TODO could possibly be less brute-force here and be more scientific
 		// about possible failure points
-		Random rand = new Random();
 		for (double lat = -90; lat <= 90; lat += rand.nextDouble() + 0.5) {
 			for (double lon = -180; lon <= 180; lon += rand.nextDouble() + 0.5) {
 				for (int precisionChars = 2; precisionChars <= 12; precisionChars++) {
@@ -75,7 +78,7 @@ public class GeoHashTest {
 					WGS84Point[] decodedBoundingBox = decodedHash.getBoundingBoxPoints();
 					assertEquals(bbox[0], decodedBoundingBox[0]);
 					assertEquals(bbox[1], decodedBoundingBox[1]);
-					
+
 					// the two hashes should also be equal
 					assertEquals(gh, decodedHash);
 					assertEquals(gh.toBase32(), decodedHash.toBase32());
@@ -157,7 +160,7 @@ public class GeoHashTest {
 
 		hash = GeoHash.withCharacterPrecision(-76.5110040642321, 39.0247389581054, 4);
 		assertEquals("hf7u", hash.toBase32());
-		
+
 		hash = GeoHash.withCharacterPrecision(39.0247389581054, -76.5110040642321, 12);
 		assertEquals("dqcw4bnrs6s7", hash.toBase32());
 	}
@@ -236,9 +239,9 @@ public class GeoHashTest {
 		GeoHash[] adjacent = GeoHash.fromGeohashString("dqcw4").getAdjacent();
 		assertEquals(8, adjacent.length);
 	}
-	
+
 	@Test
-	public void testMovingInCircle(){
+	public void testMovingInCircle() {
 		// moving around hashes in a circle should be possible
 		checkMovingInCircle(34.2, -45.123);
 		// this should also work at the "back" of the earth
@@ -260,21 +263,23 @@ public class GeoHashTest {
 	}
 
 	@Test
-	public void testMovingAroundWorldOnHashStrips() throws SecurityException, NoSuchMethodException,
-			IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+	public void testMovingAroundWorldOnHashStrips() throws Exception {
 		String[] directions = { "Northern", "Eastern", "Southern", "Western" };
 		for (String direction : directions) {
 			checkMoveAroundStrip(direction);
 		}
 	}
 
-	private void checkMoveAroundStrip(String direction) throws SecurityException, NoSuchMethodException,
-			IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		for (int bits = 2; bits < 12; bits++) {
+	private void checkMoveAroundStrip(String direction) throws Exception {
+		for (int bits = 2; bits < 16; bits++) {
+			double randomLatitude = (rand.nextDouble() - 0.5) * 180;
+			double randomLongitude = (rand.nextDouble() - 0.5) * 360;
+
 			// this divides the range by 2^bits
-			GeoHash hash = GeoHash.withBitPrecision(10, 10, bits);
+			GeoHash hash = GeoHash.withBitPrecision(randomLatitude, randomLongitude, bits);
 			Method method = hash.getClass().getDeclaredMethod("get" + direction + "Neighbour");
 			GeoHash result = hash;
+
 			// moving this direction 2^bits times should yield the same hash
 			// again
 			for (int i = 0; i < Math.pow(2, bits); i++) {
@@ -295,7 +300,7 @@ public class GeoHashTest {
 		assertEquals(hash, fromRef);
 		assertEquals(base32, hash.toBase32());
 		assertEquals(base32, fromRef.toBase32());
-		
+
 		hash = GeoHash.withCharacterPrecision(lat, lon, 10);
 		assertEquals("dr4jb0bn21", hash.toBase32());
 	}
