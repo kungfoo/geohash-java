@@ -154,7 +154,8 @@ public final class GeoHash {
 	}
 
 	/**
-	 * get the base32 string for this {@link GeoHash}.
+	 * get the base32 string for this {@link GeoHash}.<br>
+	 * this method only makes sense, if this hash has a multiple of 5 significant bits.
 	 */
 	public String toBase32() {
 		StringBuilder buf = new StringBuilder();
@@ -325,23 +326,9 @@ public final class GeoHash {
 		bits <<= 1;
 	}
 
-	protected String longToBitString(long value) {
-		StringBuilder buf = new StringBuilder();
-		for (int i = significantBits; i > 0; i--) {
-			long bit = value & FIRST_BIT_FLAGGED;
-			if (bit == FIRST_BIT_FLAGGED) {
-				buf.append('1');
-			} else {
-				buf.append('0');
-			}
-			value <<= 1;
-		}
-		return buf.toString();
-	}
-
 	@Override
 	public String toString() {
-		return String.format("%s -> %s,%s", longToBitString(bits), upperLeft, lowerRight);
+		return String.format("%s -> %s,%s", Long.toBinaryString(bits), upperLeft, lowerRight);
 	}
 
 	@Override
