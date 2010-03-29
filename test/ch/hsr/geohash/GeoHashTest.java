@@ -68,17 +68,11 @@ public class GeoHashTest {
 					BoundingBox bbox = gh.getBoundingBox();
 					GeoHash decodedHash = GeoHash.fromGeohashString(gh.toBase32());
 					WGS84Point decodedCenter = decodedHash.getBoundingBoxCenterPoint();
-					/*assertTrue("Decoded position should be within bounds of original",
-							(decodedCenter.latitude >= bbox[0].latitude)
-									&& (decodedCenter.longitude >= bbox[0].longitude)
-									&& (decodedCenter.latitude <= bbox[1].latitude)
-									&& (decodedCenter.longitude <= bbox[1].longitude));
-*/
-					// they should now actually have the same bounding box.
+					
+					assertTrue("bbox " + bbox + " should contain the decoded center value " + decodedCenter, bbox
+							.contains(decodedCenter));
 					BoundingBox decodedBoundingBox = decodedHash.getBoundingBox();
 					assertEquals(bbox, decodedBoundingBox);
-
-					// the two hashes should also be equal
 					assertEquals(gh, decodedHash);
 					assertEquals(gh.toBase32(), decodedHash.toBase32());
 				}

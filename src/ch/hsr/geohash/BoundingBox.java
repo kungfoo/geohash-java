@@ -44,8 +44,10 @@ public class BoundingBox {
 	}
 
 	public boolean contains(WGS84Point point) {
-		return point.latitude >= upperLeft.latitude && point.latitude <= upperLeft.latitude
-				&& point.longitude >= lowerRight.longitude && point.longitude <= lowerRight.longitude;
+	return (point.latitude >= upperLeft.latitude)
+		&& (point.longitude >= upperLeft.longitude)
+		&& (point.latitude <= lowerRight.latitude)
+		&& (point.longitude <= lowerRight.longitude);
 	}
 
 	@Override
