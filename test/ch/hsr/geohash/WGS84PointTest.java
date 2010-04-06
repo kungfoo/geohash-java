@@ -6,7 +6,6 @@
  * in the LICENSE file. If you have not, see
  * http://www.gnu.org/licenses/lgpl-3.0.txt
  */
-
 package ch.hsr.geohash;
 
 import static org.junit.Assert.*;
