@@ -5,7 +5,8 @@ An implementation of Geohashes in pure Java.
 The produced hashes, when using character precision (multiples of 5 bits) are compatible
 to the reference implementation geohash.org.
 
-You can however also encode Geohashes down to the full available precision of long i.e. 64 bits.
+You can however also encode Geohashes down to the full available precision of a long i.e. 64 bits.
+
 
 TODO
 ----
@@ -25,3 +26,10 @@ Last important changes
 
 -	Fixed issue #1 from Github:
 	- A bug caused different hashes to be yielded sometimes.
+
+	
+License
+-------
+
+This code has been placed under the LGPL. See the LICENSE file for more information.
+Please contribute improvements and bug fixes back via github.
