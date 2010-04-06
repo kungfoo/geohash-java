@@ -89,6 +89,8 @@
 			<zipfileset dir="${basedir}" prefix="${release}/sources">
 				<include name="src/**/*.java" />
 				<include name="test/**/*.java" />
+				<include name="LICENSE" />
+				<include name="README" />
 				<include name="build.xml" />
 				<include name="vendor/**/*.jar"/>
 			</zipfileset>

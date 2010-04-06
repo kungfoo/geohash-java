@@ -1,11 +1,24 @@
 java code for geohashes
---------------------------------
+=======================
 
 An implementation of Geohashes in pure Java.
 The produced hashes, when using character precision (multiples of 5 bits) are compatible
 to the reference implementation geohash.org.
 
 You can however also encode Geohashes down to the full available precision of a long i.e. 64 bits.
+
+
+Building/Testing the code
+-------------------------
+
+The geohash-java code can be built using Apache Ant.
+Following targets are available:
+
+	- clean		# wash dishes.
+    - compile	# compile the main source code.
+    - test		# (default) run the unit tests.
+    - jar		# pack a jar archive with the compiled class files.
+    - zip 		# pack a zip archive with the compiled binaries, source code and all other files.
 
 
 TODO
