@@ -10,8 +10,7 @@ package ch.hsr.geohash;
 
 public class GeoHashBoundingBoxSearch {
 	
-	private WGS84Point upperLeft;
-	private WGS84Point lowerRight;
+	private BoundingBox boundingBox;
 	private int precision;
 
 	/**
@@ -20,8 +19,8 @@ public class GeoHashBoundingBoxSearch {
 	 * @param lowerRight
 	 *            : lower right corner.
 	 */
-	public GeoHashBoundingBoxSearch(WGS84Point upperLeft, WGS84Point lowerRight) {
-		this(upperLeft, lowerRight, 16);
+	public GeoHashBoundingBoxSearch(BoundingBox bbox) {
+		this(bbox, 16);
 	}
 
 	/**
@@ -31,9 +30,8 @@ public class GeoHashBoundingBoxSearch {
 	 * @param precision
 	 *            : bit precision to search with. Defaults to 16 bits.
 	 */
-	public GeoHashBoundingBoxSearch(WGS84Point upperLeft, WGS84Point lowerRight, int precision) {
-		this.upperLeft = upperLeft;
-		this.lowerRight = lowerRight;
+	public GeoHashBoundingBoxSearch(BoundingBox bbox, int precision) {
+		this.boundingBox = bbox;
 		this.precision = Math.min(precision, 64);
 		
 		
