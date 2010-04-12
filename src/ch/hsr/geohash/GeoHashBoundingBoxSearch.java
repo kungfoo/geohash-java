@@ -8,10 +8,14 @@
  */
 package ch.hsr.geohash;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GeoHashBoundingBoxSearch {
-	
+
 	private BoundingBox boundingBox;
 	private int precision;
+	private List<GeoHash> searchHashes;
 
 	/**
 	 * @param upperLeft
@@ -33,7 +37,8 @@ public class GeoHashBoundingBoxSearch {
 	public GeoHashBoundingBoxSearch(BoundingBox bbox, int precision) {
 		this.boundingBox = bbox;
 		this.precision = Math.min(precision, 64);
-		
-		
+		searchHashes = new ArrayList<GeoHash>();
+		GeoHash topLeftHash = GeoHash.withBitPrecision(bbox.getUpperLeft().getLatitude(), bbox.getUpperLeft()
+				.getLongitude(), precision);
 	}
 }

@@ -92,7 +92,7 @@ public final class GeoHash {
 
 	private GeoHash(double latitude, double longitude, int desiredPrecision) {
 		point = new WGS84Point(latitude, longitude);
-		highCapDesiredPrecision(desiredPrecision);
+		desiredPrecision = Math.min(desiredPrecision, 64);
 
 		boolean isEvenBit = true;
 		double[] latitudeRange = { -90, 90 };
@@ -206,14 +206,6 @@ public final class GeoHash {
 
 	public BoundingBox getBoundingBox() {
 		return boundingBox;
-	}
-
-	/**
-	 * @return an array containing all four corners of the bounding box.<br>
-	 *         upper left, upper right, lower left, lower right.
-	 */
-	public WGS84Point[] getFourBoundingBoxPoints() {
-		return boundingBox.getFourBoundingBoxPoints();
 	}
 
 	public boolean enclosesCircleAroundPoint(WGS84Point point, double radius) {
@@ -369,10 +361,5 @@ public final class GeoHash {
 		long mask = 0xffffffffffffffffl;
 		mask >>>= (64 - n);
 		return value & mask;
-	}
-
-	private void highCapDesiredPrecision(int desiredPrecision) {
-		if (desiredPrecision > 64)
-			desiredPrecision = 64;
 	}
 }

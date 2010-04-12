@@ -14,6 +14,8 @@ import org.junit.Test;
 public class GeoHashBoundingBoxSearchTest {
 	@Test
 	public void testBoundingBoxSearch() {
+		GeoHashBoundingBoxSearch search = new GeoHashBoundingBoxSearch(new BoundingBox(new WGS84Point(40.09872762,
+				30.0113312322), new WGS84Point(41.23452234, 31.23432)));
 		
 	}
 }
