@@ -268,25 +268,19 @@ public final class GeoHash {
 	}
 
 	protected long[] getRightAlignedLatitudeBits() {
-		long value = 0;
-		long copyOfBits = bits;
-		copyOfBits <<= 1;
-		int numberOfBits = getNumberOfLatLonBits()[0];
-		for (int i = 0; i < numberOfBits; i++) {
-			if ((copyOfBits & FIRST_BIT_FLAGGED) == FIRST_BIT_FLAGGED) {
-				value |= 0x1;
-			}
-			value <<= 1;
-			copyOfBits <<= 2;
-		}
-		value >>>= 1;
-		return new long[] { value, numberOfBits };
+		long copyOfBits = bits << 1;
+		long value = extractEverySecondBit(copyOfBits, getNumberOfLatLonBits()[0]);
+		return new long[] { value, getNumberOfLatLonBits()[0] };
 	}
 
 	protected long[] getRightAlignedLongitudeBits() {
-		long value = 0;
 		long copyOfBits = bits;
-		int numberOfBits = getNumberOfLatLonBits()[1];
+		long value = extractEverySecondBit(copyOfBits, getNumberOfLatLonBits()[1]);
+		return new long[] { value, getNumberOfLatLonBits()[1] };
+	}
+
+	private long extractEverySecondBit(long copyOfBits, int numberOfBits) {
+		long value = 0;
 		for (int i = 0; i < numberOfBits; i++) {
 			if ((copyOfBits & FIRST_BIT_FLAGGED) == FIRST_BIT_FLAGGED) {
 				value |= 0x1;
@@ -295,7 +289,7 @@ public final class GeoHash {
 			copyOfBits <<= 2;
 		}
 		value >>>= 1;
-		return new long[] { value, numberOfBits };
+		return value;
 	}
 
 	protected int[] getNumberOfLatLonBits() {
