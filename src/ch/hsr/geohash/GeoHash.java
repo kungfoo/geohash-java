@@ -14,7 +14,7 @@ import java.util.Map;
 public final class GeoHash {
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
 	private static final int BASE32_BITS = 5;
-	private static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
+	public static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
 	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f',
 			'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
@@ -238,7 +238,7 @@ public final class GeoHash {
 	public GeoHash getNorthernNeighbour() {
 		long[] latitudeBits = getRightAlignedLatitudeBits();
 		long[] longitudeBits = getRightAlignedLongitudeBits();
-		latitudeBits[0] -= 1;
+		latitudeBits[0] += 1;
 		latitudeBits[0] = maskLastNBits(latitudeBits[0], latitudeBits[1]);
 		return recombineLatLonBitsToHash(latitudeBits, longitudeBits);
 	}
@@ -246,7 +246,7 @@ public final class GeoHash {
 	public GeoHash getSouthernNeighbour() {
 		long[] latitudeBits = getRightAlignedLatitudeBits();
 		long[] longitudeBits = getRightAlignedLongitudeBits();
-		latitudeBits[0] += 1;
+		latitudeBits[0] -= 1;
 		latitudeBits[0] = maskLastNBits(latitudeBits[0], latitudeBits[1]);
 		return recombineLatLonBitsToHash(latitudeBits, longitudeBits);
 	}

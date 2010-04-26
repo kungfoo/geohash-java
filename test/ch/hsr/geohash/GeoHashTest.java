@@ -68,8 +68,8 @@ public class GeoHashTest {
 		// geohash formed by encoder
 		// TODO could possibly be less brute-force here and be more scientific
 		// about possible failure points
-		for (double lat = -90; lat <= 90; lat += rand.nextDouble() + 0.85) {
-			for (double lon = -180; lon <= 180; lon += rand.nextDouble() + 0.85) {
+		for (double lat = -90; lat <= 90; lat += rand.nextDouble() + 1.45) {
+			for (double lon = -180; lon <= 180; lon += rand.nextDouble() + 1.54) {
 				for (int precisionChars = 6; precisionChars <= 12; precisionChars++) {
 					GeoHash gh = GeoHash.withCharacterPrecision(lat, lon, precisionChars);
 					BoundingBox bbox = gh.getBoundingBox();
@@ -196,11 +196,11 @@ public class GeoHashTest {
 		assertEquals(3, latBits[1]);
 
 		GeoHash north = hash.getNorthernNeighbour();
-		assertEquals(0xc000000000000000l, north.bits);
+		assertEquals(0xd000000000000000l, north.bits);
 		assertEquals(7, north.significantBits);
 
 		GeoHash south = hash.getSouthernNeighbour();
-		assertEquals(0xd000000000000000l, south.bits);
+		assertEquals(0xc000000000000000l, south.bits);
 		assertEquals(7, south.significantBits());
 
 		GeoHash east = hash.getEasternNeighbour();
@@ -216,9 +216,6 @@ public class GeoHashTest {
 		east = hash.getEasternNeighbour();
 		assertEquals(0x5400000000000000l, east.bits);
 
-		// and then from there, just a little south of sanity...
-		south = east.getSouthernNeighbour();
-		assertEquals(0x0l, south.bits);
 	}
 
 	@Test
@@ -288,6 +285,17 @@ public class GeoHashTest {
 			assertEquals(hash, result);
 		}
 	}
+	
+	@Test
+	public void testKnownNeighbouringHashes(){
+		GeoHash h1 = GeoHash.fromGeohashString("u1pb");
+		assertEquals("u0zz", h1.getSouthernNeighbour().toBase32());
+		assertEquals("u1pc", h1.getNorthernNeighbour().toBase32());
+		assertEquals("u300", h1.getEasternNeighbour().toBase32());
+		assertEquals("u302", h1.getEasternNeighbour().getEasternNeighbour().toBase32());
+		assertEquals("u1p8", h1.getWesternNeighbour().toBase32());
+	}
+	
 
 	@Test
 	public void testIssue1() {
