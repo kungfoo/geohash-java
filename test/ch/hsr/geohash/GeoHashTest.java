@@ -75,7 +75,7 @@ public class GeoHashTest {
 					BoundingBox bbox = gh.getBoundingBox();
 					GeoHash decodedHash = GeoHash.fromGeohashString(gh.toBase32());
 					WGS84Point decodedCenter = decodedHash.getBoundingBoxCenterPoint();
-					
+
 					assertTrue("bbox " + bbox + " should contain the decoded center value " + decodedCenter, bbox
 							.contains(decodedCenter));
 					BoundingBox decodedBoundingBox = decodedHash.getBoundingBox();
@@ -285,9 +285,9 @@ public class GeoHashTest {
 			assertEquals(hash, result);
 		}
 	}
-	
+
 	@Test
-	public void testKnownNeighbouringHashes(){
+	public void testKnownNeighbouringHashes() {
 		GeoHash h1 = GeoHash.fromGeohashString("u1pb");
 		assertEquals("u0zz", h1.getSouthernNeighbour().toBase32());
 		assertEquals("u1pc", h1.getNorthernNeighbour().toBase32());
@@ -295,7 +295,27 @@ public class GeoHashTest {
 		assertEquals("u302", h1.getEasternNeighbour().getEasternNeighbour().toBase32());
 		assertEquals("u1p8", h1.getWesternNeighbour().toBase32());
 	}
-	
+
+	@Test
+	public void testKnownAdjacentNeighbours() {
+		GeoHash center = GeoHash.fromGeohashString("dqcjqc");
+		GeoHash[] adjacent = center.getAdjacent();
+		for (String check : new String[] { "dqcjqf", "dqcjqb", "dqcjr1", "dqcjq9", "dqcjqd", "dqcjr4", "dqcjr0",
+				"dqcjq8" }) {
+			assertArrayContainsGeoHash(check, adjacent);
+		}
+	}
+
+	private void assertArrayContainsGeoHash(String check, GeoHash[] hashes) {
+		boolean found = false;
+		for (GeoHash hash : hashes) {
+			if (hash.toBase32().equals(check)) {
+				found = true;
+				break;
+			}
+		}
+		assertTrue("Array should contain " + check, found);
+	}
 
 	@Test
 	public void testIssue1() {

@@ -313,7 +313,11 @@ public final class GeoHash {
 
 	@Override
 	public String toString() {
-		return String.format("%s -> %s", Long.toBinaryString(bits), boundingBox);
+		if(significantBits % 5 == 0){
+			return String.format("%s -> %s -> %s", Long.toBinaryString(bits), boundingBox, toBase32());
+		} else {
+			return String.format("%s -> %s", Long.toBinaryString(bits), boundingBox);
+		}
 	}
 
 	@Override
