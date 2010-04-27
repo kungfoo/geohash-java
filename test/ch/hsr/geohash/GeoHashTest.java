@@ -333,6 +333,15 @@ public class GeoHashTest {
 		}
 		assertTrue("Array should contain " + check, found);
 	}
+	
+	@Test
+	public void testNeibouringHashesNearMeridian() {
+		GeoHash hash = GeoHash.fromGeohashString("sp2j");
+		GeoHash west = hash.getWesternNeighbour();
+		assertEquals("ezrv", west.toBase32());
+		west = west.getWesternNeighbour();
+		assertEquals("ezrt", west.toBase32());
+	}
 
 	@Test
 	public void testIssue1() {
