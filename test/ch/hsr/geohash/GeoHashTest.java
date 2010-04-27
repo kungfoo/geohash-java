@@ -294,14 +294,31 @@ public class GeoHashTest {
 		assertEquals("u300", h1.getEasternNeighbour().toBase32());
 		assertEquals("u302", h1.getEasternNeighbour().getEasternNeighbour().toBase32());
 		assertEquals("u1p8", h1.getWesternNeighbour().toBase32());
+		
+		assertEquals("sp2j", GeoHash.withCharacterPrecision(41.7, 0.08, 4).toBase32());
 	}
 
 	@Test
 	public void testKnownAdjacentNeighbours() {
-		GeoHash center = GeoHash.fromGeohashString("dqcjqc");
+		String center = "dqcjqc";
+		String[] adjacent = new String[] { "dqcjqf", "dqcjqb", "dqcjr1", "dqcjq9", "dqcjqd", "dqcjr4", "dqcjr0",
+				"dqcjq8" };
+		assertAdjacentHashesAre(center, adjacent);
+
+		center = "u1x0dfg";
+		adjacent = new String[] { "u1x0dg4", "u1x0dg5", "u1x0dgh", "u1x0dfu", "u1x0dfs", "u1x0dfe", "u1x0dfd",
+				"u1x0dff" };
+		assertAdjacentHashesAre(center, adjacent);
+
+		center = "sp2j";
+		adjacent = new String[] { "ezry", "sp2n", "sp2q", "sp2m", "sp2k", "sp2h", "ezru", "ezrv" };
+		assertAdjacentHashesAre(center, adjacent);
+	}
+
+	private void assertAdjacentHashesAre(String centerString, String[] adjacentStrings) {
+		GeoHash center = GeoHash.fromGeohashString(centerString);
 		GeoHash[] adjacent = center.getAdjacent();
-		for (String check : new String[] { "dqcjqf", "dqcjqb", "dqcjr1", "dqcjq9", "dqcjqd", "dqcjr4", "dqcjr0",
-				"dqcjq8" }) {
+		for (String check : adjacentStrings) {
 			assertArrayContainsGeoHash(check, adjacent);
 		}
 	}
