@@ -30,6 +30,14 @@ public class BoundingBox {
 		return lowerRight;
 	}
 
+	public double getLatitudeSize() {
+		return lowerRight.getLatitude() - upperLeft.getLatitude();
+	}
+
+	public double getLongitudeSize() {
+		return lowerRight.getLongitude() - upperLeft.getLongitude();
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
