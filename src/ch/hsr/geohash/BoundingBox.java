@@ -60,6 +60,11 @@ public class BoundingBox {
 				&& (point.latitude <= lowerRight.latitude) && (point.longitude <= lowerRight.longitude);
 	}
 
+	public boolean intersects(BoundingBox other) {
+		return (upperLeft.latitude < other.lowerRight.latitude) && (lowerRight.latitude > other.upperLeft.latitude)
+				&& (upperLeft.longitude < other.lowerRight.longitude) && (lowerRight.longitude > other.upperLeft.longitude);
+	}
+
 	@Override
 	public String toString() {
 		return upperLeft + " -> " + lowerRight;

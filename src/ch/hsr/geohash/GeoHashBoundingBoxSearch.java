@@ -17,23 +17,46 @@ public class GeoHashBoundingBoxSearch {
 
 	private BoundingBox boundingBox;
 	private int precision;
-	private List<GeoHash> searchHashes;
+	private List<GeoHash> searchHashes = new ArrayList<GeoHash>(9);
 
 	/**
 	 * return the hash(es) that approximate this bounding box.
 	 */
 	public GeoHashBoundingBoxSearch(BoundingBox bbox) {
 		int fittingBits = GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(bbox);
-		GeoHash upperLeftHash = GeoHash
-				.withBitPrecision(bbox.getUpperLeft().getLatitude(), bbox.getUpperLeft().getLongitude(), fittingBits);
-		GeoHash lowerRightHash = GeoHash.withBitPrecision(bbox.getLowerRight().getLatitude(), bbox.getLowerRight().getLongitude(),
-				fittingBits);
-		if (upperLeftHash.equals(lowerRightHash)) {
-			/* the hashes fit exactly, we're lucky */
-			searchHashes = new ArrayList<GeoHash>(1);
-			searchHashes.add(upperLeftHash);
+		WGS84Point center = bbox.getCenterPoint();
+		GeoHash centerHash = GeoHash.withBitPrecision(center.getLatitude(), center.getLongitude(), fittingBits);
+		boundingBox = centerHash.getBoundingBox();
+
+		if (hashFits(centerHash, bbox)) {
+			System.out.println("yay, centered hash fits.");
+			addSearchHash(centerHash);
 		} else {
-			// TODO: search for more hashes that cut the bounding box.
+			expandSearch(centerHash, bbox);
 		}
+	}
+
+	private void expandSearch(GeoHash centerHash, BoundingBox bbox) {
+		assert centerHash.getBoundingBox().intersects(bbox) : "center hash must at least intersect the bounding box!";
+		addSearchHash(centerHash);
+		
+		for (GeoHash adjacent : centerHash.getAdjacent()) {
+			if (adjacent.getBoundingBox().intersects(bbox)) {
+				addSearchHash(adjacent);
+			}
+		}
+	}
+
+	private void addSearchHash(GeoHash hash) {
+		searchHashes.add(hash);
+		expandSearchBoundingBox(hash);
+	}
+
+	private void expandSearchBoundingBox(GeoHash hash) {
+		// TODO: adjust the bounding box size with the added hashes.
+	}
+
+	private boolean hashFits(GeoHash hash, BoundingBox bbox) {
+		return hash.contains(bbox.getUpperLeft()) && hash.contains(bbox.getLowerRight());
 	}
 }
