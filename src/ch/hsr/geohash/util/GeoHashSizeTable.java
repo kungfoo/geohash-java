@@ -8,6 +8,8 @@
  */
 package ch.hsr.geohash.util;
 
+import ch.hsr.geohash.BoundingBox;
+
 public class GeoHashSizeTable {
 	private static final int NUM_BITS = 64;
 	private static final double[] dLat = new double[NUM_BITS];
@@ -26,5 +28,9 @@ public class GeoHashSizeTable {
 
 	protected static final double dLon(int bits) {
 		return 360d / Math.pow(2, (bits + 1) / 2);
+	}
+	
+	public int numberOfBitsForOverlappingGeoHash(BoundingBox boundingBox){
+		return 0;
 	}
 }
