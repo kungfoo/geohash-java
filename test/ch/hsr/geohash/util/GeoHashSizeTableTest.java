@@ -12,11 +12,8 @@ import ch.hsr.geohash.WGS84Point;
 
 public class GeoHashSizeTableTest {
 
-	private Random random;
-
 	@Before
 	public void setUp() {
-		random = new Random();
 	}
 
 	@Test
@@ -50,13 +47,15 @@ public class GeoHashSizeTableTest {
 			// make the bounding box a little smaller than dLat/dLon
 			double delta = 1e-10;
 			double dLat = GeoHashSizeTable.dLat(bits) - delta;
-			double dLon = GeoHashSizeTable.dLon(bits) - delta;
 
+			double dLon = GeoHashSizeTable.dLon(bits) - delta;
 			WGS84Point upperLeft = new WGS84Point(45 - dLat, 30 - dLon);
 			WGS84Point lowerRight = new WGS84Point(45, 30);
 			BoundingBox boundingBox = new BoundingBox(upperLeft, lowerRight);
 			// TODO: make sure the number of bits matches the expected one for
 			// this specific bounding box
+			int actualBits = GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(boundingBox);
+			assertEquals(bits, actualBits);
 		}
 	}
 }

@@ -15,8 +15,8 @@ public final class GeoHash {
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
 	private static final int BASE32_BITS = 5;
 	public static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
-	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f',
-			'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k',
+			'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
 	private final static Map<Character, Integer> decodeMap = new HashMap<Character, Integer>();
 	static {
@@ -112,8 +112,8 @@ public final class GeoHash {
 	}
 
 	private static void setBoundingBox(GeoHash hash, double[] latitudeRange, double[] longitudeRange) {
-		hash.boundingBox = new BoundingBox(new WGS84Point(latitudeRange[0], longitudeRange[0]), new WGS84Point(
-				latitudeRange[1], longitudeRange[1]));
+		hash.boundingBox = new BoundingBox(new WGS84Point(latitudeRange[0], longitudeRange[0]), new WGS84Point(latitudeRange[1],
+				longitudeRange[1]));
 	}
 
 	private void divideRangeEncode(double value, double[] range) {
@@ -148,8 +148,8 @@ public final class GeoHash {
 		GeoHash eastern = getEasternNeighbour();
 		GeoHash southern = getSouthernNeighbour();
 		GeoHash western = getWesternNeighbour();
-		return new GeoHash[] { northern, northern.getEasternNeighbour(), eastern, southern.getEasternNeighbour(),
-				southern, southern.getWesternNeighbour(), western, northern.getWesternNeighbour() };
+		return new GeoHash[] { northern, northern.getEasternNeighbour(), eastern, southern.getEasternNeighbour(), southern,
+				southern.getWesternNeighbour(), western, northern.getWesternNeighbour() };
 	}
 
 	/**
@@ -184,6 +184,15 @@ public final class GeoHash {
 	 */
 	public boolean within(GeoHash boundingBox) {
 		return (bits & boundingBox.mask()) == boundingBox.bits;
+	}
+
+	/**
+	 * find out if the given point lies within this hashes bounding box.<br>
+	 * <i>Note: this operation checks the bounding boxes coordinates, i.e. does
+	 * not use the {@link GeoHash}s special abilities.s</i>
+	 */
+	public boolean contains(WGS84Point point) {
+		return boundingBox.contains(point);
 	}
 
 	/**
@@ -313,7 +322,7 @@ public final class GeoHash {
 
 	@Override
 	public String toString() {
-		if(significantBits % 5 == 0){
+		if (significantBits % 5 == 0) {
 			return String.format("%s -> %s -> %s", Long.toBinaryString(bits), boundingBox, toBase32());
 		} else {
 			return String.format("%s -> %s", Long.toBinaryString(bits), boundingBox);

@@ -11,6 +11,8 @@ package ch.hsr.geohash;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.hsr.geohash.util.GeoHashSizeTable;
+
 public class GeoHashBoundingBoxSearch {
 
 	private BoundingBox boundingBox;
@@ -18,27 +20,20 @@ public class GeoHashBoundingBoxSearch {
 	private List<GeoHash> searchHashes;
 
 	/**
-	 * @param upperLeft
-	 *            : upper left corner of the bounding box to find hashes within.
-	 * @param lowerRight
-	 *            : lower right corner.
+	 * return the hash(es) that approximate this bounding box.
 	 */
 	public GeoHashBoundingBoxSearch(BoundingBox bbox) {
-		this(bbox, 16);
-	}
-
-	/**
-	 * search for hashes with the given precision. The search will be faster
-	 * when less precise, but it my contain more false positives.
-	 * 
-	 * @param precision
-	 *            : bit precision to search with. Defaults to 16 bits.
-	 */
-	public GeoHashBoundingBoxSearch(BoundingBox bbox, int precision) {
-		this.boundingBox = bbox;
-		this.precision = Math.min(precision, 64);
-		searchHashes = new ArrayList<GeoHash>();
-		GeoHash topLeftHash = GeoHash.withBitPrecision(bbox.getUpperLeft().getLatitude(), bbox.getUpperLeft()
-				.getLongitude(), precision);
+		int fittingBits = GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(bbox);
+		GeoHash upperLeftHash = GeoHash
+				.withBitPrecision(bbox.getUpperLeft().getLatitude(), bbox.getUpperLeft().getLongitude(), fittingBits);
+		GeoHash lowerRightHash = GeoHash.withBitPrecision(bbox.getLowerRight().getLatitude(), bbox.getLowerRight().getLongitude(),
+				fittingBits);
+		if (upperLeftHash.equals(lowerRightHash)) {
+			/* the hashes fit exactly, we're lucky */
+			searchHashes = new ArrayList<GeoHash>(1);
+			searchHashes.add(upperLeftHash);
+		} else {
+			// TODO: search for more hashes that cut the bounding box.
+		}
 	}
 }

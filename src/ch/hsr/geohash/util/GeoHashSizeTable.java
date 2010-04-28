@@ -29,8 +29,12 @@ public class GeoHashSizeTable {
 	protected static final double dLon(int bits) {
 		return 360d / Math.pow(2, (bits + 1) / 2);
 	}
-	
-	public int numberOfBitsForOverlappingGeoHash(BoundingBox boundingBox){
-		return 0;
+
+	public static final int numberOfBitsForOverlappingGeoHash(BoundingBox boundingBox) {
+		int bits = 63;
+		while ((dLat[bits] < boundingBox.getLatitudeSize() || dLon[bits] < boundingBox.getLongitudeSize()) && bits > 0) {
+			bits--;
+		}
+		return bits;
 	}
 }
