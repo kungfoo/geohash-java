@@ -12,20 +12,24 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class GeoHashBoundingBoxSearchTest {
-	@Test
-	public void testBoundingBoxSearch() {
-		GeoHashBoundingBoxSearch search = createSearch(40.09872762, 30.0113312322, 41.23452234, 31.23432);
-		
-	}
+
 
 	@Test
 	public void testSeveralBoundingBoxes() {
-		GeoHashBoundingBoxSearch search = createSearch(40.2, -22.5, 40.3, -22.4);
-		createSearch(40.2, -22.5, 40.3, -22.4);
-		createSearch(40.2090980098, -22.523432424324, 40.21982983232432, -22.494234232442);
+		checkSearchYieldsCorrectNumberOfHashes(40.2, -22.5, 40.3, -22.4);
+		checkSearchYieldsCorrectNumberOfHashes(40.2, -22.5, 40.3, -22.4);
+		checkSearchYieldsCorrectNumberOfHashes(40.2090980098, -22.523432424324, 40.21982983232432, -22.494234232442);
+		checkSearchYieldsCorrectNumberOfHashes(40.09872762, 30.0113312322, 41.23452234, 31.23432);
 	}
 
-	private GeoHashBoundingBoxSearch createSearch(double minx, double miny, double maxx, double maxy) {
-		return new GeoHashBoundingBoxSearch(new BoundingBox(new WGS84Point(minx, miny), new WGS84Point(maxx, maxy)));
+	private void checkSearchYieldsCorrectNumberOfHashes(double minLat, double minLon, double maxLat, double maxLon) {
+		WGS84Point upperLeft = new WGS84Point(minLat, minLon);
+		WGS84Point lowerRight = new WGS84Point(maxLat, maxLon);
+		GeoHashBoundingBoxSearch search = new GeoHashBoundingBoxSearch(new BoundingBox(upperLeft, lowerRight));
+		assertRightNumberOfSearchHashes(search);
+	}
+
+	private void assertRightNumberOfSearchHashes(GeoHashBoundingBoxSearch search) {
+		assertTrue(search.getSearchHashes().size() == 2 || search.getSearchHashes().size() == 4);
 	}
 }

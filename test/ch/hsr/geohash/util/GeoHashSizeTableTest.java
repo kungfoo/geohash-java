@@ -12,6 +12,9 @@ import ch.hsr.geohash.WGS84Point;
 
 public class GeoHashSizeTableTest {
 
+	private static final double DELTA = 1e-10;
+	private double delta;
+
 	@Before
 	public void setUp() {
 	}
@@ -42,20 +45,32 @@ public class GeoHashSizeTableTest {
 	}
 
 	@Test
-	public void testKnownBoundingBoxSizes() {
+	public void testKnownSmallerBoundingBoxSizes() {
 		for (int bits = 3; bits < 64; bits++) {
 			// make the bounding box a little smaller than dLat/dLon
-			double delta = 1e-10;
-			double dLat = GeoHashSizeTable.dLat(bits) - delta;
-
-			double dLon = GeoHashSizeTable.dLon(bits) - delta;
+			double dLat = GeoHashSizeTable.dLat(bits) - DELTA;
+			double dLon = GeoHashSizeTable.dLon(bits) - DELTA;
 			WGS84Point upperLeft = new WGS84Point(45 - dLat, 30 - dLon);
 			WGS84Point lowerRight = new WGS84Point(45, 30);
 			BoundingBox boundingBox = new BoundingBox(upperLeft, lowerRight);
-			// TODO: make sure the number of bits matches the expected one for
-			// this specific bounding box
 			int actualBits = GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(boundingBox);
 			assertEquals(bits, actualBits);
 		}
 	}
+
+	@Test
+	public void testKnownLargerBoundingBoxSizes() {
+		for (int bits = 4; bits < 63; bits++) {
+			double dLat = GeoHashSizeTable.dLat(bits);
+			double dLon = GeoHashSizeTable.dLon(bits);
+			WGS84Point upperLeft = new WGS84Point(0, 0);
+			/* make the bounding box a little larger in both directions */
+			WGS84Point lowerRight = new WGS84Point(dLat + DELTA, dLon + DELTA);
+			BoundingBox boundingBox = new BoundingBox(upperLeft, lowerRight);
+			int actualBits = GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(boundingBox);
+			assertEquals(bits - 2, actualBits);
+		}
+	}
+	
+	
 }

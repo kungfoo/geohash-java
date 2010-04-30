@@ -16,7 +16,6 @@ import ch.hsr.geohash.util.GeoHashSizeTable;
 public class GeoHashBoundingBoxSearch {
 
 	private BoundingBox boundingBox;
-	private int precision;
 	private List<GeoHash> searchHashes = new ArrayList<GeoHash>(9);
 
 	/**
@@ -39,9 +38,9 @@ public class GeoHashBoundingBoxSearch {
 	private void expandSearch(GeoHash centerHash, BoundingBox bbox) {
 		assert centerHash.getBoundingBox().intersects(bbox) : "center hash must at least intersect the bounding box!";
 		addSearchHash(centerHash);
-		
+
 		for (GeoHash adjacent : centerHash.getAdjacent()) {
-			if (adjacent.getBoundingBox().intersects(bbox)) {
+			if (adjacent.getBoundingBox().intersects(bbox) && !searchHashes.contains(adjacent)) {
 				addSearchHash(adjacent);
 			}
 		}
@@ -58,5 +57,9 @@ public class GeoHashBoundingBoxSearch {
 
 	private boolean hashFits(GeoHash hash, BoundingBox bbox) {
 		return hash.contains(bbox.getUpperLeft()) && hash.contains(bbox.getLowerRight());
+	}
+
+	public List<GeoHash> getSearchHashes() {
+		return searchHashes;
 	}
 }
