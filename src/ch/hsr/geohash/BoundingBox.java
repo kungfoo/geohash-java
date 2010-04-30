@@ -17,6 +17,10 @@ public class BoundingBox {
 		this.lowerRight = lowerRight;
 	}
 
+	public BoundingBox(double minLat, double minLon, double maxLat, double maxLon) {
+		this(new WGS84Point(minLat, minLon), new WGS84Point(maxLat, maxLon));
+	}
+
 	public BoundingBox(BoundingBox other) {
 		upperLeft = new WGS84Point(other.upperLeft);
 		lowerRight = new WGS84Point(other.lowerRight);
