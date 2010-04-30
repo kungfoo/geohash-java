@@ -2,6 +2,8 @@ package ch.hsr.geohash.util;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Random;
+
 import org.junit.Test;
 
 import ch.hsr.geohash.BoundingBox;
@@ -48,6 +50,10 @@ public class GeoHashSizeTableTest {
 		public int getExpectedBits(int bits);
 	}
 
+	/**
+	 * the entire box is a little too small, thus it must fit nicely into the
+	 * hash.
+	 */
 	private static class ALittleTooSmallVerifier implements BoundingBoxSizeTableVerifier {
 		@Override
 		public BoundingBox generate(int bits) {
@@ -63,6 +69,10 @@ public class GeoHashSizeTableTest {
 		}
 	}
 
+	/**
+	 * if both lat and lon are a little too large, we must use a bigger hash,
+	 * i.e. less bits.
+	 */
 	private static class BothALittleTooLargeVerifier implements BoundingBoxSizeTableVerifier {
 		public BoundingBox generate(int bits) {
 			double dLat = GeoHashSizeTable.dLat(bits);
@@ -76,15 +86,42 @@ public class GeoHashSizeTableTest {
 		}
 	}
 
+	/**
+	 * depending on whether we're currently at an even or odd nuber of bits, one
+	 * or two bits have to be removed.
+	 */
 	private static class OnlyOneALittleTooLargeVerifier implements BoundingBoxSizeTableVerifier {
+		private Random rand = new Random();
+		private boolean latitudeAffected;
+
 		@Override
 		public BoundingBox generate(int bits) {
-			return null;
+			double dLat = GeoHashSizeTable.dLat(bits);
+			double dLon = GeoHashSizeTable.dLon(bits);
+
+			if (latitudeAffected = rand.nextBoolean()) {
+				dLat += DELTA;
+			} else {
+				dLon += DELTA;
+			}
+			return new BoundingBox(0, 0, dLat, dLon);
 		}
 
 		@Override
 		public int getExpectedBits(int bits) {
-			return bits - 2;
+			if (latitudeAffected) {
+				if (bits % 2 != 0) {
+					return bits - 2;
+				} else {
+					return bits - 1;
+				}
+			} else {
+				if (bits % 2 != 0) {
+					return bits - 1;
+				} else {
+					return bits - 2;
+				}
+			}
 		}
 	}
 
@@ -100,7 +137,7 @@ public class GeoHashSizeTableTest {
 
 	@Test
 	public void testKnownOneBitLargerBoxSizes() {
-		// TODO: verify the number of bits for just one dimension too large.
+		checkWithGenerator(new OnlyOneALittleTooLargeVerifier());
 	}
 
 	private void checkWithGenerator(BoundingBoxSizeTableVerifier generator) {
