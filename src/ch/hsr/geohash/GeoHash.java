@@ -325,7 +325,7 @@ public final class GeoHash {
 		if (significantBits % 5 == 0) {
 			return String.format("%s -> %s -> %s", Long.toBinaryString(bits), boundingBox, toBase32());
 		} else {
-			return String.format("%s -> %s", Long.toBinaryString(bits), boundingBox);
+			return String.format("%s -> %s, bits: %d", Long.toBinaryString(bits), boundingBox, significantBits);
 		}
 	}
 

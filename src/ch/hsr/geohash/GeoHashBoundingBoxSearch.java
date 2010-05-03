@@ -62,4 +62,13 @@ public class GeoHashBoundingBoxSearch {
 	public List<GeoHash> getSearchHashes() {
 		return searchHashes;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder bui = new StringBuilder();
+		for (GeoHash hash : searchHashes) {
+			bui.append(hash).append("\n");
+		}
+		return bui.toString();
+	}
 }
