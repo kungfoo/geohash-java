@@ -9,37 +9,55 @@
 package ch.hsr.geohash;
 
 public class BoundingBox {
-	private WGS84Point upperLeft;
-	private WGS84Point lowerRight;
+	private double minLat;
+	private double maxLat;
+	private double minLon;
+	private double maxLon;
 
-	public BoundingBox(WGS84Point upperLeft, WGS84Point lowerRight) {
-		this.upperLeft = upperLeft;
-		this.lowerRight = lowerRight;
+	/**
+	 * create a bounding box defined by two coordinates
+	 */
+	public BoundingBox(WGS84Point p1, WGS84Point p2) {
+		this(p1.getLatitude(), p2.getLatitude(), p1.getLongitude(), p2.getLongitude());
 	}
 
-	public BoundingBox(double minLat, double minLon, double maxLat, double maxLon) {
-		this(new WGS84Point(minLat, minLon), new WGS84Point(maxLat, maxLon));
+	public BoundingBox(double y1, double y2, double x1, double x2) {
+		if (x1 < x2) {
+			this.minLon = x1;
+			this.maxLon = x2;
+		} else {
+			this.minLon = x2;
+			this.maxLon = x1;
+		}
+		if (y1 < y2) {
+			this.minLat = y1;
+			this.maxLat = y2;
+		} else {
+			this.minLat = y2;
+			this.maxLat = y1;
+		}
+		assert (maxLat >= minLat) : "maxLat should be bigger than minLat";
+		assert (maxLon >= minLon) : "maxLon should be bigger than minLon";
 	}
 
-	public BoundingBox(BoundingBox other) {
-		upperLeft = new WGS84Point(other.upperLeft);
-		lowerRight = new WGS84Point(other.lowerRight);
+	public BoundingBox(BoundingBox that) {
+		this(that.minLat, that.maxLat, that.minLon, that.maxLon);
 	}
 
 	public WGS84Point getUpperLeft() {
-		return upperLeft;
+		return new WGS84Point(maxLat, minLon);
 	}
 
 	public WGS84Point getLowerRight() {
-		return lowerRight;
+		return new WGS84Point(minLat, maxLon);
 	}
 
 	public double getLatitudeSize() {
-		return lowerRight.getLatitude() - upperLeft.getLatitude();
+		return maxLat - minLat;
 	}
 
 	public double getLongitudeSize() {
-		return lowerRight.getLongitude() - upperLeft.getLongitude();
+		return maxLon - minLon;
 	}
 
 	@Override
@@ -47,8 +65,8 @@ public class BoundingBox {
 		if (this == obj)
 			return true;
 		if (obj instanceof BoundingBox) {
-			BoundingBox o = (BoundingBox) obj;
-			return upperLeft.equals(o.upperLeft) && lowerRight.equals(o.lowerRight);
+			BoundingBox that = (BoundingBox) obj;
+			return minLat == that.minLat && minLon == that.minLon && maxLat == that.maxLat && maxLon == that.maxLon;
 		} else {
 			return false;
 		}
@@ -56,33 +74,36 @@ public class BoundingBox {
 
 	@Override
 	public int hashCode() {
-		return 31 * (713 + upperLeft.hashCode()) + lowerRight.hashCode();
+		int result = 17;
+		result = 37 * result + hashCode(minLat);
+		result = 37 * result + hashCode(maxLat);
+		result = 37 * result + hashCode(minLon);
+		result = 37 * result + hashCode(maxLon);
+		return result;
+	}
+
+	private static int hashCode(double x) {
+		long f = Double.doubleToLongBits(x);
+		return (int) (f ^ (f >>> 32));
 	}
 
 	public boolean contains(WGS84Point point) {
-		return (point.latitude >= upperLeft.latitude) && (point.longitude >= upperLeft.longitude)
-				&& (point.latitude <= lowerRight.latitude) && (point.longitude <= lowerRight.longitude);
+		return (point.latitude >= minLat) && (point.longitude >= minLon) && (point.latitude <= maxLat)
+				&& (point.longitude <= maxLon);
 	}
 
 	public boolean intersects(BoundingBox other) {
-		return (upperLeft.latitude < other.lowerRight.latitude) && (lowerRight.latitude > other.upperLeft.latitude)
-				&& (upperLeft.longitude < other.lowerRight.longitude) && (lowerRight.longitude > other.upperLeft.longitude);
+		return !(other.minLon > maxLon || other.maxLon < minLon || other.minLon > maxLon || other.maxLon < minLon);
 	}
 
 	@Override
 	public String toString() {
-		return upperLeft + " -> " + lowerRight;
-	}
-
-	public WGS84Point[] getFourBoundingBoxPoints() {
-		WGS84Point upperRight = new WGS84Point(upperLeft.latitude, lowerRight.longitude);
-		WGS84Point lowerLeft = new WGS84Point(lowerRight.latitude, upperLeft.longitude);
-		return new WGS84Point[] { upperLeft, upperRight, lowerLeft, lowerRight };
+		return getUpperLeft() + " -> " + getLowerRight();
 	}
 
 	public WGS84Point getCenterPoint() {
-		double centerLatitude = (upperLeft.latitude + lowerRight.latitude) / 2;
-		double centerLongitude = (upperLeft.longitude + lowerRight.longitude) / 2;
+		double centerLatitude = (minLat + maxLat) / 2;
+		double centerLongitude = (minLon + maxLon) / 2;
 		return new WGS84Point(centerLatitude, centerLongitude);
 	}
 }

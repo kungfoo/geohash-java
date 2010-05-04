@@ -38,19 +38,36 @@ public class BoundingBoxTest {
 		assertEquals(b, a);
 		assertFalse(a.equals(c));
 	}
-	
+
 	@Test
-	public void testContains(){
-		BoundingBox bbox = new BoundingBox(new WGS84Point(45, 120), new WGS84Point(46, 121));
+	public void testContains() {
+		BoundingBox bbox = new BoundingBox(45, 46, 121, 120);
 		assertContains(bbox, new WGS84Point(45.5, 120.5));
 		assertNotContains(bbox, new WGS84Point(90, 90));
 	}
-	
-	private void assertContains(BoundingBox box, WGS84Point p){
+
+	@Test
+	public void testIntersects() {
+		BoundingBox bbox = new BoundingBox(10, -10, 41, 40);
+		assertIntersects(bbox, new BoundingBox(5, -15, 40.5, 43));
+		assertDoesNotIntersect(bbox, new BoundingBox(5, -15, 42, 43));
+	}
+
+	private void assertDoesNotIntersect(BoundingBox bbox, BoundingBox boundingBox) {
+		assertFalse(bbox + " should NOT intersect " + boundingBox, bbox.intersects(boundingBox));
+		assertFalse(boundingBox + " should NOT intersect " + bbox, boundingBox.intersects(bbox));
+	}
+
+	private void assertIntersects(BoundingBox bbox, BoundingBox boundingBox) {
+		assertTrue(bbox + " should intersect " + boundingBox, bbox.intersects(boundingBox));
+		assertTrue(boundingBox + " should intersect " + bbox, boundingBox.intersects(bbox));
+	}
+
+	private void assertContains(BoundingBox box, WGS84Point p) {
 		assertTrue(p + " should be in " + box, box.contains(p));
 	}
-	
-	private void assertNotContains(BoundingBox box, WGS84Point p){
+
+	private void assertNotContains(BoundingBox box, WGS84Point p) {
 		assertFalse(p + " should NOT be in " + box, box.contains(p));
 	}
 }
