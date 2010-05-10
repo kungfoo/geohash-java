@@ -15,6 +15,7 @@ import org.junit.Test;
 
 public class BoundingBoxTest {
 
+	private static final double DELTA = 1e-12;
 	private BoundingBox a;
 	private BoundingBox b;
 	private BoundingBox c;
@@ -44,6 +45,27 @@ public class BoundingBoxTest {
 		BoundingBox bbox = new BoundingBox(45, 46, 121, 120);
 		assertContains(bbox, new WGS84Point(45.5, 120.5));
 		assertNotContains(bbox, new WGS84Point(90, 90));
+	}
+	
+	@Test
+	public void testSize(){ 
+		BoundingBox bbox = new BoundingBox(45, 90, 0, 30);
+		assertHeightIs(bbox, 45);
+		assertWidthIs(bbox, 30);
+		bbox = new BoundingBox(-45, 45, -22.5, 30);
+		assertHeightIs(bbox, 90);
+		assertWidthIs(bbox, 52.5);
+		bbox = new BoundingBox(-44, -46.1, -127.2, -128);
+		assertHeightIs(bbox, 2.1);
+		assertWidthIs(bbox, 0.8);
+	}
+
+	private void assertWidthIs(BoundingBox bbox, double width) {
+		assertEquals(width, bbox.getLongitudeSize(), DELTA);
+	}
+
+	private void assertHeightIs(BoundingBox bbox, double height) {
+		assertEquals(height, bbox.getLatitudeSize(), DELTA);
 	}
 
 	@Test

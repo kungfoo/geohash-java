@@ -32,7 +32,9 @@ public class GeoHashSizeTable {
 
 	public static final int numberOfBitsForOverlappingGeoHash(BoundingBox boundingBox) {
 		int bits = 63;
-		while ((dLat[bits] < boundingBox.getLatitudeSize() || dLon[bits] < boundingBox.getLongitudeSize()) && bits > 0) {
+		double height = boundingBox.getLatitudeSize();
+		double width = boundingBox.getLongitudeSize();
+		while ((dLat[bits] < height || dLon[bits] < width) && bits > 0) {
 			bits--;
 		}
 		return bits;

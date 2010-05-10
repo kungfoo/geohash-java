@@ -22,22 +22,10 @@ public class BoundingBox {
 	}
 
 	public BoundingBox(double y1, double y2, double x1, double x2) {
-		if (x1 < x2) {
-			this.minLon = x1;
-			this.maxLon = x2;
-		} else {
-			this.minLon = x2;
-			this.maxLon = x1;
-		}
-		if (y1 < y2) {
-			this.minLat = y1;
-			this.maxLat = y2;
-		} else {
-			this.minLat = y2;
-			this.maxLat = y1;
-		}
-		assert (maxLat >= minLat) : "maxLat should be bigger than minLat";
-		assert (maxLon >= minLon) : "maxLon should be bigger than minLon";
+		minLon = Math.min(x1, x2);
+		maxLon = Math.max(x1, x2);
+		minLat = Math.min(y1, y2);
+		maxLat = Math.max(y1, y2);
 	}
 
 	public BoundingBox(BoundingBox that) {
