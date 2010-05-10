@@ -28,7 +28,7 @@ public class GeoHashBoundingBoxSearch {
 
 		if (hashFits(centerHash, bbox)) {
 			System.out.println("yay, centered hash fits.");
-			addSearchHash(centerHash);
+			searchHashes.add(centerHash);
 		} else {
 			expandSearch(centerHash, bbox);
 		}
@@ -36,23 +36,14 @@ public class GeoHashBoundingBoxSearch {
 
 	private void expandSearch(GeoHash centerHash, BoundingBox bbox) {
 		assert centerHash.getBoundingBox().intersects(bbox) : "center hash must at least intersect the bounding box!";
-		addSearchHash(centerHash);
+		searchHashes.add(centerHash);
 
 		for (GeoHash adjacent : centerHash.getAdjacent()) {
 			BoundingBox adjacentBox = adjacent.getBoundingBox();
 			if (adjacentBox.intersects(bbox) && !searchHashes.contains(adjacent)) {
-				addSearchHash(adjacent);
+				searchHashes.add(adjacent);
 			}
 		}
-	}
-
-	private void addSearchHash(GeoHash hash) {
-		searchHashes.add(hash);
-		expandSearchBoundingBox(hash);
-	}
-
-	private void expandSearchBoundingBox(GeoHash hash) {
-		// TODO: adjust the bounding box size with the added hashes.
 	}
 
 	private boolean hashFits(GeoHash hash, BoundingBox bbox) {
