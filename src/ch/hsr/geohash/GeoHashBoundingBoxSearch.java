@@ -34,7 +34,6 @@ public class GeoHashBoundingBoxSearch {
 	}
 
 	private void expandSearch(GeoHash centerHash, BoundingBox bbox) {
-		assert centerHash.getBoundingBox().intersects(bbox) : "center hash must at least intersect the bounding box!";
 		searchHashes.add(centerHash);
 
 		for (GeoHash adjacent : centerHash.getAdjacent()) {
