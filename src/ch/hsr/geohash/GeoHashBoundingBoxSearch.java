@@ -15,8 +15,8 @@ import ch.hsr.geohash.util.GeoHashSizeTable;
 
 public class GeoHashBoundingBoxSearch {
 
-	private BoundingBox boundingBox;
-	private List<GeoHash> searchHashes = new ArrayList<GeoHash>(9);
+	/* there's not going to more than 4 hashes. */
+	private List<GeoHash> searchHashes = new ArrayList<GeoHash>(4);
 
 	/**
 	 * return the hash(es) that approximate this bounding box.
@@ -25,7 +25,6 @@ public class GeoHashBoundingBoxSearch {
 		int fittingBits = GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(bbox);
 		WGS84Point center = bbox.getCenterPoint();
 		GeoHash centerHash = GeoHash.withBitPrecision(center.getLatitude(), center.getLongitude(), fittingBits);
-		boundingBox = centerHash.getBoundingBox();
 
 		if (hashFits(centerHash, bbox)) {
 			System.out.println("yay, centered hash fits.");
