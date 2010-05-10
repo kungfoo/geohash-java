@@ -15,12 +15,10 @@ public class GeoHashBoundingBoxSearchTest {
 
 	@Test
 	public void testSeveralBoundingBoxes() {
-		checkSearchYieldsCorrectNumberOfHashes(-22.5,-22.4, 40.2,  40.3);
-		checkSearchYieldsCorrectNumberOfHashes(40.2,  40.3, -22.5,-22.4);
 		checkSearchYieldsCorrectNumberOfHashes(40.2090980098, 40.21982983232432, -22.523432424324,-22.494234232442);
 		checkSearchYieldsCorrectNumberOfHashes( 41.23452234, 40.09872762,31.23432, 30.0113312322);
-		checkSearchYieldsCorrectHashes(8.760941,  8.471276, 47.447907, 47.300200,"u0qj");
-		checkSearchYieldsCorrectHashes(8.562244, 8.859215,47.157502, 47.329727,  "u0qj", "u0qm", "u0qh", "u0qk");
+		checkSearchYieldsCorrectHashes( 47.447907, 47.300200,8.760941,  8.471276, "u0qj");
+		checkSearchYieldsCorrectHashes(47.157502, 47.329727, 8.562244, 8.859215, "u0qj", "u0qm", "u0qh", "u0qk");
 	}
 
 	private void checkSearchYieldsCorrectNumberOfHashes(double minLat, double maxLat, double minLon, double maxLon) {

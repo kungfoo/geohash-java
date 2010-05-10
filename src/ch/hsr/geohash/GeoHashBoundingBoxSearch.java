@@ -40,7 +40,8 @@ public class GeoHashBoundingBoxSearch {
 		addSearchHash(centerHash);
 
 		for (GeoHash adjacent : centerHash.getAdjacent()) {
-			if (adjacent.getBoundingBox().intersects(bbox) && !searchHashes.contains(adjacent)) {
+			BoundingBox adjacentBox = adjacent.getBoundingBox();
+			if (adjacentBox.intersects(bbox) && !searchHashes.contains(adjacent)) {
 				addSearchHash(adjacent);
 			}
 		}

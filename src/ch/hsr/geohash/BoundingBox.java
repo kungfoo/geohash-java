@@ -81,7 +81,7 @@ public class BoundingBox {
 	}
 
 	public boolean intersects(BoundingBox other) {
-		return !(other.minLon > maxLon || other.maxLon < minLon || other.minLon > maxLon || other.maxLon < minLon);
+		return !(other.minLon > maxLon || other.maxLon < minLon || other.minLat > maxLat || other.maxLat < minLat);
 	}
 
 	@Override
