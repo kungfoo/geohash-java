@@ -76,8 +76,8 @@ public class BoundingBox {
 	}
 
 	public boolean contains(WGS84Point point) {
-		return (point.latitude >= minLat) && (point.longitude >= minLon) && (point.latitude <= maxLat)
-				&& (point.longitude <= maxLon);
+		return (point.getLatitude() >= minLat) && (point.getLongitude() >= minLon) && (point.getLatitude() <= maxLat)
+				&& (point.getLongitude() <= maxLon);
 	}
 
 	public boolean intersects(BoundingBox other) {
