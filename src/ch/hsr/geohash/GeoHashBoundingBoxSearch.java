@@ -27,7 +27,6 @@ public class GeoHashBoundingBoxSearch {
 		GeoHash centerHash = GeoHash.withBitPrecision(center.getLatitude(), center.getLongitude(), fittingBits);
 
 		if (hashFits(centerHash, bbox)) {
-			System.out.println("yay, centered hash fits.");
 			searchHashes.add(centerHash);
 		} else {
 			expandSearch(centerHash, bbox);
