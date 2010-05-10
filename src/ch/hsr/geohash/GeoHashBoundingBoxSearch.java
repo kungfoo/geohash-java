@@ -15,7 +15,7 @@ import ch.hsr.geohash.util.GeoHashSizeTable;
 
 public class GeoHashBoundingBoxSearch {
 
-	/* there's not going to more than 4 hashes. */
+	/* there's not going to be more than 4 hashes. */
 	private List<GeoHash> searchHashes = new ArrayList<GeoHash>(4);
 
 	/**
