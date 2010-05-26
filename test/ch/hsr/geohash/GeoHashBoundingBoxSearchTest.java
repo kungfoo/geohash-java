@@ -11,6 +11,9 @@ package ch.hsr.geohash;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import ch.hsr.geohash.queries.GeoHashBoundingBoxQuery;
+import ch.hsr.geohash.queries.GeoHashQuery;
+
 public class GeoHashBoundingBoxSearchTest {
 
 	@Test
@@ -22,13 +25,13 @@ public class GeoHashBoundingBoxSearchTest {
 	}
 
 	private void checkSearchYieldsCorrectNumberOfHashes(double minLat, double maxLat, double minLon, double maxLon) {
-		GeoHashBoundingBoxSearch search = new GeoHashBoundingBoxSearch(new BoundingBox(minLat, maxLat, minLon, maxLon));
+		GeoHashQuery search = new GeoHashBoundingBoxQuery(new BoundingBox(minLat, maxLat, minLon, maxLon));
 		assertRightNumberOfSearchHashes(search);
 	}
 
 	private void checkSearchYieldsCorrectHashes(double minLat, double maxLat, double minLon, double maxLon,
 			String... hashes) {
-		GeoHashBoundingBoxSearch search = new GeoHashBoundingBoxSearch(new BoundingBox(minLat,  maxLat,minLon, maxLon));
+		GeoHashQuery search = new GeoHashBoundingBoxQuery(new BoundingBox(minLat,  maxLat,minLon, maxLon));
 		assertEquals(hashes.length, search.getSearchHashes().size());
 		for (String expectedHash : hashes) {
 			assertTrue("search hashes should contain " + expectedHash + " is: " + search, search.getSearchHashes().contains(
@@ -36,7 +39,7 @@ public class GeoHashBoundingBoxSearchTest {
 		}
 	}
 
-	private void assertRightNumberOfSearchHashes(GeoHashBoundingBoxSearch search) {
+	private void assertRightNumberOfSearchHashes(GeoHashQuery search) {
 		int size = search.getSearchHashes().size();
 		assertTrue(size == 1 || size == 2 || size == 4);
 	}

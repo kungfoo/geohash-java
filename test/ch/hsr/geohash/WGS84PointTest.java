@@ -77,6 +77,6 @@ public class WGS84PointTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testRangeCheck() {
-		WGS84Point p = new WGS84Point(180, 240);
+		new WGS84Point(180, 240);
 	}
 }
