@@ -54,7 +54,7 @@ public class GeoHashSizeTableTest {
 	 * the entire box is a little too small, thus it must fit nicely into the
 	 * hash.
 	 */
-	private static class ALittleTooSmallVerifier implements BoundingBoxSizeTableVerifier {
+	static class ALittleTooSmallVerifier implements BoundingBoxSizeTableVerifier {
 		@Override
 		public BoundingBox generate(int bits) {
 			// make the bounding box a little smaller than dLat/dLon
@@ -73,7 +73,7 @@ public class GeoHashSizeTableTest {
 	 * if both lat and lon are a little too large, we must use a bigger hash,
 	 * i.e. less bits.
 	 */
-	private static class BothALittleTooLargeVerifier implements BoundingBoxSizeTableVerifier {
+	static class BothALittleTooLargeVerifier implements BoundingBoxSizeTableVerifier {
 		public BoundingBox generate(int bits) {
 			double dLat = GeoHashSizeTable.dLat(bits);
 			double dLon = GeoHashSizeTable.dLon(bits);
@@ -90,7 +90,7 @@ public class GeoHashSizeTableTest {
 	 * depending on whether we're currently at an even or odd nuber of bits, one
 	 * or two bits have to be removed.
 	 */
-	private static class OnlyOneALittleTooLargeVerifier implements BoundingBoxSizeTableVerifier {
+	static class OnlyOneALittleTooLargeVerifier implements BoundingBoxSizeTableVerifier {
 		private Random rand = new Random();
 		private boolean latitudeAffected;
 

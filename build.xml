@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project name="geohash-java" default="test" basedir=".">
 	<property name="build.dir" location="bin" />
-	<property name="src.dir" location="src" />
-	<property name="test.dir" location="test" />
+	<property name="src.dir" location="src/main/java" />
+	<property name="test.dir" location="src/test/java" />
 	<property name="vendor.dir" location="vendor" />
 	<property name="build.prod.dir" location="${build.dir}/prod" />
 	<property name="build.test.dir" location="${build.dir}/test" />
