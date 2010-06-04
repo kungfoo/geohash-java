@@ -20,13 +20,17 @@ import ch.hsr.geohash.util.VincentyGeodesy;
  * Approximates the circle with a square!
  */
 public class GeoHashCircleQuery implements GeoHashQuery {
+	private double radius;
 	private GeoHashQuery query;
+	private WGS84Point center;
 
 	/**
 	 * create a {@link GeoHashCircleQuery} with the given center point and a
 	 * radius in meters.
 	 */
 	public GeoHashCircleQuery(WGS84Point center, double radius) {
+		this.radius = radius;
+		this.center = center;
 		double halfRadius = radius / 2.0;
 		WGS84Point northEast = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 0, halfRadius),
 				90, halfRadius);
@@ -44,5 +48,18 @@ public class GeoHashCircleQuery implements GeoHashQuery {
 	@Override
 	public List<GeoHash> getSearchHashes() {
 		return query.getSearchHashes();
+	}
+
+	@Override
+	public String toString() {
+		return "Cicle Query [center=" + center + ", radius=" + getRadiusString() + "]";
+	}
+
+	private String getRadiusString() {
+		if (radius > 1000) {
+			return radius / 1000 + "km";
+		} else {
+			return radius + "m";
+		}
 	}
 }

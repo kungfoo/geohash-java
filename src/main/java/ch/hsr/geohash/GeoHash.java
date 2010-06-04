@@ -165,6 +165,9 @@ public final class GeoHash {
 	 * significant bits.
 	 */
 	public String toBase32() {
+		if(significantBits % 5 != 0){
+			return "";
+		}
 		StringBuilder buf = new StringBuilder();
 
 		long firstFiveBitsMask = 0xf800000000000000l;
