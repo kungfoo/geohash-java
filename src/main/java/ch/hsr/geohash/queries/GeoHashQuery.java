@@ -16,4 +16,6 @@ public interface GeoHashQuery {
 	 */
 	public abstract List<GeoHash> getSearchHashes();
 
+	public abstract String getWktBox();
+
 }

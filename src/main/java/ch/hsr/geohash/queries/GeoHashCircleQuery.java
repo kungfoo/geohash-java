@@ -44,6 +44,11 @@ public class GeoHashCircleQuery implements GeoHashQuery {
 	public boolean contains(GeoHash hash) {
 		return query.contains(hash);
 	}
+	
+	@Override
+	public String getWktBox() {
+		return query.getWktBox();
+	}
 
 	@Override
 	public List<GeoHash> getSearchHashes() {

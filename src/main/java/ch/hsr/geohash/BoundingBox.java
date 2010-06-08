@@ -94,4 +94,35 @@ public class BoundingBox {
 		double centerLongitude = (minLon + maxLon) / 2;
 		return new WGS84Point(centerLatitude, centerLongitude);
 	}
+
+	public void expandToInclude(BoundingBox other) {
+		if (other.minLon < minLon) {
+			minLon = other.minLon;
+		}
+		if (other.maxLon > maxLon) {
+			maxLon = other.maxLon;
+		}
+		if (other.minLat < minLat) {
+			minLat = other.minLat;
+		}
+		if (other.maxLat > maxLat) {
+			maxLat = other.maxLat;
+		}
+	}
+
+	public double getMinLon() {
+		return minLon;
+	}
+
+	public double getMinLat() {
+		return minLat;
+	}
+
+	public double getMaxLat() {
+		return maxLat;
+	}
+
+	public double getMaxLon() {
+		return maxLon;
+	}
 }

@@ -25,26 +25,37 @@ public class GeoHashBoundingBoxQuery implements GeoHashQuery {
 
 	/* there's not going to be more than 4 hashes. */
 	private List<GeoHash> searchHashes = new ArrayList<GeoHash>(4);
-	
+	/* the combined bounding box of those hashes. */
+	private BoundingBox boundingBox;
+
 	public GeoHashBoundingBoxQuery(BoundingBox bbox) {
 		int fittingBits = GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(bbox);
 		WGS84Point center = bbox.getCenterPoint();
 		GeoHash centerHash = GeoHash.withBitPrecision(center.getLatitude(), center.getLongitude(), fittingBits);
 
 		if (hashFits(centerHash, bbox)) {
-			searchHashes.add(centerHash);
+			addSearchHash(centerHash);
 		} else {
 			expandSearch(centerHash, bbox);
 		}
 	}
 
+	private void addSearchHash(GeoHash hash) {
+		if (boundingBox == null) {
+			boundingBox = new BoundingBox(hash.getBoundingBox());
+		} else {
+			boundingBox.expandToInclude(hash.getBoundingBox());
+		}
+		searchHashes.add(hash);
+	}
+
 	private void expandSearch(GeoHash centerHash, BoundingBox bbox) {
-		searchHashes.add(centerHash);
+		addSearchHash(centerHash);
 
 		for (GeoHash adjacent : centerHash.getAdjacent()) {
 			BoundingBox adjacentBox = adjacent.getBoundingBox();
 			if (adjacentBox.intersects(bbox) && !searchHashes.contains(adjacent)) {
-				searchHashes.add(adjacent);
+				addSearchHash(adjacent);
 			}
 		}
 	}
@@ -72,5 +83,11 @@ public class GeoHashBoundingBoxQuery implements GeoHashQuery {
 			bui.append(hash).append("\n");
 		}
 		return bui.toString();
+	}
+
+	@Override
+	public String getWktBox() {
+		return "BOX(" + boundingBox.getMinLon() + " " + boundingBox.getMinLat() + "," + boundingBox.getMaxLon() + " "
+				+ boundingBox.getMaxLat() + ")";
 	}
 }
