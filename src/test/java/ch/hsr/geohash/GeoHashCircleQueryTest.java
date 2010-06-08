@@ -12,16 +12,6 @@ import ch.hsr.geohash.queries.GeoHashQuery;
 
 public class GeoHashCircleQueryTest {
 	private WGS84Point center = new WGS84Point(10.00254, 76.30627);;
-
-	@Test
-	public void checkJerryDonSample1() {
-		checkRadiusSearchHashes(1000, "t9y2bk" );
-	}
-
-	@Test
-	public void testJerryDonSample2() {
-		checkRadiusSearchHashes(1500, "t9y2bh", "t9y2bs", "t9yb2b0", "t9yb2b8");
-	}
 	
 	@Test
 	public void testJerryDonSample3() {
