@@ -31,11 +31,8 @@ public class GeoHashCircleQuery implements GeoHashQuery {
 	public GeoHashCircleQuery(WGS84Point center, double radius) {
 		this.radius = radius;
 		this.center = center;
-		double halfRadius = radius / 2.0;
-		WGS84Point northEast = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 0, halfRadius),
-				90, halfRadius);
-		WGS84Point southWest = VincentyGeodesy.moveInDirection(
-				VincentyGeodesy.moveInDirection(center, 180, halfRadius), 270, halfRadius);
+		WGS84Point northEast = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 0, radius), 90, radius);
+		WGS84Point southWest = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 180, radius), 270, radius);
 		BoundingBox bbox = new BoundingBox(northEast, southWest);
 		query = new GeoHashBoundingBoxQuery(bbox);
 	}
@@ -66,5 +63,10 @@ public class GeoHashCircleQuery implements GeoHashQuery {
 		} else {
 			return radius + "m";
 		}
+	}
+
+	@Override
+	public boolean contains(WGS84Point point) {
+		return query.contains(point);
 	}
 }

@@ -64,12 +64,18 @@ public class GeoHashBoundingBoxQuery implements GeoHashQuery {
 		return hash.contains(bbox.getUpperLeft()) && hash.contains(bbox.getLowerRight());
 	}
 
+	@Override
 	public boolean contains(GeoHash hash) {
 		for (GeoHash searchHash : searchHashes) {
 			if (hash.within(searchHash))
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean contains(WGS84Point point) {
+		return contains(GeoHash.withBitPrecision(point.getLatitude(), point.getLongitude(), 64));
 	}
 
 	public List<GeoHash> getSearchHashes() {
