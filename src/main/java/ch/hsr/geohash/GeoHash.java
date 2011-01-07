@@ -11,7 +11,7 @@ package ch.hsr.geohash;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class GeoHash {
+public final class GeoHash implements Comparable<GeoHash> {
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
 	private static final int BASE32_BITS = 5;
 	public static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
@@ -90,6 +90,35 @@ public final class GeoHash {
 		return hash;
 	}
 
+    public static GeoHash fromLongValue(long hashVal, int significantBits) {
+		double[] latitudeRange = { -90.0, 90.0 };
+		double[] longitudeRange = { -180.0, 180.0 };
+
+        boolean isEvenBit = true;
+        GeoHash hash = new GeoHash();
+
+        String binaryString = Long.toBinaryString(hashVal);
+        while (binaryString.length() < 64) {
+            binaryString = "0" + binaryString;
+        }
+        for (int j = 0; j < significantBits; j++) {
+            if (isEvenBit) {
+                divideRangeDecode(hash, longitudeRange, binaryString.charAt(j) != '0');
+            } else {
+                divideRangeDecode(hash, latitudeRange, binaryString.charAt(j) != '0');
+            }
+            isEvenBit = !isEvenBit;
+        }
+
+		double latitude = (latitudeRange[0] + latitudeRange[1]) / 2;
+		double longitude = (longitudeRange[0] + longitudeRange[1]) / 2;
+
+		hash.point = new WGS84Point(latitude, longitude);
+		setBoundingBox(hash, latitudeRange, longitudeRange);
+		hash.bits <<= (64 - hash.significantBits);
+		return hash;
+    }
+
 	private GeoHash(double latitude, double longitude, int desiredPrecision) {
 		point = new WGS84Point(latitude, longitude);
 		desiredPrecision = Math.min(desiredPrecision, 64);
@@ -115,6 +144,10 @@ public final class GeoHash {
 		hash.boundingBox = new BoundingBox(new WGS84Point(latitudeRange[0], longitudeRange[0]), new WGS84Point(latitudeRange[1],
 				longitudeRange[1]));
 	}
+
+    public GeoHash next() {
+        return fromLongValue(bits + (1l << (64 - significantBits)), significantBits);
+    }
 
 	private void divideRangeEncode(double value, double[] range) {
 		double mid = (range[0] + range[1]) / 2;
@@ -158,6 +191,10 @@ public final class GeoHash {
 	public int significantBits() {
 		return (int) significantBits;
 	}
+
+    public long longValue() {
+        return bits;
+    }
 
 	/**
 	 * get the base32 string for this {@link GeoHash}.<br>
@@ -372,4 +409,9 @@ public final class GeoHash {
 		mask >>>= (64 - n);
 		return value & mask;
 	}
+
+    @Override
+    public int compareTo(GeoHash o) {
+        return new Long(bits).compareTo(o.bits);
+    }
 }

@@ -371,4 +371,25 @@ public class GeoHashTest {
 		System.out.print("corners=");
 		System.out.println(hash.getBoundingBox());
 	}
+
+    @Test
+    public void testToLongAndBack() {
+        double lat = 40.390943;
+        double lon = -75.9375;
+        GeoHash hash = GeoHash.withCharacterPrecision(lat, lon, 10);
+        long lv = hash.longValue();
+        assertEquals(lv + (1 << (64 - hash.significantBits())), hash.next().longValue());
+        GeoHash hashFromLong = GeoHash.fromLongValue(lv, hash.significantBits());
+        assertEquals("dr4jb0bn21", hashFromLong.toBase32());
+        assertEquals(hash, hashFromLong);
+    }
+
+    @Test
+    public void testNext() {
+        double lat = 37.7;
+        double lon = -122.52;
+        GeoHash hash = GeoHash.withBitPrecision(lat, lon, 10);
+        GeoHash next = hash.next();
+        assertTrue(hash.compareTo(next) < 0);                
+    }
 }
