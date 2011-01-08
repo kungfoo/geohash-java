@@ -11,8 +11,8 @@ You can however also encode Geohashes down to the full available precision of a 
 Building/Testing the code
 -------------------------
 
-The geohash-java code can be built using Apache Ant.
-Following targets are available:
+The geohash-java code can be built using Apache Ant or Apache Maven.
+Ant targets that are available:
 
 	- clean		# wash dishes.
     - compile	# compile the main source code.
@@ -20,6 +20,11 @@ Following targets are available:
     - jar		# pack a jar archive with the compiled class files.
     - zip 		# pack a zip archive with the compiled binaries, source code and all other files.
 
+Maven targets are the usual suspects.
+    
+    - compile
+    - test
+    - package
 
 TODO
 ----
@@ -27,17 +32,25 @@ TODO
 Current development involves getting the following things to run:
 
 -	a method to find the n closest hashes to any given point.
--	find all hashes within a bounding box (possibly including false positives)
 
 
 Last important changes
 ----------------------
 
--	Fixed issue #2 from Github:
+Version 1.0.2
+-------------
+
+-   Merged Kevins [ktcorby] code that yields all the geohashes in a bounding box, at a given resolution.
+- 	Merged Chris' [cchandler] code to encode and decode geohashes from a binary string.
+
+Version 1.0.1
+-------------
+
+-   Fixed issue #2 from Github:
 	- Neighbouring hashes can be calculated by using the getAdjacent() method, which yields a hashes 8 neighbors.
 	- northern, eastern, western and southern neighbours can be determined using the respective methods.
 
--	Fixed issue #1 from Github:
+-   Fixed issue #1 from Github:
 	- A bug caused different hashes to be yielded sometimes.
 
 	

@@ -43,12 +43,9 @@ public class BoundingBoxGeoHashIteratorTest {
             hashes.add(iter.next());
         }
         GeoHash prev = null;
-        int idx = 0;
-        //System.out.println("idx,lat,lon");
         for (GeoHash gh : hashes) {
             if (prev != null) Assert.assertTrue(prev.compareTo(gh) < 0);
             Assert.assertTrue(newBox.contains(gh.getPoint()));
-            System.out.println(idx++ + "," + gh.getPoint().getLatitude() + "," + gh.getPoint().getLongitude());
             prev = gh;
         }
 
