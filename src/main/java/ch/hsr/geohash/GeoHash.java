@@ -57,30 +57,21 @@ public final class GeoHash implements Comparable<GeoHash> {
 	}
 	
 	public static GeoHash fromBinaryString(String binaryString) {
-	  GeoHash geohash = new GeoHash();
-	  geohash.significantBits = (byte) binaryString.length();
-	  if(binaryString.length() < 64)
-	  {
-	    StringBuffer b = new StringBuffer();
-	    b.append(binaryString);
-	    for(int i = binaryString.length(); i < 63; i++)
-	    {
-	      b.append("0");
-	    }
-	    binaryString = b.toString();
-	  }
-	  
-	  geohash.bits = Long.valueOf(binaryString, 2);
-	  
-	  
-    long[] latitudeBits = geohash.getRightAlignedLatitudeBits();
-    long[] longitudeBits = geohash.getRightAlignedLongitudeBits();
-    //latitudeBits[0] += 1;
-    //latitudeBits[0] = geohash.maskLastNBits(latitudeBits[0], latitudeBits[1]);
-    return geohash.recombineLatLonBitsToHash(latitudeBits, longitudeBits);
-		
-	  
-	  //return geohash;
+		GeoHash geohash = new GeoHash();
+		geohash.significantBits = (byte) binaryString.length();
+		if (binaryString.length() < 64) {
+			StringBuffer b = new StringBuffer();
+			b.append(binaryString);
+			for (int i = binaryString.length(); i < 63; i++) {
+				b.append("0");
+			}
+			binaryString = b.toString();
+		}
+
+		geohash.bits = Long.valueOf(binaryString, 2);
+		long[] latitudeBits = geohash.getRightAlignedLatitudeBits();
+		long[] longitudeBits = geohash.getRightAlignedLongitudeBits();
+		return geohash.recombineLatLonBitsToHash(latitudeBits, longitudeBits);
 	}
 
 	/**
