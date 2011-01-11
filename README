@@ -14,17 +14,17 @@ Building/Testing the code
 The geohash-java code can be built using Apache Ant or Apache Maven.
 Ant targets that are available:
 
-	- clean		# wash dishes.
-    - compile	# compile the main source code.
-    - test		# (default) run the unit tests.
-    - jar		# pack a jar archive with the compiled class files.
-    - zip 		# pack a zip archive with the compiled binaries, source code and all other files.
+    - clean     # wash dishes.
+    - compile   # compile the main source code.
+    - test      # (default) run the unit tests.
+    - jar       # pack a jar archive with the compiled class files.
+    - zip       # pack a zip archive with the compiled binaries, source code and all other files.
 
 Maven targets are the usual suspects.
     
     - compile
     - test
-    - package
+    - package   # pack a versioned jar containing the compiled class files
 
 TODO
 ----
@@ -41,7 +41,7 @@ Version 1.0.2
 -------------
 
 -   Merged Kevins [ktcorby] code that yields all the geohashes in a bounding box, at a given resolution.
-- 	Merged Chris' [cchandler] code to encode and decode geohashes from a binary string.
+-   Merged Chris' [cchandler] code to encode and decode geohashes from a binary string.
 
 Version 1.0.1
 -------------
