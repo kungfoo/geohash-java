@@ -18,6 +18,8 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.hsr.geohash.util.RandomGeohashes;
+
 public class GeoHashTest {
 	private GeoHash hash;
 	private Random rand;
@@ -66,25 +68,34 @@ public class GeoHashTest {
 	public void testDecode() {
 		// for all lat/lon pairs check decoded point is in the same bbox as the
 		// geohash formed by encoder
-		// TODO could possibly be less brute-force here and be more scientific
-		// about possible failure points
-		for (double lat = -90; lat <= 90; lat += rand.nextDouble() + 1.45) {
-			for (double lon = -180; lon <= 180; lon += rand.nextDouble() + 1.54) {
-				for (int precisionChars = 6; precisionChars <= 12; precisionChars++) {
-					GeoHash gh = GeoHash.withCharacterPrecision(lat, lon, precisionChars);
-					BoundingBox bbox = gh.getBoundingBox();
-					GeoHash decodedHash = GeoHash.fromGeohashString(gh.toBase32());
-					WGS84Point decodedCenter = decodedHash.getBoundingBoxCenterPoint();
+		for (GeoHash gh : RandomGeohashes.fullRange()) {
+			BoundingBox bbox = gh.getBoundingBox();
+			GeoHash decodedHash = GeoHash.fromGeohashString(gh.toBase32());
+			WGS84Point decodedCenter = decodedHash.getBoundingBoxCenterPoint();
 
-					assertTrue("bbox " + bbox + " should contain the decoded center value " + decodedCenter, bbox
+			assertTrue("bbox " + bbox + " should contain the decoded center value " + decodedCenter, bbox
 							.contains(decodedCenter));
-					BoundingBox decodedBoundingBox = decodedHash.getBoundingBox();
-					assertEquals(bbox, decodedBoundingBox);
-					assertEquals(gh, decodedHash);
-					assertEquals(gh.toBase32(), decodedHash.toBase32());
-				}
-			}
+			BoundingBox decodedBoundingBox = decodedHash.getBoundingBox();
+			assertEquals(bbox, decodedBoundingBox);
+			assertEquals(gh, decodedHash);
+			assertEquals(gh.toBase32(), decodedHash.toBase32());
 		}
+	}
+
+	@Test
+	public void testToAndFromBinaryString() {
+		for (GeoHash gh : RandomGeohashes.fullRange()) {
+			String binaryString = gh.toBinaryString();
+			GeoHash readBack = GeoHash.fromBinaryString(binaryString);
+			assertEquals(gh, readBack);
+		}
+	}
+
+	@Test
+	public void testOffendingBinaryString() {
+		String offendingString = "1000000000000000000010101000000000000000000000000000000000000000";
+		assertEquals(64, offendingString.length());
+		Long.parseLong(offendingString, 2);
 	}
 
 	@Test
@@ -294,7 +305,7 @@ public class GeoHashTest {
 		assertEquals("u300", h1.getEasternNeighbour().toBase32());
 		assertEquals("u302", h1.getEasternNeighbour().getEasternNeighbour().toBase32());
 		assertEquals("u1p8", h1.getWesternNeighbour().toBase32());
-		
+
 		assertEquals("sp2j", GeoHash.withCharacterPrecision(41.7, 0.08, 4).toBase32());
 	}
 
@@ -333,7 +344,7 @@ public class GeoHashTest {
 		}
 		assertTrue("Array should contain " + check, found);
 	}
-	
+
 	@Test
 	public void testNeibouringHashesNearMeridian() {
 		GeoHash hash = GeoHash.fromGeohashString("sp2j");
@@ -372,24 +383,24 @@ public class GeoHashTest {
 		System.out.println(hash.getBoundingBox());
 	}
 
-    @Test
-    public void testToLongAndBack() {
-        double lat = 40.390943;
-        double lon = -75.9375;
-        GeoHash hash = GeoHash.withCharacterPrecision(lat, lon, 10);
-        long lv = hash.longValue();
-        assertEquals(lv + (1 << (64 - hash.significantBits())), hash.next().longValue());
-        GeoHash hashFromLong = GeoHash.fromLongValue(lv, hash.significantBits());
-        assertEquals("dr4jb0bn21", hashFromLong.toBase32());
-        assertEquals(hash, hashFromLong);
-    }
+	@Test
+	public void testToLongAndBack() {
+		double lat = 40.390943;
+		double lon = -75.9375;
+		GeoHash hash = GeoHash.withCharacterPrecision(lat, lon, 10);
+		long lv = hash.longValue();
+		assertEquals(lv + (1 << (64 - hash.significantBits())), hash.next().longValue());
+		GeoHash hashFromLong = GeoHash.fromLongValue(lv, hash.significantBits());
+		assertEquals("dr4jb0bn21", hashFromLong.toBase32());
+		assertEquals(hash, hashFromLong);
+	}
 
-    @Test
-    public void testNext() {
-        double lat = 37.7;
-        double lon = -122.52;
-        GeoHash hash = GeoHash.withBitPrecision(lat, lon, 10);
-        GeoHash next = hash.next();
-        assertTrue(hash.compareTo(next) < 0);                
-    }
+	@Test
+	public void testNext() {
+		double lat = 37.7;
+		double lon = -122.52;
+		GeoHash hash = GeoHash.withBitPrecision(lat, lon, 10);
+		GeoHash next = hash.next();
+		assertTrue(hash.compareTo(next) < 0);
+	}
 }

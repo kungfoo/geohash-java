@@ -63,15 +63,15 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 		GeoHash geohash = new GeoHash();
 		geohash.significantBits = (byte) binaryString.length();
 		if (binaryString.length() < 64) {
-			StringBuffer b = new StringBuffer();
+			StringBuilder b = new StringBuilder();
 			b.append(binaryString);
-			for (int i = binaryString.length(); i < 63; i++) {
-				b.append("0");
+			for (int i = binaryString.length(); i < 64; i++) {
+				b.append('0');
 			}
 			binaryString = b.toString();
 		}
 
-		geohash.bits = Long.valueOf(binaryString, 2);
+		geohash.bits = Long.parseLong(binaryString, 2);
 		long[] latitudeBits = geohash.getRightAlignedLatitudeBits();
 		long[] longitudeBits = geohash.getRightAlignedLongitudeBits();
 		return geohash.recombineLatLonBitsToHash(latitudeBits, longitudeBits);
@@ -392,8 +392,18 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 		}
 	}
 
-	public String toStringWithSignificantPrecision() {
-		return Long.toBinaryString(bits).substring(0, significantBits);
+	public String toBinaryString() {
+		StringBuilder bui = new StringBuilder();
+		long bitsCopy = bits;
+		for (int i = 0; i < significantBits; i++) {
+			if ((bitsCopy & FIRST_BIT_FLAGGED) == FIRST_BIT_FLAGGED) {
+				bui.append('1');
+			} else {
+				bui.append('0');
+			}
+			bitsCopy <<= 1;
+		}
+		return bui.toString();
 	}
 
 	@Override
