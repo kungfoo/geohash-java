@@ -8,6 +8,7 @@
  */
 package ch.hsr.geohash.queries;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import ch.hsr.geohash.util.GeoHashSizeTable;
  * either 1,2 or 4 susch hashes, depending on the position of the bounding box
  * on the geohash grid.
  */
-public class GeoHashBoundingBoxQuery implements GeoHashQuery {
+public class GeoHashBoundingBoxQuery implements GeoHashQuery, Serializable {
 
 	/* there's not going to be more than 4 hashes. */
 	private List<GeoHash> searchHashes = new ArrayList<GeoHash>(4);

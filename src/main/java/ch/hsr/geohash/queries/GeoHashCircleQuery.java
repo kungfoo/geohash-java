@@ -8,6 +8,7 @@
  */
 package ch.hsr.geohash.queries;
 
+import java.io.Serializable;
 import java.util.List;
 
 import ch.hsr.geohash.BoundingBox;
@@ -19,9 +20,9 @@ import ch.hsr.geohash.util.VincentyGeodesy;
  * represents a radius search around a specific point via geohashes.
  * Approximates the circle with a square!
  */
-public class GeoHashCircleQuery implements GeoHashQuery {
+public class GeoHashCircleQuery implements GeoHashQuery, Serializable {
 	private double radius;
-	private GeoHashQuery query;
+	private GeoHashBoundingBoxQuery query;
 	private WGS84Point center;
 
 	/**

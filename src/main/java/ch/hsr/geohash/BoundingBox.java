@@ -8,7 +8,9 @@
  */
 package ch.hsr.geohash;
 
-public class BoundingBox {
+import java.io.Serializable;
+
+public class BoundingBox implements Serializable {
 	private double minLat;
 	private double maxLat;
 	private double minLon;

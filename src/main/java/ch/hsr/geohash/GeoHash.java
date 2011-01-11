@@ -8,10 +8,11 @@
  */
 package ch.hsr.geohash;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class GeoHash implements Comparable<GeoHash> {
+public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
 	private static final int BASE32_BITS = 5;
 	public static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;

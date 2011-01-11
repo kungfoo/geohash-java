@@ -8,11 +8,13 @@
  */
 package ch.hsr.geohash;
 
+import java.io.Serializable;
+
 /**
  * {@link WGS84Point} encapsulates coordinates on the earths surface.<br>
  * Coordinate projections might end up using this class...
  */
-public class WGS84Point {
+public class WGS84Point implements Serializable {
 	
 	private double longitude;
 	private double latitude;
