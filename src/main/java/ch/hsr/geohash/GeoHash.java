@@ -12,6 +12,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import sun.security.pkcs.SigningCertificateInfo;
+
 public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	private static final long serialVersionUID = -8553214249630252175L;
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
@@ -61,17 +63,16 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 
 	public static GeoHash fromBinaryString(String binaryString) {
 		GeoHash geohash = new GeoHash();
-		geohash.significantBits = (byte) binaryString.length();
-		if (binaryString.length() < 64) {
-			StringBuilder b = new StringBuilder();
-			b.append(binaryString);
-			for (int i = binaryString.length(); i < 64; i++) {
-				b.append('0');
+		for(int i = 0; i < binaryString.length(); i++){
+			if(binaryString.charAt(i) == '1'){
+				geohash.addOnBitToEnd();
+			} else if(binaryString.charAt(i) == '0') {
+				geohash.addOffBitToEnd();
+			} else {
+				throw new IllegalArgumentException(binaryString + " is not a valid geohash as a binary string");
 			}
-			binaryString = b.toString();
 		}
-
-		geohash.bits = Long.parseLong(binaryString, 2);
+		geohash.bits <<= (64 - geohash.significantBits);
 		long[] latitudeBits = geohash.getRightAlignedLatitudeBits();
 		long[] longitudeBits = geohash.getRightAlignedLongitudeBits();
 		return geohash.recombineLatLonBitsToHash(latitudeBits, longitudeBits);

@@ -92,13 +92,6 @@ public class GeoHashTest {
 	}
 
 	@Test
-	public void testOffendingBinaryString() {
-		String offendingString = "1000000000000000000010101000000000000000000000000000000000000000";
-		assertEquals(64, offendingString.length());
-		Long.parseLong(offendingString, 2);
-	}
-
-	@Test
 	public void testWithin() {
 		hash.bits = 0x6ff0414000000000l;
 		hash.significantBits = 25;
