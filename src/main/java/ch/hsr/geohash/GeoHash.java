@@ -181,6 +181,14 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
         return next(-1);
     }
 
+    /**
+     * Counts the number of geohashes contained between the two (ie how many times next() is called to increment from one to two)
+     * This value depends on the number of significant bits.
+     *
+     * @param one
+     * @param two
+     * @return number of steps
+     */
     public static long stepsBetween(GeoHash one, GeoHash two) {
         if (one.significantBits() != two.significantBits())
             throw new IllegalArgumentException("It is only valid to compare the number of steps between two hashes if they have the same number of significant bits");

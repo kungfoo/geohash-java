@@ -6,10 +6,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: kevin
- * Date: Jan 6, 2011
- * Time: 11:10:03 AM
+ * Iterate over all of the values within a bounding box at a particular resolution
  */
 public class BoundingBoxGeoHashIterator implements Iterator<GeoHash> {
     private TwoGeoHashBoundingBox boundingBox;

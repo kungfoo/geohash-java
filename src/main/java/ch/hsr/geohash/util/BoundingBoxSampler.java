@@ -7,10 +7,7 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * Created by IntelliJ IDEA.
- * User: kevin
- * Date: Jan 17, 2011
- * Time: 12:02:06 PM
+ * Select random samples of geohashes within a bounding box, without replacement
  */
 public class BoundingBoxSampler {
     private TwoGeoHashBoundingBox boundingBox;
@@ -18,6 +15,10 @@ public class BoundingBoxSampler {
     private int maxSamples;
     private Random rand = new Random();
 
+    /**
+     * @param bbox
+     * @throws IllegalArgumentException if the number of geohashes contained in the bounding box exceeds Integer.MAX_VALUE
+     */
     public BoundingBoxSampler(TwoGeoHashBoundingBox bbox) {
         this.boundingBox = bbox;
         long maxSamplesLong = GeoHash.stepsBetween(bbox.getBottomLeft(), bbox.getTopRight());
@@ -36,6 +37,9 @@ public class BoundingBoxSampler {
         return boundingBox;
     }
 
+    /**
+     * @return next sample, or NULL if all samples have been returned
+     */
     public GeoHash next() {
         if (alreadyUsed.size() == maxSamples) return null;
         int idx = rand.nextInt(maxSamples + 1);
