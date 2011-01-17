@@ -23,6 +23,7 @@ public class BoundingBoxGeoHashIterator implements Iterator<GeoHash> {
         GeoHash topRight = GeoHash.withCharacterPrecision(bbox.getMaxLat(), bbox.getMaxLon(), numberOfCharacters);
         return new BoundingBoxGeoHashIterator(bottomLeft, topRight);
     }
+
     /**
      * create a new {@link GeoHash} with the given number of bits accuracy. This
      * at the same time defines this hash's bounding box.
@@ -34,7 +35,7 @@ public class BoundingBoxGeoHashIterator implements Iterator<GeoHash> {
     }
 
     public BoundingBoxGeoHashIterator(GeoHash bottomLeft, GeoHash topRight) {
-        this.bottomLeft = GeoHash.fromLongValue(bottomLeft.longValue(), bottomLeft.significantBits());;
+        this.bottomLeft = GeoHash.fromLongValue(bottomLeft.longValue(), bottomLeft.significantBits());
         this.topRight = GeoHash.fromLongValue(topRight.longValue(), topRight.significantBits());
         this.boundingBox = this.bottomLeft.getBoundingBox();
         this.boundingBox.expandToInclude(this.topRight.getBoundingBox());
@@ -61,7 +62,7 @@ public class BoundingBoxGeoHashIterator implements Iterator<GeoHash> {
     @Override
     public GeoHash next() {
         GeoHash rv = current;
-        if (!hasNext()) throw new NoSuchElementException(); 
+        if (!hasNext()) throw new NoSuchElementException();
         current = rv.next();
         while (hasNext() && !boundingBox.contains(current.getPoint())) {
             current = current.next();

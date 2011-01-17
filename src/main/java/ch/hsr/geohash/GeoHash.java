@@ -166,8 +166,28 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
                 longitudeRange[1]));
     }
 
+    public GeoHash next(int step) {
+        int insignificantBits = 64 - significantBits;
+        long unshiftedVal = bits >> insignificantBits;
+        unshiftedVal += step;
+        return fromLongValue(unshiftedVal << insignificantBits, significantBits);
+    }
+
     public GeoHash next() {
-        return fromLongValue(bits + (1l << (64 - significantBits)), significantBits);
+        return next(1);
+    }
+
+    public GeoHash prev() {
+        return next(-1);
+    }
+
+    public static long stepsBetween(GeoHash one, GeoHash two) {
+        if (one.significantBits() != two.significantBits())
+            throw new IllegalArgumentException("It is only valid to compare the number of steps between two hashes if they have the same number of significant bits");
+        int insignificantBits = 64 - one.significantBits();
+        long unshiftedVal1 = one.bits >> insignificantBits;
+        long unshiftedVal2 = two.bits >> insignificantBits;
+        return unshiftedVal2 - unshiftedVal1;
     }
 
     private void divideRangeEncode(double value, double[] range) {
