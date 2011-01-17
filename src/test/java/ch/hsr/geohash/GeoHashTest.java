@@ -9,6 +9,7 @@
 package ch.hsr.geohash;
 
 import ch.hsr.geohash.util.BoundingBoxGeoHashIterator;
+import ch.hsr.geohash.util.RandomGeohashes;
 import ch.hsr.geohash.util.TwoGeoHashBoundingBox;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,379 +20,381 @@ import java.util.Random;
 import static org.junit.Assert.*;
 
 public class GeoHashTest {
-    private GeoHash hash;
-    private Random rand;
+	private GeoHash hash;
+	private Random rand;
 
-    @Before
-    public void setUp() {
-        hash = new GeoHash();
-        rand = new Random();
-    }
+	@Before
+	public void setUp() {
+		hash = new GeoHash();
+		rand = new Random();
+	}
 
-    @Test
-    public void testAddingOnes() {
-        hash.addOnBitToEnd();
-        assertEquals(0x1l, hash.bits);
-        assertEquals(1, hash.significantBits());
-        hash.addOnBitToEnd();
-        hash.addOnBitToEnd();
-        hash.addOnBitToEnd();
-        assertEquals(0xfl, hash.bits);
-        assertEquals(4, hash.significantBits());
-    }
+	@Test
+	public void testAddingOnes() {
+		hash.addOnBitToEnd();
+		assertEquals(0x1l, hash.bits);
+		assertEquals(1, hash.significantBits());
+		hash.addOnBitToEnd();
+		hash.addOnBitToEnd();
+		hash.addOnBitToEnd();
+		assertEquals(0xfl, hash.bits);
+		assertEquals(4, hash.significantBits());
+	}
 
-    @Test
-    public void testAddingZeroes() {
-        hash.addOnBitToEnd();
-        assertEquals(0x1l, hash.bits);
+	@Test
+	public void testAddingZeroes() {
+		hash.addOnBitToEnd();
+		assertEquals(0x1l, hash.bits);
 
-        hash.addOffBitToEnd();
-        hash.addOffBitToEnd();
-        hash.addOffBitToEnd();
-        hash.addOffBitToEnd();
-        assertEquals(0x10l, hash.bits);
-        assertEquals(5, hash.significantBits());
-    }
+		hash.addOffBitToEnd();
+		hash.addOffBitToEnd();
+		hash.addOffBitToEnd();
+		hash.addOffBitToEnd();
+		assertEquals(0x10l, hash.bits);
+		assertEquals(5, hash.significantBits());
+	}
 
-    @Test
-    public void testToBase32() {
-        hash.bits = 0x6ff0414000000000l;
-        hash.significantBits = 25;
+	@Test
+	public void testToBase32() {
+		hash.bits = 0x6ff0414000000000l;
+		hash.significantBits = 25;
 
-        String base32 = hash.toBase32();
-        assertEquals("ezs42", base32);
-    }
+		String base32 = hash.toBase32();
+		assertEquals("ezs42", base32);
+	}
 
-    @Test
-    public void testDecode() {
-        // for all lat/lon pairs check decoded point is in the same bbox as the
-        // geohash formed by encoder
-        // TODO could possibly be less brute-force here and be more scientific
-        // about possible failure points
-        for (double lat = -90; lat <= 90; lat += rand.nextDouble() + 1.45) {
-            for (double lon = -180; lon <= 180; lon += rand.nextDouble() + 1.54) {
-                for (int precisionChars = 6; precisionChars <= 12; precisionChars++) {
-                    GeoHash gh = GeoHash.withCharacterPrecision(lat, lon, precisionChars);
-                    BoundingBox bbox = gh.getBoundingBox();
-                    GeoHash decodedHash = GeoHash.fromGeohashString(gh.toBase32());
-                    WGS84Point decodedCenter = decodedHash.getBoundingBoxCenterPoint();
+	@Test
+	public void testDecode() {
+		// for all lat/lon pairs check decoded point is in the same bbox as the
+		// geohash formed by encoder
+		for (GeoHash gh : RandomGeohashes.fullRange()) {
+			BoundingBox bbox = gh.getBoundingBox();
+			GeoHash decodedHash = GeoHash.fromGeohashString(gh.toBase32());
+			WGS84Point decodedCenter = decodedHash.getBoundingBoxCenterPoint();
 
-                    assertTrue("bbox " + bbox + " should contain the decoded center value " + decodedCenter, bbox
-                            .contains(decodedCenter));
-                    BoundingBox decodedBoundingBox = decodedHash.getBoundingBox();
-                    assertEquals(bbox, decodedBoundingBox);
-                    assertEquals(gh, decodedHash);
-                    assertEquals(gh.toBase32(), decodedHash.toBase32());
-                }
-            }
-        }
-    }
+			assertTrue("bbox " + bbox + " should contain the decoded center value " + decodedCenter, bbox
+							.contains(decodedCenter));
+			BoundingBox decodedBoundingBox = decodedHash.getBoundingBox();
+			assertEquals(bbox, decodedBoundingBox);
+			assertEquals(gh, decodedHash);
+			assertEquals(gh.toBase32(), decodedHash.toBase32());
+		}
+	}
 
-    @Test
-    public void testWithin() {
-        hash.bits = 0x6ff0414000000000l;
-        hash.significantBits = 25;
-        System.out.println(hash.toBase32());
-        assertEquals("ezs42", hash.toBase32());
+	@Test
+	public void testToAndFromBinaryString() {
+		for (GeoHash gh : RandomGeohashes.fullRange()) {
+			String binaryString = gh.toBinaryString();
+			GeoHash readBack = GeoHash.fromBinaryString(binaryString);
+			assertEquals(gh, readBack);
+		}
+	}
 
-        GeoHash bbox = new GeoHash();
-        bbox.bits = 0x6ff0000000000000l;
-        bbox.significantBits = 12;
+	@Test
+	public void testWithin() {
+		hash.bits = 0x6ff0414000000000l;
+		hash.significantBits = 25;
+		System.out.println(hash.toBase32());
+		assertEquals("ezs42", hash.toBase32());
 
-        assertWithin(hash, bbox);
-    }
+		GeoHash bbox = new GeoHash();
+		bbox.bits = 0x6ff0000000000000l;
+		bbox.significantBits = 12;
 
-    private void assertWithin(GeoHash hash, GeoHash bbox) {
-        assertTrue(hash.toBase32() + " should be within " + bbox.toBase32(), hash.within(bbox));
-    }
+		assertWithin(hash, bbox);
+	}
 
-    @Test
-    public void testNotWithin() {
-        hash.bits = 0x6ff0414000000000l;
-        hash.significantBits = 25;
-        assertEquals("ezs42", hash.toBase32());
+	private void assertWithin(GeoHash hash, GeoHash bbox) {
+		assertTrue(hash.toBase32() + " should be within " + bbox.toBase32(), hash.within(bbox));
+	}
 
-        GeoHash bbox = new GeoHash();
-        bbox.bits = 0x6fc0000000000000l;
-        bbox.significantBits = 12;
+	@Test
+	public void testNotWithin() {
+		hash.bits = 0x6ff0414000000000l;
+		hash.significantBits = 25;
+		assertEquals("ezs42", hash.toBase32());
 
-        assertFalse(hash.toBase32() + " should NOT be within " + bbox.toBase32(), hash.within(bbox));
-    }
+		GeoHash bbox = new GeoHash();
+		bbox.bits = 0x6fc0000000000000l;
+		bbox.significantBits = 12;
 
-    @Test
-    public void testConstructorWithBitPrecision() {
-        GeoHash hash1 = GeoHash.withBitPrecision(45, 120, 20);
-        assertEquals(hash1.significantBits, 20);
-        System.out.println(hash1);
-        System.out.println(hash1.toBase32());
+		assertFalse(hash.toBase32() + " should NOT be within " + bbox.toBase32(), hash.within(bbox));
+	}
 
-        GeoHash hash2 = GeoHash.withBitPrecision(45, 120, 55);
-        assertEquals(hash2.significantBits, 55);
-        System.out.println(hash2);
-        System.out.println(hash2.toBase32());
+	@Test
+	public void testConstructorWithBitPrecision() {
+		GeoHash hash1 = GeoHash.withBitPrecision(45, 120, 20);
+		assertEquals(hash1.significantBits, 20);
+		System.out.println(hash1);
+		System.out.println(hash1.toBase32());
 
-        assertTrue(hash2.within(hash1));
+		GeoHash hash2 = GeoHash.withBitPrecision(45, 120, 55);
+		assertEquals(hash2.significantBits, 55);
+		System.out.println(hash2);
+		System.out.println(hash2.toBase32());
 
-        // this should match Dave Troys Codebase. This is also his maximum
-        // accuracy (12 5-nibbles).
-        GeoHash hash3 = GeoHash.withBitPrecision(20, 31, 60);
-        assertEquals("sew1c2vs2q5r", hash3.toBase32());
-    }
+		assertTrue(hash2.within(hash1));
 
-    @Test
-    public void testLatLonBoundingBoxes() {
-        hash = GeoHash.withBitPrecision(40, 120, 10);
-        System.out.println(hash.toBase32());
-        printBoundingBox(hash);
-    }
+		// this should match Dave Troys Codebase. This is also his maximum
+		// accuracy (12 5-nibbles).
+		GeoHash hash3 = GeoHash.withBitPrecision(20, 31, 60);
+		assertEquals("sew1c2vs2q5r", hash3.toBase32());
+	}
 
-    @Test
-    public void testByCharacterPrecision() {
-        assertEncodingWithCharacterPrecision(new WGS84Point(20, 31), 12, "sew1c2vs2q5r");
-        assertEncodingWithCharacterPrecision(new WGS84Point(-20, 31), 12, "ksqn1rje83g2");
-        assertEncodingWithCharacterPrecision(new WGS84Point(-20.783236276, 31.9867127312312), 12, "ksq9zbs0b7vw");
+	@Test
+	public void testLatLonBoundingBoxes() {
+		hash = GeoHash.withBitPrecision(40, 120, 10);
+		System.out.println(hash.toBase32());
+		printBoundingBox(hash);
+	}
 
-        WGS84Point point = new WGS84Point(-76.5110040642321, 39.0247389581054);
-        String fullStringValue = "hf7u8p8gn747";
-        for (int characters = 12; characters > 1; characters--) {
-            assertEncodingWithCharacterPrecision(point, characters, fullStringValue.substring(0, characters));
-        }
+	@Test
+	public void testByCharacterPrecision() {
+		assertEncodingWithCharacterPrecision(new WGS84Point(20, 31), 12, "sew1c2vs2q5r");
+		assertEncodingWithCharacterPrecision(new WGS84Point(-20, 31), 12, "ksqn1rje83g2");
+		assertEncodingWithCharacterPrecision(new WGS84Point(-20.783236276, 31.9867127312312), 12, "ksq9zbs0b7vw");
 
-        assertEncodingWithCharacterPrecision(new WGS84Point(39.0247389581054, -76.5110040642321), 12, "dqcw4bnrs6s7");
-    }
+		WGS84Point point = new WGS84Point(-76.5110040642321, 39.0247389581054);
+		String fullStringValue = "hf7u8p8gn747";
+		for (int characters = 12; characters > 1; characters--) {
+			assertEncodingWithCharacterPrecision(point, characters, fullStringValue.substring(0, characters));
+		}
 
-    private void assertEncodingWithCharacterPrecision(WGS84Point point, int numberOfCharacters, String stringValue) {
-        GeoHash hash = GeoHash.withCharacterPrecision(point.getLatitude(), point.getLongitude(), numberOfCharacters);
-        assertEquals(stringValue, hash.toBase32());
-    }
+		assertEncodingWithCharacterPrecision(new WGS84Point(39.0247389581054, -76.5110040642321), 12, "dqcw4bnrs6s7");
+	}
 
-    @Test
-    public void testGetLatitudeBits() {
-        hash = GeoHash.withBitPrecision(30, 30, 16);
-        long[] latitudeBits = hash.getRightAlignedLatitudeBits();
-        assertEquals(0xaal, latitudeBits[0]);
-        assertEquals(8, latitudeBits[1]);
-    }
+	private void assertEncodingWithCharacterPrecision(WGS84Point point, int numberOfCharacters, String stringValue) {
+		GeoHash hash = GeoHash.withCharacterPrecision(point.getLatitude(), point.getLongitude(), numberOfCharacters);
+		assertEquals(stringValue, hash.toBase32());
+	}
 
-    @Test
-    public void testGetLongitudeBits() {
-        hash = GeoHash.withBitPrecision(30, 30, 16);
-        long[] longitudeBits = hash.getRightAlignedLongitudeBits();
-        assertEquals(0x95l, longitudeBits[0]);
-        assertEquals(8, longitudeBits[1]);
-    }
+	@Test
+	public void testGetLatitudeBits() {
+		hash = GeoHash.withBitPrecision(30, 30, 16);
+		long[] latitudeBits = hash.getRightAlignedLatitudeBits();
+		assertEquals(0xaal, latitudeBits[0]);
+		assertEquals(8, latitudeBits[1]);
+	}
 
-    @Test
-    public void testNeighbourLocationCode() {
-        // set up corner case
-        hash.bits = 0xc400000000000000l;
-        hash.significantBits = 7;
+	@Test
+	public void testGetLongitudeBits() {
+		hash = GeoHash.withBitPrecision(30, 30, 16);
+		long[] longitudeBits = hash.getRightAlignedLongitudeBits();
+		assertEquals(0x95l, longitudeBits[0]);
+		assertEquals(8, longitudeBits[1]);
+	}
 
-        long[] lonBits = hash.getRightAlignedLongitudeBits();
-        assertEquals(0x8, lonBits[0]);
-        assertEquals(4, lonBits[1]);
+	@Test
+	public void testNeighbourLocationCode() {
+		// set up corner case
+		hash.bits = 0xc400000000000000l;
+		hash.significantBits = 7;
 
-        long[] latBits = hash.getRightAlignedLatitudeBits();
-        assertEquals(0x5, latBits[0]);
-        assertEquals(3, latBits[1]);
+		long[] lonBits = hash.getRightAlignedLongitudeBits();
+		assertEquals(0x8, lonBits[0]);
+		assertEquals(4, lonBits[1]);
 
-        GeoHash north = hash.getNorthernNeighbour();
-        assertEquals(0xd000000000000000l, north.bits);
-        assertEquals(7, north.significantBits);
+		long[] latBits = hash.getRightAlignedLatitudeBits();
+		assertEquals(0x5, latBits[0]);
+		assertEquals(3, latBits[1]);
 
-        GeoHash south = hash.getSouthernNeighbour();
-        assertEquals(0xc000000000000000l, south.bits);
-        assertEquals(7, south.significantBits());
+		GeoHash north = hash.getNorthernNeighbour();
+		assertEquals(0xd000000000000000l, north.bits);
+		assertEquals(7, north.significantBits);
 
-        GeoHash east = hash.getEasternNeighbour();
-        assertEquals(0xc600000000000000l, east.bits);
+		GeoHash south = hash.getSouthernNeighbour();
+		assertEquals(0xc000000000000000l, south.bits);
+		assertEquals(7, south.significantBits());
 
-        // NOTE: this is actually a corner case!
-        GeoHash west = hash.getWesternNeighbour();
-        assertEquals(0x6e00000000000000l, west.bits);
+		GeoHash east = hash.getEasternNeighbour();
+		assertEquals(0xc600000000000000l, east.bits);
 
-        // NOTE: and now, for the most extreme corner case in 7-bit geohash-land
-        hash.bits = 0xfe00000000000000l;
+		// NOTE: this is actually a corner case!
+		GeoHash west = hash.getWesternNeighbour();
+		assertEquals(0x6e00000000000000l, west.bits);
 
-        east = hash.getEasternNeighbour();
-        assertEquals(0x5400000000000000l, east.bits);
+		// NOTE: and now, for the most extreme corner case in 7-bit geohash-land
+		hash.bits = 0xfe00000000000000l;
 
-    }
+		east = hash.getEasternNeighbour();
+		assertEquals(0x5400000000000000l, east.bits);
 
-    @Test
-    public void testEqualsAndHashCode() {
-        GeoHash hash1 = GeoHash.withBitPrecision(30, 30, 24);
-        GeoHash hash2 = GeoHash.withBitPrecision(30, 30, 24);
-        GeoHash hash3 = GeoHash.withBitPrecision(30, 30, 10);
+	}
 
-        assertTrue(hash1.equals(hash2) && hash2.equals(hash1));
-        assertFalse(hash1.equals(hash3) && hash3.equals(hash1));
+	@Test
+	public void testEqualsAndHashCode() {
+		GeoHash hash1 = GeoHash.withBitPrecision(30, 30, 24);
+		GeoHash hash2 = GeoHash.withBitPrecision(30, 30, 24);
+		GeoHash hash3 = GeoHash.withBitPrecision(30, 30, 10);
 
-        assertEquals(hash1.hashCode(), hash2.hashCode());
-        assertFalse(hash1.hashCode() == hash3.hashCode());
-    }
+		assertTrue(hash1.equals(hash2) && hash2.equals(hash1));
+		assertFalse(hash1.equals(hash3) && hash3.equals(hash1));
 
-    @Test
-    public void testAdjacentHashes() {
-        GeoHash[] adjacent = GeoHash.fromGeohashString("dqcw4").getAdjacent();
-        assertEquals(8, adjacent.length);
-    }
+		assertEquals(hash1.hashCode(), hash2.hashCode());
+		assertFalse(hash1.hashCode() == hash3.hashCode());
+	}
 
-    @Test
-    public void testMovingInCircle() {
-        // moving around hashes in a circle should be possible
-        checkMovingInCircle(34.2, -45.123);
-        // this should also work at the "back" of the earth
-        checkMovingInCircle(45, 180);
-        checkMovingInCircle(90, 180);
-        checkMovingInCircle(0, -180);
-    }
+	@Test
+	public void testAdjacentHashes() {
+		GeoHash[] adjacent = GeoHash.fromGeohashString("dqcw4").getAdjacent();
+		assertEquals(8, adjacent.length);
+	}
 
-    private void checkMovingInCircle(double latitude, double longitude) {
-        GeoHash start;
-        GeoHash end;
-        start = GeoHash.withCharacterPrecision(latitude, longitude, 12);
-        end = start.getEasternNeighbour();
-        end = end.getSouthernNeighbour();
-        end = end.getWesternNeighbour();
-        end = end.getNorthernNeighbour();
-        assertEquals(start, end);
-        assertEquals(start.getBoundingBox(), end.getBoundingBox());
-    }
+	@Test
+	public void testMovingInCircle() {
+		// moving around hashes in a circle should be possible
+		checkMovingInCircle(34.2, -45.123);
+		// this should also work at the "back" of the earth
+		checkMovingInCircle(45, 180);
+		checkMovingInCircle(90, 180);
+		checkMovingInCircle(0, -180);
+	}
 
-    @Test
-    public void testMovingAroundWorldOnHashStrips() throws Exception {
-        String[] directions = {"Northern", "Eastern", "Southern", "Western"};
-        for (String direction : directions) {
-            checkMoveAroundStrip(direction);
-        }
-    }
+	private void checkMovingInCircle(double latitude, double longitude) {
+		GeoHash start;
+		GeoHash end;
+		start = GeoHash.withCharacterPrecision(latitude, longitude, 12);
+		end = start.getEasternNeighbour();
+		end = end.getSouthernNeighbour();
+		end = end.getWesternNeighbour();
+		end = end.getNorthernNeighbour();
+		assertEquals(start, end);
+		assertEquals(start.getBoundingBox(), end.getBoundingBox());
+	}
 
-    private void checkMoveAroundStrip(String direction) throws Exception {
-        for (int bits = 2; bits < 16; bits++) {
-            double randomLatitude = (rand.nextDouble() - 0.5) * 180;
-            double randomLongitude = (rand.nextDouble() - 0.5) * 360;
+	@Test
+	public void testMovingAroundWorldOnHashStrips() throws Exception {
+		String[] directions = { "Northern", "Eastern", "Southern", "Western" };
+		for (String direction : directions) {
+			checkMoveAroundStrip(direction);
+		}
+	}
 
-            // this divides the range by 2^bits
-            GeoHash hash = GeoHash.withBitPrecision(randomLatitude, randomLongitude, bits);
-            Method method = hash.getClass().getDeclaredMethod("get" + direction + "Neighbour");
-            GeoHash result = hash;
+	private void checkMoveAroundStrip(String direction) throws Exception {
+		for (int bits = 2; bits < 16; bits++) {
+			double randomLatitude = (rand.nextDouble() - 0.5) * 180;
+			double randomLongitude = (rand.nextDouble() - 0.5) * 360;
 
-            // moving this direction 2^bits times should yield the same hash
-            // again
-            for (int i = 0; i < Math.pow(2, bits); i++) {
-                result = (GeoHash) method.invoke(result);
-            }
-            assertEquals(hash, result);
-        }
-    }
+			// this divides the range by 2^bits
+			GeoHash hash = GeoHash.withBitPrecision(randomLatitude, randomLongitude, bits);
+			Method method = hash.getClass().getDeclaredMethod("get" + direction + "Neighbour");
+			GeoHash result = hash;
 
-    @Test
-    public void testKnownNeighbouringHashes() {
-        GeoHash h1 = GeoHash.fromGeohashString("u1pb");
-        assertEquals("u0zz", h1.getSouthernNeighbour().toBase32());
-        assertEquals("u1pc", h1.getNorthernNeighbour().toBase32());
-        assertEquals("u300", h1.getEasternNeighbour().toBase32());
-        assertEquals("u302", h1.getEasternNeighbour().getEasternNeighbour().toBase32());
-        assertEquals("u1p8", h1.getWesternNeighbour().toBase32());
+			// moving this direction 2^bits times should yield the same hash
+			// again
+			for (int i = 0; i < Math.pow(2, bits); i++) {
+				result = (GeoHash) method.invoke(result);
+			}
+			assertEquals(hash, result);
+		}
+	}
 
-        assertEquals("sp2j", GeoHash.withCharacterPrecision(41.7, 0.08, 4).toBase32());
-    }
+	@Test
+	public void testKnownNeighbouringHashes() {
+		GeoHash h1 = GeoHash.fromGeohashString("u1pb");
+		assertEquals("u0zz", h1.getSouthernNeighbour().toBase32());
+		assertEquals("u1pc", h1.getNorthernNeighbour().toBase32());
+		assertEquals("u300", h1.getEasternNeighbour().toBase32());
+		assertEquals("u302", h1.getEasternNeighbour().getEasternNeighbour().toBase32());
+		assertEquals("u1p8", h1.getWesternNeighbour().toBase32());
 
-    @Test
-    public void testKnownAdjacentNeighbours() {
-        String center = "dqcjqc";
-        String[] adjacent = new String[]{"dqcjqf", "dqcjqb", "dqcjr1", "dqcjq9", "dqcjqd", "dqcjr4", "dqcjr0",
-                "dqcjq8"};
-        assertAdjacentHashesAre(center, adjacent);
+		assertEquals("sp2j", GeoHash.withCharacterPrecision(41.7, 0.08, 4).toBase32());
+	}
 
-        center = "u1x0dfg";
-        adjacent = new String[]{"u1x0dg4", "u1x0dg5", "u1x0dgh", "u1x0dfu", "u1x0dfs", "u1x0dfe", "u1x0dfd",
-                "u1x0dff"};
-        assertAdjacentHashesAre(center, adjacent);
+	@Test
+	public void testKnownAdjacentNeighbours() {
+		String center = "dqcjqc";
+		String[] adjacent = new String[] { "dqcjqf", "dqcjqb", "dqcjr1", "dqcjq9", "dqcjqd", "dqcjr4", "dqcjr0",
+				"dqcjq8" };
+		assertAdjacentHashesAre(center, adjacent);
 
-        center = "sp2j";
-        adjacent = new String[]{"ezry", "sp2n", "sp2q", "sp2m", "sp2k", "sp2h", "ezru", "ezrv"};
-        assertAdjacentHashesAre(center, adjacent);
-    }
+		center = "u1x0dfg";
+		adjacent = new String[] { "u1x0dg4", "u1x0dg5", "u1x0dgh", "u1x0dfu", "u1x0dfs", "u1x0dfe", "u1x0dfd",
+				"u1x0dff" };
+		assertAdjacentHashesAre(center, adjacent);
 
-    private void assertAdjacentHashesAre(String centerString, String[] adjacentStrings) {
-        GeoHash center = GeoHash.fromGeohashString(centerString);
-        GeoHash[] adjacent = center.getAdjacent();
-        for (String check : adjacentStrings) {
-            assertArrayContainsGeoHash(check, adjacent);
-        }
-    }
+		center = "sp2j";
+		adjacent = new String[] { "ezry", "sp2n", "sp2q", "sp2m", "sp2k", "sp2h", "ezru", "ezrv" };
+		assertAdjacentHashesAre(center, adjacent);
+	}
 
-    private void assertArrayContainsGeoHash(String check, GeoHash[] hashes) {
-        boolean found = false;
-        for (GeoHash hash : hashes) {
-            if (hash.toBase32().equals(check)) {
-                found = true;
-                break;
-            }
-        }
-        assertTrue("Array should contain " + check, found);
-    }
+	private void assertAdjacentHashesAre(String centerString, String[] adjacentStrings) {
+		GeoHash center = GeoHash.fromGeohashString(centerString);
+		GeoHash[] adjacent = center.getAdjacent();
+		for (String check : adjacentStrings) {
+			assertArrayContainsGeoHash(check, adjacent);
+		}
+	}
 
-    @Test
-    public void testNeibouringHashesNearMeridian() {
-        GeoHash hash = GeoHash.fromGeohashString("sp2j");
-        GeoHash west = hash.getWesternNeighbour();
-        assertEquals("ezrv", west.toBase32());
-        west = west.getWesternNeighbour();
-        assertEquals("ezrt", west.toBase32());
-    }
+	private void assertArrayContainsGeoHash(String check, GeoHash[] hashes) {
+		boolean found = false;
+		for (GeoHash hash : hashes) {
+			if (hash.toBase32().equals(check)) {
+				found = true;
+				break;
+			}
+		}
+		assertTrue("Array should contain " + check, found);
+	}
 
-    @Test
-    public void testIssue1() {
-        double lat = 40.390943;
-        double lon = -75.9375;
-        GeoHash hash = GeoHash.withCharacterPrecision(lat, lon, 12);
+	@Test
+	public void testNeibouringHashesNearMeridian() {
+		GeoHash hash = GeoHash.fromGeohashString("sp2j");
+		GeoHash west = hash.getWesternNeighbour();
+		assertEquals("ezrv", west.toBase32());
+		west = west.getWesternNeighbour();
+		assertEquals("ezrt", west.toBase32());
+	}
 
-        String base32 = "dr4jb0bn2180";
-        GeoHash fromRef = GeoHash.fromGeohashString(base32);
-        assertEquals(hash, fromRef);
-        assertEquals(base32, hash.toBase32());
-        assertEquals(base32, fromRef.toBase32());
+	@Test
+	public void testIssue1() {
+		double lat = 40.390943;
+		double lon = -75.9375;
+		GeoHash hash = GeoHash.withCharacterPrecision(lat, lon, 12);
 
-        hash = GeoHash.withCharacterPrecision(lat, lon, 10);
-        assertEquals("dr4jb0bn21", hash.toBase32());
-    }
+		String base32 = "dr4jb0bn2180";
+		GeoHash fromRef = GeoHash.fromGeohashString(base32);
+		assertEquals(hash, fromRef);
+		assertEquals(base32, hash.toBase32());
+		assertEquals(base32, fromRef.toBase32());
 
-    @Test
-    public void testSimpleWithin() {
-        GeoHash hash = GeoHash.withBitPrecision(70, -120, 8);
-        GeoHash inside = GeoHash.withBitPrecision(74, -130, 64);
-        assertWithin(inside, hash);
-    }
+		hash = GeoHash.withCharacterPrecision(lat, lon, 10);
+		assertEquals("dr4jb0bn21", hash.toBase32());
+	}
 
-    private void printBoundingBox(GeoHash hash) {
-        System.out.println("Bounding Box: \ncenter =" + hash.getBoundingBoxCenterPoint());
-        System.out.print("corners=");
-        System.out.println(hash.getBoundingBox());
-    }
+	@Test
+	public void testSimpleWithin() {
+		GeoHash hash = GeoHash.withBitPrecision(70, -120, 8);
+		GeoHash inside = GeoHash.withBitPrecision(74, -130, 64);
+		assertWithin(inside, hash);
+	}
 
-    @Test
-    public void testToLongAndBack() {
-        double lat = 40.390943;
-        double lon = -75.9375;
-        GeoHash hash = GeoHash.withCharacterPrecision(lat, lon, 10);
-        long lv = hash.longValue();
-        assertEquals(lv + (1 << (64 - hash.significantBits())), hash.next().longValue());
-        GeoHash hashFromLong = GeoHash.fromLongValue(lv, hash.significantBits());
-        assertEquals("dr4jb0bn21", hashFromLong.toBase32());
-        assertEquals(hash, hashFromLong);
-    }
+	private void printBoundingBox(GeoHash hash) {
+		System.out.println("Bounding Box: \ncenter =" + hash.getBoundingBoxCenterPoint());
+		System.out.print("corners=");
+		System.out.println(hash.getBoundingBox());
+	}
 
-    @Test
-    public void testNext() {
-        double lat = 37.7;
-        double lon = -122.52;
-        GeoHash hash = GeoHash.withBitPrecision(lat, lon, 10);
-        GeoHash next = hash.next();
-        assertTrue(hash.compareTo(next) < 0);
-    }
+	@Test
+	public void testToLongAndBack() {
+		double lat = 40.390943;
+		double lon = -75.9375;
+		GeoHash hash = GeoHash.withCharacterPrecision(lat, lon, 10);
+		long lv = hash.longValue();
+		assertEquals(lv + (1 << (64 - hash.significantBits())), hash.next().longValue());
+		GeoHash hashFromLong = GeoHash.fromLongValue(lv, hash.significantBits());
+		assertEquals("dr4jb0bn21", hashFromLong.toBase32());
+		assertEquals(hash, hashFromLong);
+	}
+
+	@Test
+	public void testNext() {
+		double lat = 37.7;
+		double lon = -122.52;
+		GeoHash hash = GeoHash.withBitPrecision(lat, lon, 10);
+		GeoHash next = hash.next();
+		assertTrue(hash.compareTo(next) < 0);
+	}
 
     @Test
     public void testNextPrev() {

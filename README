@@ -37,6 +37,17 @@ Current development involves getting the following things to run:
 Last important changes
 ----------------------
 
+Version 1.0.4
+-------------
+
+-   Added/fixed the methods toBinaryString() and Geohash.fromBinaryString() that can encode and decode a geohash into a simple String of 0s and 1s.
+-   Also added test code for those methods.
+
+Version 1.0.3
+-------------
+
+-   Classes containing data are now Serializable.
+
 Version 1.0.2
 -------------
 
