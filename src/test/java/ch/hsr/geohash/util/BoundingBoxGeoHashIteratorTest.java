@@ -18,8 +18,8 @@ public class BoundingBoxGeoHashIteratorTest {
     @Test
     public void testIter() {
         BoundingBox box = new BoundingBox(37.7, 37.84, -122.52, -122.35);
-        BoundingBoxGeoHashIterator iter = BoundingBoxGeoHashIterator.withBitPrecision(box, 10);
-        BoundingBox newBox = iter.getBoundingBox();
+        BoundingBoxGeoHashIterator iter = new BoundingBoxGeoHashIterator(TwoGeoHashBoundingBox.withBitPrecision(box, 10));
+        BoundingBox newBox = iter.getBoundingBox().getBoundingBox();
         List<GeoHash> hashes = new ArrayList<GeoHash>();
         while (iter.hasNext()) {
             hashes.add(iter.next());
@@ -36,8 +36,8 @@ public class BoundingBoxGeoHashIteratorTest {
     @Test
     public void testIter2() {
         BoundingBox box = new BoundingBox(37.7, 37.84, -122.52, -122.35);
-        BoundingBoxGeoHashIterator iter = BoundingBoxGeoHashIterator.withBitPrecision(box, 35);
-        BoundingBox newBox = iter.getBoundingBox();
+        BoundingBoxGeoHashIterator iter = new BoundingBoxGeoHashIterator(TwoGeoHashBoundingBox.withBitPrecision(box, 35));
+        BoundingBox newBox = iter.getBoundingBox().getBoundingBox();
         List<GeoHash> hashes = new ArrayList<GeoHash>();
         while (iter.hasNext()) {
             hashes.add(iter.next());

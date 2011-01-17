@@ -9,6 +9,7 @@
 package ch.hsr.geohash;
 
 import ch.hsr.geohash.util.BoundingBoxGeoHashIterator;
+import ch.hsr.geohash.util.TwoGeoHashBoundingBox;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -422,7 +423,7 @@ public class GeoHashTest {
         steps = GeoHash.stepsBetween(bl, bl.next(4));
         assertEquals(steps, 4);
 
-        BoundingBoxGeoHashIterator iter = new BoundingBoxGeoHashIterator(bl, ur);
+        BoundingBoxGeoHashIterator iter = new BoundingBoxGeoHashIterator(new TwoGeoHashBoundingBox(bl, ur));
         int count = 0;
         while (iter.hasNext()) {
             iter.next();
@@ -441,26 +442,27 @@ public class GeoHashTest {
         int latLessLonMore = 0;
         int latMoreLonLess = 0;
         GeoHash idx = bl;
+        BoundingBox iterBbox = iter.getBoundingBox().getBoundingBox();
         while (idx.compareTo(ur) < 0) {
             idx = idx.next();
             allHashes++;
-            if (iter.getBoundingBox().contains(idx.getPoint())) {
+            if (iterBbox.contains(idx.getPoint())) {
                 inBbox++;
             }
             boolean latIsMore = false;
             boolean latIsLess = false;
-            if (idx.getPoint().getLatitude() > iter.getBoundingBox().getMaxLat()) {
+            if (idx.getPoint().getLatitude() > iterBbox.getMaxLat()) {
                 latIsMore = true;
                 latMore++;
-            } else if (idx.getPoint().getLatitude() < iter.getBoundingBox().getMinLat()) {
+            } else if (idx.getPoint().getLatitude() < iterBbox.getMinLat()) {
                 latIsLess = true;
                 latLess++;
             }
-            if (idx.getPoint().getLongitude() > iter.getBoundingBox().getMaxLon()) {
+            if (idx.getPoint().getLongitude() > iterBbox.getMaxLon()) {
                 lonMore++;
                 if (latIsMore) bothMore++;
                 if (latIsLess) latLessLonMore++;
-            } else if (idx.getPoint().getLongitude() < iter.getBoundingBox().getMinLon()) {
+            } else if (idx.getPoint().getLongitude() < iterBbox.getMinLon()) {
                 lonLess++;
                 if (latIsLess) bothLess++;
                 if (latIsMore) latMoreLonLess++;
