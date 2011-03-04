@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"JavaDoc"})
 public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	private static final long serialVersionUID = -8553214249630252175L;
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
@@ -167,10 +168,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	}
 
 	public GeoHash next(int step) {
-		int insignificantBits = 64 - significantBits;
-		long unshiftedVal = bits >> insignificantBits;
-		unshiftedVal += step;
-		return fromLongValue(unshiftedVal << insignificantBits, significantBits);
+        return fromOrd(ord() + step, significantBits);
 	}
 
 	public GeoHash next() {
@@ -181,6 +179,15 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 		return next(-1);
 	}
 
+    public long ord() {
+        int insignificantBits = 64 - significantBits;
+        return bits >> insignificantBits;
+    }
+
+    public static GeoHash fromOrd(long ord, int significantBits) {
+        int insignificantBits = 64 - significantBits;
+        return fromLongValue(ord << insignificantBits, significantBits);
+    }
 	/**
 	* Counts the number of geohashes contained between the two (ie how many times next() is called to increment from one to two)
 	* This value depends on the number of significant bits.
@@ -192,10 +199,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	public static long stepsBetween(GeoHash one, GeoHash two) {
 		if (one.significantBits() != two.significantBits())
 			throw new IllegalArgumentException("It is only valid to compare the number of steps between two hashes if they have the same number of significant bits");
-		int insignificantBits = 64 - one.significantBits();
-		long unshiftedVal1 = one.bits >> insignificantBits;
-		long unshiftedVal2 = two.bits >> insignificantBits;
-		return unshiftedVal2 - unshiftedVal1;
+		return two.ord() - one.ord();
 	}
 	
 	private void divideRangeEncode(double value, double[] range) {
