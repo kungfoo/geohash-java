@@ -26,6 +26,12 @@ public class TwoGeoHashBoundingBox {
         return new TwoGeoHashBoundingBox(bottomLeft, topRight);
     }
 
+    public static TwoGeoHashBoundingBox fromBase32(String base32) {
+        String bottomLeft = base32.substring(0, 7);
+        String topRight = base32.substring(7);
+        return new TwoGeoHashBoundingBox(GeoHash.fromGeohashString(bottomLeft), GeoHash.fromGeohashString(topRight));
+    }
+
     public TwoGeoHashBoundingBox(GeoHash bottomLeft, GeoHash topRight) {
         if (bottomLeft.significantBits() != topRight.significantBits()) {
             throw new IllegalArgumentException("Does it make sense to iterate between hashes that have different precisions?");
@@ -48,4 +54,7 @@ public class TwoGeoHashBoundingBox {
         return topRight;
     }
 
+    public String toBase32() {
+        return bottomLeft.toBase32() + topRight.toBase32();
+    }
 }
