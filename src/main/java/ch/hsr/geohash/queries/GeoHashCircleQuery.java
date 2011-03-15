@@ -8,13 +8,13 @@
  */
 package ch.hsr.geohash.queries;
 
+import java.io.Serializable;
+import java.util.List;
+
 import ch.hsr.geohash.BoundingBox;
 import ch.hsr.geohash.GeoHash;
 import ch.hsr.geohash.WGS84Point;
 import ch.hsr.geohash.util.VincentyGeodesy;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * represents a radius search around a specific point via geohashes.
@@ -33,8 +33,10 @@ public class GeoHashCircleQuery implements GeoHashQuery, Serializable {
 	public GeoHashCircleQuery(WGS84Point center, double radius) {
 		this.radius = radius;
 		this.center = center;
-		WGS84Point northEast = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 0, radius), 90, radius);
-		WGS84Point southWest = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 180, radius), 270, radius);
+		WGS84Point northEast = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 0, radius), 90,
+				radius);
+		WGS84Point southWest = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 180, radius),
+				270, radius);
 		BoundingBox bbox = new BoundingBox(northEast, southWest);
 		query = new GeoHashBoundingBoxQuery(bbox);
 	}

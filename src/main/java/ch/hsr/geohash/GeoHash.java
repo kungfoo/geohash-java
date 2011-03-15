@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings({"JavaDoc"})
+@SuppressWarnings({ "JavaDoc" })
 public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	private static final long serialVersionUID = -8553214249630252175L;
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
@@ -55,17 +55,18 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	 * at the same time defines this hash's bounding box.
 	 */
 	public static GeoHash withBitPrecision(double latitude, double longitude, int numberOfBits) {
-		if (Math.abs(latitude) > 90.0 || Math.abs(longitude) > 180.0)
+		if (Math.abs(latitude) > 90.0 || Math.abs(longitude) > 180.0) {
 			throw new IllegalArgumentException("Can't have lat/lon values out of (-90,90)/(-180/180)");
+		}
 		return new GeoHash(latitude, longitude, numberOfBits);
 	}
 
 	public static GeoHash fromBinaryString(String binaryString) {
 		GeoHash geohash = new GeoHash();
-		for(int i = 0; i < binaryString.length(); i++){
-			if(binaryString.charAt(i) == '1'){
+		for (int i = 0; i < binaryString.length(); i++) {
+			if (binaryString.charAt(i) == '1') {
 				geohash.addOnBitToEnd();
-			} else if(binaryString.charAt(i) == '0') {
+			} else if (binaryString.charAt(i) == '0') {
 				geohash.addOffBitToEnd();
 			} else {
 				throw new IllegalArgumentException(binaryString + " is not a valid geohash as a binary string");
@@ -168,7 +169,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	}
 
 	public GeoHash next(int step) {
-        return fromOrd(ord() + step, significantBits);
+		return fromOrd(ord() + step, significantBits);
 	}
 
 	public GeoHash next() {
@@ -179,29 +180,33 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 		return next(-1);
 	}
 
-    public long ord() {
-        int insignificantBits = 64 - significantBits;
-        return bits >> insignificantBits;
-    }
+	public long ord() {
+		int insignificantBits = 64 - significantBits;
+		return bits >> insignificantBits;
+	}
 
-    public static GeoHash fromOrd(long ord, int significantBits) {
-        int insignificantBits = 64 - significantBits;
-        return fromLongValue(ord << insignificantBits, significantBits);
-    }
+	public static GeoHash fromOrd(long ord, int significantBits) {
+		int insignificantBits = 64 - significantBits;
+		return fromLongValue(ord << insignificantBits, significantBits);
+	}
+
 	/**
-	* Counts the number of geohashes contained between the two (ie how many times next() is called to increment from one to two)
-	* This value depends on the number of significant bits.
-	*
-	* @param one
-	* @param two
-	* @return number of steps
-	*/
+	 * Counts the number of geohashes contained between the two (ie how many
+	 * times next() is called to increment from one to two) This value depends
+	 * on the number of significant bits.
+	 * 
+	 * @param one
+	 * @param two
+	 * @return number of steps
+	 */
 	public static long stepsBetween(GeoHash one, GeoHash two) {
-		if (one.significantBits() != two.significantBits())
-			throw new IllegalArgumentException("It is only valid to compare the number of steps between two hashes if they have the same number of significant bits");
+		if (one.significantBits() != two.significantBits()) {
+			throw new IllegalArgumentException(
+					"It is only valid to compare the number of steps between two hashes if they have the same number of significant bits");
+		}
 		return two.ord() - one.ord();
 	}
-	
+
 	private void divideRangeEncode(double value, double[] range) {
 		double mid = (range[0] + range[1]) / 2;
 		if (value >= mid) {
@@ -243,7 +248,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	 * how many significant bits are there in this {@link GeoHash}?
 	 */
 	public int significantBits() {
-		return (int) significantBits;
+		return significantBits;
 	}
 
 	public long longValue() {

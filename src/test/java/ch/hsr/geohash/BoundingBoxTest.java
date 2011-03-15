@@ -8,7 +8,9 @@
  */
 package ch.hsr.geohash;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,9 +48,9 @@ public class BoundingBoxTest {
 		assertContains(bbox, new WGS84Point(45.5, 120.5));
 		assertNotContains(bbox, new WGS84Point(90, 90));
 	}
-	
+
 	@Test
-	public void testSize(){ 
+	public void testSize() {
 		BoundingBox bbox = new BoundingBox(45, 90, 0, 30);
 		assertHeightIs(bbox, 45);
 		assertWidthIs(bbox, 30);

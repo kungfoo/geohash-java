@@ -1,11 +1,11 @@
 package ch.hsr.geohash.util;
 
-import ch.hsr.geohash.GeoHash;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
+import ch.hsr.geohash.GeoHash;
 
 public class RandomGeohashes {
 

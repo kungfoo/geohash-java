@@ -91,23 +91,26 @@ public class VincentyGeodesy {
 			double sinLambda = Math.sin(lambda), cosLambda = Math.cos(lambda);
 			sinSigma = Math.sqrt((cosU2 * sinLambda) * (cosU2 * sinLambda)
 					+ (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) * (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda));
-			if (sinSigma == 0)
+			if (sinSigma == 0) {
 				return 0; // co-incident points
+			}
 			cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
 			sigma = Math.atan2(sinSigma, cosSigma);
 			double sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
 			cosSqAlpha = 1 - sinAlpha * sinAlpha;
 			cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cosSqAlpha;
-			if (cos2SigmaM == Double.NaN)
+			if (cos2SigmaM == Double.NaN) {
 				cos2SigmaM = 0; // equatorial line: cosSqAlpha=0 (�6)
+			}
 			double C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha));
 			lambdaP = lambda;
 			lambda = L + (1 - C) * f * sinAlpha
 					* (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
 		} while (Math.abs(lambda - lambdaP) > EPSILON && --iterLimit > 0);
 
-		if (iterLimit == 0)
+		if (iterLimit == 0) {
 			return Double.NaN;
+		}
 		double uSquared = cosSqAlpha * (a * a - b * b) / (b * b);
 		double A = 1 + uSquared / 16384 * (4096 + uSquared * (-768 + uSquared * (320 - 175 * uSquared)));
 		double B = uSquared / 1024 * (256 + uSquared * (-128 + uSquared * (74 - 47 * uSquared)));

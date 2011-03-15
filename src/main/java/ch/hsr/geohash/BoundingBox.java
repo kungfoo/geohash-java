@@ -53,8 +53,9 @@ public class BoundingBox implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
+		}
 		if (obj instanceof BoundingBox) {
 			BoundingBox that = (BoundingBox) obj;
 			return minLat == that.minLat && minLon == that.minLon && maxLat == that.maxLat && maxLon == that.maxLon;

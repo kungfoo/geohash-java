@@ -8,7 +8,9 @@
  */
 package ch.hsr.geohash;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import ch.hsr.geohash.queries.GeoHashBoundingBoxQuery;
@@ -18,9 +20,9 @@ public class GeoHashBoundingBoxSearchTest {
 
 	@Test
 	public void testSeveralBoundingBoxes() {
-		checkSearchYieldsCorrectNumberOfHashes(40.2090980098, 40.21982983232432, -22.523432424324,-22.494234232442);
-		checkSearchYieldsCorrectNumberOfHashes( 41.23452234, 40.09872762,31.23432, 30.0113312322);
-		checkSearchYieldsCorrectHashes( 47.447907, 47.300200,8.760941,  8.471276, "u0qj");
+		checkSearchYieldsCorrectNumberOfHashes(40.2090980098, 40.21982983232432, -22.523432424324, -22.494234232442);
+		checkSearchYieldsCorrectNumberOfHashes(41.23452234, 40.09872762, 31.23432, 30.0113312322);
+		checkSearchYieldsCorrectHashes(47.447907, 47.300200, 8.760941, 8.471276, "u0qj");
 		checkSearchYieldsCorrectHashes(47.157502, 47.329727, 8.562244, 8.859215, "u0qj", "u0qm", "u0qh", "u0qk");
 	}
 
@@ -31,11 +33,12 @@ public class GeoHashBoundingBoxSearchTest {
 
 	private void checkSearchYieldsCorrectHashes(double minLat, double maxLat, double minLon, double maxLon,
 			String... hashes) {
-		GeoHashQuery search = new GeoHashBoundingBoxQuery(new BoundingBox(minLat,  maxLat,minLon, maxLon));
+		GeoHashQuery search = new GeoHashBoundingBoxQuery(new BoundingBox(minLat, maxLat, minLon, maxLon));
 		assertEquals(hashes.length, search.getSearchHashes().size());
 		for (String expectedHash : hashes) {
-			assertTrue("search hashes should contain " + expectedHash + " is: " + search, search.getSearchHashes().contains(
-					GeoHash.fromGeohashString(expectedHash)));
+			assertTrue("search hashes should contain " + expectedHash + " is: " + search, search.getSearchHashes()
+					.contains(
+							GeoHash.fromGeohashString(expectedHash)));
 		}
 	}
 

@@ -80,6 +80,7 @@ public class GeoHashSizeTableTest {
 		public BothALittleTooLargeVerifier() {
 		}
 
+		@Override
 		public BoundingBox generate(int bits) {
 			double dLat = GeoHashSizeTable.dLat(bits);
 			double dLon = GeoHashSizeTable.dLon(bits);
@@ -99,7 +100,7 @@ public class GeoHashSizeTableTest {
 	private static class OnlyOneALittleTooLargeVerifier implements BoundingBoxSizeTableVerifier {
 		public OnlyOneALittleTooLargeVerifier() {
 		}
-		
+
 		private Random rand = new Random();
 		private boolean latitudeAffected;
 

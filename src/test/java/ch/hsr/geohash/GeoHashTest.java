@@ -8,16 +8,19 @@
  */
 package ch.hsr.geohash;
 
-import ch.hsr.geohash.util.BoundingBoxGeoHashIterator;
-import ch.hsr.geohash.util.RandomGeohashes;
-import ch.hsr.geohash.util.TwoGeoHashBoundingBox;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.Random;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import ch.hsr.geohash.util.BoundingBoxGeoHashIterator;
+import ch.hsr.geohash.util.RandomGeohashes;
+import ch.hsr.geohash.util.TwoGeoHashBoundingBox;
 
 public class GeoHashTest {
 	private GeoHash hash;
@@ -396,96 +399,105 @@ public class GeoHashTest {
 		assertTrue(hash.compareTo(next) < 0);
 	}
 
-    @Test
-    public void testNextPrev() {
-        double lat = 37.7;
-        double lon = -122.52;
-        GeoHash hash = GeoHash.withBitPrecision(lat, lon, 35);
-        GeoHash next = hash.next(2);
-        assertTrue(hash.compareTo(next) < 0);
-        GeoHash prev1 = next.prev();
-        GeoHash prev2 = prev1.next(-1);
-        assertTrue(prev1.compareTo(next) < 0);
-        System.out.println("hash: " + hash.toBase32());
-        System.out.println("next: " + next.toBase32());
-        System.out.println("prev1: " + prev1.toBase32());
-        System.out.println("prev2: " + prev2.toBase32());
+	@Test
+	public void testNextPrev() {
+		double lat = 37.7;
+		double lon = -122.52;
+		GeoHash hash = GeoHash.withBitPrecision(lat, lon, 35);
+		GeoHash next = hash.next(2);
+		assertTrue(hash.compareTo(next) < 0);
+		GeoHash prev1 = next.prev();
+		GeoHash prev2 = prev1.next(-1);
+		assertTrue(prev1.compareTo(next) < 0);
+		System.out.println("hash: " + hash.toBase32());
+		System.out.println("next: " + next.toBase32());
+		System.out.println("prev1: " + prev1.toBase32());
+		System.out.println("prev2: " + prev2.toBase32());
 
-        assertTrue(prev2.compareTo(prev1) < 0);
-        assertTrue(prev2.compareTo(hash) == 0);
-    }
+		assertTrue(prev2.compareTo(prev1) < 0);
+		assertTrue(prev2.compareTo(hash) == 0);
+	}
 
-    @Test
-    public void testStepsBetween() {
-        GeoHash bl = GeoHash.withBitPrecision(37.7, -122.52, 35);
-        GeoHash ur = GeoHash.withBitPrecision(37.84, -122.35, 35);
+	@Test
+	public void testStepsBetween() {
+		GeoHash bl = GeoHash.withBitPrecision(37.7, -122.52, 35);
+		GeoHash ur = GeoHash.withBitPrecision(37.84, -122.35, 35);
 
-        long steps = GeoHash.stepsBetween(bl, bl);
-        assertEquals(steps, 0);
+		long steps = GeoHash.stepsBetween(bl, bl);
+		assertEquals(steps, 0);
 
-        steps = GeoHash.stepsBetween(bl, bl.next(4));
-        assertEquals(steps, 4);
+		steps = GeoHash.stepsBetween(bl, bl.next(4));
+		assertEquals(steps, 4);
 
-        BoundingBoxGeoHashIterator iter = new BoundingBoxGeoHashIterator(new TwoGeoHashBoundingBox(bl, ur));
-        int count = 0;
-        while (iter.hasNext()) {
-            iter.next();
-            count++;
-        }
-        assertEquals(12875, count);
+		BoundingBoxGeoHashIterator iter = new BoundingBoxGeoHashIterator(new TwoGeoHashBoundingBox(bl, ur));
+		int count = 0;
+		while (iter.hasNext()) {
+			iter.next();
+			count++;
+		}
+		assertEquals(12875, count);
 
-        int allHashes = 0;
-        int inBbox = 1;
-        int latMore = 0;
-        int lonMore = 0;
-        int bothMore = 0;
-        int latLess = 0;
-        int lonLess = 0;
-        int bothLess = 0;
-        int latLessLonMore = 0;
-        int latMoreLonLess = 0;
-        GeoHash idx = bl;
-        BoundingBox iterBbox = iter.getBoundingBox().getBoundingBox();
-        while (idx.compareTo(ur) < 0) {
-            idx = idx.next();
-            allHashes++;
-            if (iterBbox.contains(idx.getPoint())) {
-                inBbox++;
-            }
-            boolean latIsMore = false;
-            boolean latIsLess = false;
-            if (idx.getPoint().getLatitude() > iterBbox.getMaxLat()) {
-                latIsMore = true;
-                latMore++;
-            } else if (idx.getPoint().getLatitude() < iterBbox.getMinLat()) {
-                latIsLess = true;
-                latLess++;
-            }
-            if (idx.getPoint().getLongitude() > iterBbox.getMaxLon()) {
-                lonMore++;
-                if (latIsMore) bothMore++;
-                if (latIsLess) latLessLonMore++;
-            } else if (idx.getPoint().getLongitude() < iterBbox.getMinLon()) {
-                lonLess++;
-                if (latIsLess) bothLess++;
-                if (latIsMore) latMoreLonLess++;
-            }
-        }
+		int allHashes = 0;
+		int inBbox = 1;
+		int latMore = 0;
+		int lonMore = 0;
+		int bothMore = 0;
+		int latLess = 0;
+		int lonLess = 0;
+		int bothLess = 0;
+		int latLessLonMore = 0;
+		int latMoreLonLess = 0;
+		GeoHash idx = bl;
+		BoundingBox iterBbox = iter.getBoundingBox().getBoundingBox();
+		while (idx.compareTo(ur) < 0) {
+			idx = idx.next();
+			allHashes++;
+			if (iterBbox.contains(idx.getPoint())) {
+				inBbox++;
+			}
+			boolean latIsMore = false;
+			boolean latIsLess = false;
+			if (idx.getPoint().getLatitude() > iterBbox.getMaxLat()) {
+				latIsMore = true;
+				latMore++;
+			} else if (idx.getPoint().getLatitude() < iterBbox.getMinLat()) {
+				latIsLess = true;
+				latLess++;
+			}
+			if (idx.getPoint().getLongitude() > iterBbox.getMaxLon()) {
+				lonMore++;
+				if (latIsMore) {
+					bothMore++;
+				}
+				if (latIsLess) {
+					latLessLonMore++;
+				}
+			} else if (idx.getPoint().getLongitude() < iterBbox.getMinLon()) {
+				lonLess++;
+				if (latIsLess) {
+					bothLess++;
+				}
+				if (latIsMore) {
+					latMoreLonLess++;
+				}
+			}
+		}
 
-        // Just trying to understand where these GeoHashes are with regard to their bounding box.
-        steps = GeoHash.stepsBetween(bl, ur);
-        assertEquals(48472, steps);
-        assertEquals(steps, allHashes);
-        assertEquals(count, inBbox);
-        assertEquals(14938, latMore);
-        assertEquals(640, lonMore);
-        assertEquals(0, bothMore);
-        assertEquals(7680, latLess);
-        assertEquals(24391, lonLess);
-        assertEquals(0, bothLess);
-        assertEquals(240, latLessLonMore);
-        assertEquals(11811, latMoreLonLess);
-        assertEquals(steps, lonLess + latLess + latMore + lonMore + inBbox - latLessLonMore - latMoreLonLess - 1);
+		// Just trying to understand where these GeoHashes are with regard to
+		// their bounding box.
+		steps = GeoHash.stepsBetween(bl, ur);
+		assertEquals(48472, steps);
+		assertEquals(steps, allHashes);
+		assertEquals(count, inBbox);
+		assertEquals(14938, latMore);
+		assertEquals(640, lonMore);
+		assertEquals(0, bothMore);
+		assertEquals(7680, latLess);
+		assertEquals(24391, lonLess);
+		assertEquals(0, bothLess);
+		assertEquals(240, latLessLonMore);
+		assertEquals(11811, latMoreLonLess);
+		assertEquals(steps, lonLess + latLess + latMore + lonMore + inBbox - latLessLonMore - latMoreLonLess - 1);
 
-    }
+	}
 }

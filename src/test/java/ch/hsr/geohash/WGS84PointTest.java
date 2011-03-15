@@ -8,7 +8,9 @@
  */
 package ch.hsr.geohash;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -43,29 +45,28 @@ public class WGS84PointTest {
 
 		Assert.assertEquals(distanceInMeters, VincentyGeodesy.distanceInMeters(
 				startPoint, result), DELTA);
-		
-		
-		WGS84Point p1 = new WGS84Point(1,1);
+
+		WGS84Point p1 = new WGS84Point(1, 1);
 		int tenThousandKilometers = 10000000;
 		WGS84Point p2 = VincentyGeodesy.moveInDirection(p1, 270, tenThousandKilometers);
 		System.out.println(p2);
 		Assert.assertEquals(tenThousandKilometers, VincentyGeodesy.distanceInMeters(p1, p2), DELTA);
 	}
-	
+
 	@Test
 	public void testEquals() {
 		assertEquals(a, a);
 		assertEquals(a, b);
 		assertEquals(b, a);
 		assertNotSame(a, b);
-		
+
 		assertFalse(a.equals(c));
 		assertFalse(c.equals(a));
 		assertFalse(d.equals(c));
 		assertFalse(d.equals(a));
 		assertFalse(d.equals(new Integer(10)));
 	}
-	
+
 	@Test
 	public void testHashCode() {
 		assertEquals(a.hashCode(), a.hashCode());
@@ -74,7 +75,7 @@ public class WGS84PointTest {
 		assertFalse(d.hashCode() == c.hashCode());
 		assertFalse(d.hashCode() == new Integer(10).hashCode());
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testRangeCheck() {
 		new WGS84Point(180, 240);

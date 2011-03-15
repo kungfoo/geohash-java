@@ -8,14 +8,14 @@
  */
 package ch.hsr.geohash.queries;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.hsr.geohash.BoundingBox;
 import ch.hsr.geohash.GeoHash;
 import ch.hsr.geohash.WGS84Point;
 import ch.hsr.geohash.util.GeoHashSizeTable;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class returns the hashes covering a certain bounding box. There are
@@ -68,8 +68,9 @@ public class GeoHashBoundingBoxQuery implements GeoHashQuery, Serializable {
 	@Override
 	public boolean contains(GeoHash hash) {
 		for (GeoHash searchHash : searchHashes) {
-			if (hash.within(searchHash))
+			if (hash.within(searchHash)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -79,6 +80,7 @@ public class GeoHashBoundingBoxQuery implements GeoHashQuery, Serializable {
 		return contains(GeoHash.withBitPrecision(point.getLatitude(), point.getLongitude(), 64));
 	}
 
+	@Override
 	public List<GeoHash> getSearchHashes() {
 		return searchHashes;
 	}
