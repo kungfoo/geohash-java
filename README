@@ -37,6 +37,13 @@ Current development involves getting the following things to run:
 Last important changes
 ----------------------
 
+Version 1.0.5
+-------------
+
+-   Added next(), next(step) and prev() methods to Geohash.
+-   Added fromBase32() and toBase32() to TwoGeoHashBoundingBox.
+-   Cleaned up the entire source tree using clearly defined settings.
+
 Version 1.0.4
 -------------
 
