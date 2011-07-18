@@ -37,6 +37,11 @@ Current development involves getting the following things to run:
 Last important changes
 ----------------------
 
+Version 1.0.6
+-------------
+
+-	Added a small fix that keeps VincentyGeodesy#moveInDirection() from returning wrong values when moving large distances. [submitted by André Kischkel]
+
 Version 1.0.5
 -------------
 

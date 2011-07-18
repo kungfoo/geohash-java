@@ -72,7 +72,13 @@ public class VincentyGeodesy {
 		double L = lambda - (1 - C) * f * sinAlpha
 				* (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
 
-		return new WGS84Point(lat2 / degToRad, point.getLongitude() + L / degToRad);
+		double newLat = lat2 / degToRad;
+		double newLon = point.getLongitude() + L / degToRad;
+		
+		newLon = (newLon >  180.0 ? 360.0 - newLon : newLon);
+		newLon = (newLon < -180.0 ? 360.0 + newLon : newLon);
+		
+		return new WGS84Point(newLat, newLon);
 	}
 
 	public static double distanceInMeters(WGS84Point foo, WGS84Point bar) {
