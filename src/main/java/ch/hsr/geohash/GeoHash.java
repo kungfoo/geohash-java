@@ -340,6 +340,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 		}
 		hash.bits <<= (64 - hash.significantBits);
 		setBoundingBox(hash, latitudeRange, longitudeRange);
+		hash.point = hash.boundingBox.getCenterPoint();
 		return hash;
 	}
 

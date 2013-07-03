@@ -10,6 +10,7 @@ package ch.hsr.geohash;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
@@ -319,6 +320,18 @@ public class GeoHashTest {
 		center = "sp2j";
 		adjacent = new String[] { "ezry", "sp2n", "sp2q", "sp2m", "sp2k", "sp2h", "ezru", "ezrv" };
 		assertAdjacentHashesAre(center, adjacent);
+	}
+	
+	@Test
+	public void testThatAdjacentHashesHavePointInitialized(){
+		String center = "dqcjqc";
+		GeoHash geohash = GeoHash.fromGeohashString(center);
+		GeoHash[] adjacentHashes = geohash.getAdjacent();
+		for (GeoHash adjacentHash : adjacentHashes) {
+			assertNotNull(adjacentHash.getBoundingBox());
+			assertNotNull(adjacentHash.getBoundingBoxCenterPoint());
+			assertNotNull(adjacentHash.getPoint());
+		}
 	}
 
 	private void assertAdjacentHashesAre(String centerString, String[] adjacentStrings) {
