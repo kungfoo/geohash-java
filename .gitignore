@@ -7,3 +7,4 @@ release
 *~
 *.new
 *.old
+/.idea
