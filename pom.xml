@@ -2,17 +2,20 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.hsr</groupId>
-	<artifactId>ch.hsr.geohash</artifactId>
+	<artifactId>geohash</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.7</version>
 	<name>geohash-java</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.1</version>
-			<type>jar</type>
-			<scope>compile-test</scope>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -20,6 +23,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
