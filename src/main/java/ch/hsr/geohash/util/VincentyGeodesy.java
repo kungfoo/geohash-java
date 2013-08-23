@@ -108,7 +108,7 @@ public class VincentyGeodesy {
 			/*if (cos2SigmaM == Double.NaN) {
 				cos2SigmaM = 0; // equatorial line: cosSqAlpha=0 (�6)
 			}*/
-			if(cosSqAlpha == 0){
+			if(Double.isNaN(cos2SigmaM)){
 				cos2SigmaM = 0; // any var compare with Double.NaN, result is false 
 			}
 			double C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha));
