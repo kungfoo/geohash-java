@@ -37,6 +37,11 @@ Current development involves getting the following things to run:
 Last important changes
 ----------------------
 
+Version 1.0.8
+-------------
+
+-   Changed the code in VincentyGeodesy not to stumble over the fact that NaN == NaN will always return false
+
 Version 1.0.6
 -------------
 

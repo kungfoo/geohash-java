@@ -4,7 +4,7 @@
 	<groupId>ch.hsr</groupId>
 	<artifactId>geohash</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.7</version>
+	<version>1.0.8</version>
 	<name>geohash-java</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
