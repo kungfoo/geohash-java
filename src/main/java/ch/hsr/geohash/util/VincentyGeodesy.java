@@ -105,7 +105,7 @@ public class VincentyGeodesy {
 			double sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
 			cosSqAlpha = 1 - sinAlpha * sinAlpha;
 			cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cosSqAlpha;
-			if (cos2SigmaM == Double.NaN) {
+			if (Double.isNaN(cos2SigmaM)) {
 				cos2SigmaM = 0; // equatorial line: cosSqAlpha=0 (�6)
 			}
 			double C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha));
