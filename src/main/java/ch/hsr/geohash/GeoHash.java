@@ -168,6 +168,13 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 				longitudeRange[1]));
 	}
 
+	public int getCharacterPrecision() {
+	 	if (significantBits % 5 != 0) {
+		    throw new IllegalStateException("precision of GeoHash is not divisble by 5: "+this);
+		} 
+		return significantBits / 5;
+	}
+
 	public GeoHash next(int step) {
 		return fromOrd(ord() + step, significantBits);
 	}
