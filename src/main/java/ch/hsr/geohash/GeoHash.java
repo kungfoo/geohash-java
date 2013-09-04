@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings({ "JavaDoc" })
+@SuppressWarnings("javadoc")
 public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	private static final long serialVersionUID = -8553214249630252175L;
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
@@ -183,6 +183,18 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	public long ord() {
 		int insignificantBits = 64 - significantBits;
 		return bits >> insignificantBits;
+	}
+
+	/**
+	 * Returns the number of characters that represent this hash.
+	 * @throws IllegalStateException when the hash cannot be encoded in base32, i.e. when the precision is not a multiple of 5.
+	 */
+	public int getCharacterPrecision() {
+		if (significantBits % 5 != 0) {
+			throw new IllegalStateException(
+					"precision of GeoHash is not divisble by 5: " + this);
+		}
+		return significantBits / 5;
 	}
 
 	public static GeoHash fromOrd(long ord, int significantBits) {

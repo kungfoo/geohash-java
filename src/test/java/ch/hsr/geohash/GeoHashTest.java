@@ -430,6 +430,19 @@ public class GeoHashTest {
 		assertTrue(prev2.compareTo(prev1) < 0);
 		assertTrue(prev2.compareTo(hash) == 0);
 	}
+	
+	@Test(expected = IllegalStateException.class)
+	public void testGetCharacterPrecisionThrows() throws Exception {
+		GeoHash hash = GeoHash.withBitPrecision(37.7, -122.52, 32);
+		hash.getCharacterPrecision();
+	}
+	
+	@Test
+	public void testGetCharacterPrecisionWorksWhenPrecisionIsMultipleOfFive() throws Exception {
+		GeoHash hash = GeoHash.withBitPrecision(37.7, -122.52, 60);
+		int precision = hash.getCharacterPrecision();
+		assertEquals(precision, 12);
+	}
 
 	@Test
 	public void testStepsBetween() {
