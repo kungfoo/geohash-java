@@ -58,7 +58,7 @@
 
 	<!-- release related ant stuff -->
 
-	<property name="version" value="1.0.8" />
+	<property name="version" value="1.0.9" />
 	<property name="release" value="${ant.project.name}-${version}" />
 
 	<property name="dist.dir" location="release" />
