@@ -50,6 +50,13 @@
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <version>2.4.2</version>
+
+        <configuration>
+          <tagNameFormat>@{project.version}</tagNameFormat>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+        </configuration>
+        
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.scm</groupId>
