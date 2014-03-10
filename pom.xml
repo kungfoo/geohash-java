@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <packaging>jar</packaging>
   <groupId>ch.hsr</groupId>
   <artifactId>geohash</artifactId>
-  <version>1.0.9</version>
+  <version>1.0.9-SNAPSHOT</version>
   <name>geohash-java</name>
   <description>
     An implementation of Geohashes in pure Java.
@@ -18,9 +17,15 @@
     </license>
   </licenses>
    <scm>
-     <url>https://github.com/jungfoo/geohash-java</url>
-     <connection>scm:git:git://github.com/kungfoo/geohash-java.git</connection>
-   </scm>
+    <connection>scm:git:git@github.com:kungfoo/geohash-java.git</connection>
+    <developerConnection>scm:git:git@github.com:kungfoo/geohash-java.git</developerConnection>
+    <url>git@github.com:kungfoo/geohash-java.git</url>
+  </scm>
+   <parent>
+     <groupId>org.sonatype.oss</groupId>
+     <artifactId>oss-parent</artifactId>
+     <version>7</version>
+   </parent>
    <developers>
      <developer>
        <id>kungfoo</id>
@@ -40,6 +45,18 @@
    </dependencies>
    <build>
      <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <tagNameFormat>@{project.version}</tagNameFormat>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+        </configuration>
+      </plugin>
+
        <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-compiler-plugin</artifactId>
