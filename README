@@ -8,6 +8,17 @@ to the reference implementation geohash.org.
 You can however also encode Geohashes down to the full available precision of a long i.e. 64 bits.
 
 
+Getting the library
+-------------------
+
+As of today, new releases are made available via maven Central.
+Thus you can use the artifacts in various build systems like maven, ivy, gradle, sbt and mayn more.
+
+Find the current versions here:
+
+    http://search.maven.org/#search|ga|1|g%3A%22ch.hsr%22%20AND%20a%3A%22geohash%22
+
+
 Building/Testing the code
 -------------------------
 
