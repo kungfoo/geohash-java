@@ -31,6 +31,9 @@
      <developer>
        <id>kungfoo</id>
      </developer>
+     <developer>
+       <id>github contributors</id>
+     </developer>
    </developers>
    <properties>
      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
