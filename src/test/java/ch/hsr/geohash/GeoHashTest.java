@@ -165,6 +165,9 @@ public class GeoHashTest {
 		}
 
 		assertEncodingWithCharacterPrecision(new WGS84Point(39.0247389581054, -76.5110040642321), 12, "dqcw4bnrs6s7");
+
+                String geoHashString = GeoHash.geoHashStringWithCharacterPrecision(point.getLatitude(), point.getLongitude(), 12);
+                assertEquals(fullStringValue, geoHashString);
 	}
 
 	private void assertEncodingWithCharacterPrecision(WGS84Point point, int numberOfCharacters, String stringValue) {
