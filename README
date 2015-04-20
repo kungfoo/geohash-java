@@ -48,7 +48,12 @@ Current development involves getting the following things to run:
 Last important changes
 ----------------------
 
-Version 1.0.11-SNAPSHOT
+Version 1.0.12
+-----------------------
+
+toBase32() now throws an exception if the hash precision is not a multiple of 5.
+
+Version 1.0.11
 -----------------------
 
 -   Added a static method to obtain a geohash string in one call.
