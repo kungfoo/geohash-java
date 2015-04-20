@@ -146,10 +146,10 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	 * value. The hash can only be 64bits long, thus a maximum precision of 12
 	 * characters can be achieved.
 	 */
-        public static String geoHashStringWithCharacterPrecision(double latitude, double longitude, int numberOfCharacters) {
-                GeoHash hash = withCharacterPrecision(latitude, longitude, numberOfCharacters);
-                return hash.toBase32();
-        }
+	public static String geoHashStringWithCharacterPrecision(double latitude, double longitude, int numberOfCharacters) {
+		GeoHash hash = withCharacterPrecision(latitude, longitude, numberOfCharacters);
+		return hash.toBase32();
+	}
 
 	private GeoHash(double latitude, double longitude, int desiredPrecision) {
 		point = new WGS84Point(latitude, longitude);
@@ -281,10 +281,11 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	 * get the base32 string for this {@link GeoHash}.<br>
 	 * this method only makes sense, if this hash has a multiple of 5
 	 * significant bits.
+	 * @throws IllegalStateException when the number of significant bits is not a multiple of 5.
 	 */
 	public String toBase32() {
 		if (significantBits % 5 != 0) {
-			return "";
+			throw new IllegalStateException("Cannot convert a geohash to base32 if the precision is not a multiple of 5.");
 		}
 		StringBuilder buf = new StringBuilder();
 

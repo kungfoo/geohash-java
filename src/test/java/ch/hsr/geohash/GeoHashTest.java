@@ -67,6 +67,13 @@ public class GeoHashTest {
 		assertEquals("ezs42", base32);
 	}
 
+	@Test(expected = IllegalStateException.class)
+	public void toBase32ShouldThrowWhenPrecisionIsNotAMultipleOf5() {
+		hash.bits = 0x6ff0413000000000l;
+		hash.significantBits = 24;
+		hash.toBase32();
+	}
+
 	@Test
 	public void testDecode() {
 		// for all lat/lon pairs check decoded point is in the same bbox as the
@@ -77,7 +84,7 @@ public class GeoHashTest {
 			WGS84Point decodedCenter = decodedHash.getBoundingBoxCenterPoint();
 
 			assertTrue("bbox " + bbox + " should contain the decoded center value " + decodedCenter, bbox
-							.contains(decodedCenter));
+					.contains(decodedCenter));
 			BoundingBox decodedBoundingBox = decodedHash.getBoundingBox();
 			assertEquals(bbox, decodedBoundingBox);
 			assertEquals(gh, decodedHash);
@@ -109,7 +116,7 @@ public class GeoHashTest {
 	}
 
 	private void assertWithin(GeoHash hash, GeoHash bbox) {
-		assertTrue(hash.toBase32() + " should be within " + bbox.toBase32(), hash.within(bbox));
+		assertTrue(hash + " should be within " + bbox, hash.within(bbox));
 	}
 
 	@Test
@@ -122,7 +129,7 @@ public class GeoHashTest {
 		bbox.bits = 0x6fc0000000000000l;
 		bbox.significantBits = 12;
 
-		assertFalse(hash.toBase32() + " should NOT be within " + bbox.toBase32(), hash.within(bbox));
+		assertFalse(hash + " should NOT be within " + bbox, hash.within(bbox));
 	}
 
 	@Test
@@ -166,8 +173,8 @@ public class GeoHashTest {
 
 		assertEncodingWithCharacterPrecision(new WGS84Point(39.0247389581054, -76.5110040642321), 12, "dqcw4bnrs6s7");
 
-                String geoHashString = GeoHash.geoHashStringWithCharacterPrecision(point.getLatitude(), point.getLongitude(), 12);
-                assertEquals(fullStringValue, geoHashString);
+		String geoHashString = GeoHash.geoHashStringWithCharacterPrecision(point.getLatitude(), point.getLongitude(), 12);
+		assertEquals(fullStringValue, geoHashString);
 	}
 
 	private void assertEncodingWithCharacterPrecision(WGS84Point point, int numberOfCharacters, String stringValue) {
@@ -324,9 +331,9 @@ public class GeoHashTest {
 		adjacent = new String[] { "ezry", "sp2n", "sp2q", "sp2m", "sp2k", "sp2h", "ezru", "ezrv" };
 		assertAdjacentHashesAre(center, adjacent);
 	}
-	
+
 	@Test
-	public void testThatAdjacentHashesHavePointInitialized(){
+	public void testThatAdjacentHashesHavePointInitialized() {
 		String center = "dqcjqc";
 		GeoHash geohash = GeoHash.fromGeohashString(center);
 		GeoHash[] adjacentHashes = geohash.getAdjacent();
@@ -433,13 +440,13 @@ public class GeoHashTest {
 		assertTrue(prev2.compareTo(prev1) < 0);
 		assertTrue(prev2.compareTo(hash) == 0);
 	}
-	
+
 	@Test(expected = IllegalStateException.class)
 	public void testGetCharacterPrecisionThrows() throws Exception {
 		GeoHash hash = GeoHash.withBitPrecision(37.7, -122.52, 32);
 		hash.getCharacterPrecision();
 	}
-	
+
 	@Test
 	public void testGetCharacterPrecisionWorksWhenPrecisionIsMultipleOfFive() throws Exception {
 		GeoHash hash = GeoHash.withBitPrecision(37.7, -122.52, 60);
