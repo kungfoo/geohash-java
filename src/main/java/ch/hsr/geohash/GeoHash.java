@@ -197,7 +197,10 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 
 	/**
 	 * Returns the number of characters that represent this hash.
-	 * @throws IllegalStateException when the hash cannot be encoded in base32, i.e. when the precision is not a multiple of 5.
+	 * 
+	 * @throws IllegalStateException
+	 *             when the hash cannot be encoded in base32, i.e. when the
+	 *             precision is not a multiple of 5.
 	 */
 	public int getCharacterPrecision() {
 		if (significantBits % 5 != 0) {
@@ -281,7 +284,9 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	 * get the base32 string for this {@link GeoHash}.<br>
 	 * this method only makes sense, if this hash has a multiple of 5
 	 * significant bits.
-	 * @throws IllegalStateException when the number of significant bits is not a multiple of 5.
+	 * 
+	 * @throws IllegalStateException
+	 *             when the number of significant bits is not a multiple of 5.
 	 */
 	public String toBase32() {
 		if (significantBits % 5 != 0) {
