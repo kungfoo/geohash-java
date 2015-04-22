@@ -536,4 +536,28 @@ public class GeoHashTest {
 		assertEquals(steps, lonLess + latLess + latMore + lonMore + inBbox - latLessLonMore - latMoreLonLess - 1);
 
 	}
+
+	@Test
+	public void testCompareTo() {
+		GeoHash prevHash = null;
+		for (int i = 0; i < 1000000; i++) {
+			double latitude = rand.nextDouble() * 180 - 90;
+			double longitude = rand.nextDouble() * 360 - 180;
+			int numberOfBits = rand.nextInt(6) * 10 + 10;
+			GeoHash hash = GeoHash.withBitPrecision(latitude, longitude, numberOfBits);
+			if (i >= 1) {
+				String prevHashBase32 = prevHash.toBase32();
+				String hashBase32 = hash.toBase32();
+				String errorMessage = String.format("prev: %s, cur: %s", prevHashBase32, hashBase32);
+				if (prevHashBase32.compareTo(hashBase32) < 0) {
+					assertTrue(errorMessage, prevHash.compareTo(hash) < 0);
+				} else if (prevHashBase32.compareTo(hashBase32) > 0) {
+					assertTrue(errorMessage, prevHash.compareTo(hash) > 0);
+				} else {
+					assertTrue(errorMessage, prevHash.compareTo(hash) == 0);
+				}
+			}
+			prevHash = hash;
+		}
+	}
 }
