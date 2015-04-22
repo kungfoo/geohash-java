@@ -25,12 +25,10 @@ import ch.hsr.geohash.util.TwoGeoHashBoundingBox;
 
 public class GeoHashTest {
 	private GeoHash hash;
-	private Random rand;
 
 	@Before
 	public void setUp() {
 		hash = new GeoHash();
-		rand = new Random();
 	}
 
 	@Test
@@ -286,11 +284,8 @@ public class GeoHashTest {
 
 	private void checkMoveAroundStrip(String direction) throws Exception {
 		for (int bits = 2; bits < 16; bits++) {
-			double randomLatitude = (rand.nextDouble() - 0.5) * 180;
-			double randomLongitude = (rand.nextDouble() - 0.5) * 360;
 
-			// this divides the range by 2^bits
-			GeoHash hash = GeoHash.withBitPrecision(randomLatitude, randomLongitude, bits);
+			GeoHash hash = RandomGeohashes.createWithPrecision(bits);
 			Method method = hash.getClass().getDeclaredMethod("get" + direction + "Neighbour");
 			GeoHash result = hash;
 
@@ -540,11 +535,8 @@ public class GeoHashTest {
 	@Test
 	public void testCompareTo() {
 		GeoHash prevHash = null;
-		for (int i = 0; i < 1000000; i++) {
-			double latitude = rand.nextDouble() * 180 - 90;
-			double longitude = rand.nextDouble() * 360 - 180;
-			int numberOfBits = rand.nextInt(6) * 10 + 10;
-			GeoHash hash = GeoHash.withBitPrecision(latitude, longitude, numberOfBits);
+		for (int i = 0; i < 10000; i++) {
+			GeoHash hash = RandomGeohashes.createWith5BitsPrecision();
 			if (i >= 1) {
 				String prevHashBase32 = prevHash.toBase32();
 				String hashBase32 = hash.toBase32();
