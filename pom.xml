@@ -8,48 +8,47 @@
 	<description>
     An implementation of Geohashes in pure Java.
   </description>
-	<url>https://github.com/kungfoo/geohash-java</url>
-	<licenses>
-		<license>
-			<name>LGPL 3.0</name>
-			<url>https://raw.github.com/kungfoo/geohash-java/master/LICENSE</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<scm>
-		<connection>scm:git:git@github.com:kungfoo/geohash-java.git</connection>
-		<developerConnection>scm:git:git@github.com:kungfoo/geohash-java.git</developerConnection>
-		<url>git@github.com:kungfoo/geohash-java.git</url>
-		<tag>HEAD</tag>
-	</scm>
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
-	<developers>
-		<developer>
-			<id>kungfoo</id>
-		</developer>
-		<developer>
-			<id>github contributors</id>
-		</developer>
-	</developers>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<build>
-		<plugins>
-
+  <url>https://github.com/kungfoo/geohash-java</url>
+  <licenses>
+    <license>
+      <name>LGPL 3.0</name>
+      <url>https://raw.github.com/kungfoo/geohash-java/master/LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+   <scm>
+    <connection>scm:git:git@github.com:kungfoo/geohash-java.git</connection>
+    <developerConnection>scm:git:git@github.com:kungfoo/geohash-java.git</developerConnection>
+    <url>git@github.com:kungfoo/geohash-java.git</url>
+    <tag>HEAD</tag>
+  </scm>
+   <parent>
+     <groupId>org.sonatype.oss</groupId>
+     <artifactId>oss-parent</artifactId>
+     <version>7</version>
+   </parent>
+   <developers>
+     <developer>
+       <id>kungfoo</id>
+     </developer>
+     <developer>
+       <id>github contributors</id>
+     </developer>
+   </developers>
+   <properties>
+     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+   </properties>
+   <dependencies>
+     <dependency>
+       <groupId>junit</groupId>
+       <artifactId>junit</artifactId>
+       <version>4.12</version>
+       <scope>test</scope>
+     </dependency>
+   </dependencies>
+   <build>
+     <plugins>
 			<plugin>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.4.2</version>

@@ -29,7 +29,7 @@ public class RandomGeohashes {
 			}
 		};
 	}
-	
+
 	/**
 	 * Fixes seed to make things reproducible.
 	 */
@@ -72,7 +72,7 @@ public class RandomGeohashes {
 	private static int randomPrecision() {
 		return rand.nextInt(60) + 5;
 	}
-	
+
 	private static int randomCharacterPrecision() {
 		return rand.nextInt(12) + 1;
 	}

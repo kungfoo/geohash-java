@@ -515,7 +515,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	@Override
 	public int compareTo(GeoHash o) {
 		int bitsCmp = Long.compare(bits ^ FIRST_BIT_FLAGGED, o.bits ^ FIRST_BIT_FLAGGED);
-		if (bitsCmp != 0){
+		if (bitsCmp != 0) {
 			return bitsCmp;
 		} else {
 			return Integer.compare(significantBits, o.significantBits);
