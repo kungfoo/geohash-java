@@ -22,7 +22,7 @@ public class BoundingBoxSamplerTest {
 		BoundingBoxSampler sampler = new BoundingBoxSampler(TwoGeoHashBoundingBox.withBitPrecision(bbox, 35), 1179);
 		bbox = sampler.getBoundingBox().getBoundingBox();
 		GeoHash gh = sampler.next();
-		Set<String> hashes = new HashSet<String>();
+		Set<String> hashes = new HashSet<>();
 		int sumOfComp = 0;
 		int crossingZero = 0;
 

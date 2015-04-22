@@ -16,7 +16,7 @@ public class RandomGeohashes {
 			@Override
 			public Iterator<GeoHash> iterator() {
 				Random rand = new Random();
-				List<GeoHash> hashes = new ArrayList<GeoHash>();
+				List<GeoHash> hashes = new ArrayList<>();
 				for (double lat = -90; lat <= 90; lat += rand.nextDouble() + 1.45) {
 					for (double lon = -180; lon <= 180; lon += rand.nextDouble() + 1.54) {
 						for (int precisionChars = 6; precisionChars <= 12; precisionChars++) {

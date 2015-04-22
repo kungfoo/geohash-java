@@ -25,7 +25,7 @@ import ch.hsr.geohash.util.GeoHashSizeTable;
 public class GeoHashBoundingBoxQuery implements GeoHashQuery, Serializable {
 	private static final long serialVersionUID = 9223256928940522683L;
 	/* there's not going to be more than 4 hashes. */
-	private List<GeoHash> searchHashes = new ArrayList<GeoHash>(4);
+	private List<GeoHash> searchHashes = new ArrayList<>(4);
 	/* the combined bounding box of those hashes. */
 	private BoundingBox boundingBox;
 

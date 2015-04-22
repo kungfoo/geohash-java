@@ -11,7 +11,7 @@ import ch.hsr.geohash.GeoHash;
  */
 public class BoundingBoxSampler {
 	private TwoGeoHashBoundingBox boundingBox;
-	private Set<Integer> alreadyUsed = new HashSet<Integer>();
+	private Set<Integer> alreadyUsed = new HashSet<>();
 	private int maxSamples;
 	private Random rand = new Random();
 
