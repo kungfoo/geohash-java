@@ -22,20 +22,19 @@ Find the current versions here:
 Building/Testing the code
 -------------------------
 
-The geohash-java code can be built using Apache Ant or Apache Maven.
-Ant targets that are available:
-
-    - clean     # wash dishes.
-    - compile   # compile the main source code.
-    - test      # (default) run the unit tests.
-    - jar       # pack a jar archive with the compiled class files.
-    - zip       # pack a zip archive with the compiled binaries, source code and all other files.
+The geohash-java code can be built using Apache Maven.
 
 Maven targets are the usual suspects.
-    
+
+	- clean    
     - compile
     - test
     - package   # pack a versioned jar containing the compiled class files
+
+Compatibility
+-------------------------
+This branch ditches 1.6 compaitibility. If you need that look at the release-1.0 branch
+and artifacts in maven central. I will backport important bugfixes to the release-1.0 branch.
 
 TODO
 ----
