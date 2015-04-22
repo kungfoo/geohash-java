@@ -48,6 +48,12 @@ Current development involves getting the following things to run:
 Last important changes
 ----------------------
 
+Version 1.0.13
+-----------------------
+
+Merge this fix https://github.com/0mok/geohash-java/commit/12550a392ea974cf75c81fce2bd21fe1535715a1
+It causes compareTo() of geohashes to behave similarly as comaring their base32 encoded strings
+
 Version 1.0.12
 -----------------------
 
