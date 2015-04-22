@@ -16,8 +16,8 @@ import java.io.Serializable;
  */
 public class WGS84Point implements Serializable {
 	private static final long serialVersionUID = 7457963026513014856L;
-	private double longitude;
-	private double latitude;
+	private final double longitude;
+	private final double latitude;
 
 	public WGS84Point(double latitude, double longitude) {
 		this.latitude = latitude;
