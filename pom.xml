@@ -3,7 +3,7 @@
 	<packaging>jar</packaging>
 	<groupId>ch.hsr</groupId>
 	<artifactId>geohash</artifactId>
-	<version>1.0.14-SNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<name>geohash-java</name>
 	<description>
     An implementation of Geohashes in pure Java.
