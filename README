@@ -33,7 +33,7 @@ Maven targets are the usual suspects.
 
 Compatibility
 -------------------------
-This branch ditches 1.6 compaitibility. If you need that look at the release-1.0 branch
+This branch ditches 1.6 compatibility. If you need that look at the release-1.0 branch
 and artifacts in maven central. I will backport important bugfixes to the release-1.0 branch.
 
 TODO
