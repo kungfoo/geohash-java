@@ -14,6 +14,9 @@ import java.util.Map;
 
 @SuppressWarnings("javadoc")
 public final class GeoHash implements Comparable<GeoHash>, Serializable {
+	private static final int MAX_BIT_PRECISION = 64;
+	private static final int MAX_CHARACTER_PRECISION = 12;
+	
 	private static final long serialVersionUID = -8553214249630252175L;
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
 	private static final int BASE32_BITS = 5;
@@ -46,6 +49,9 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	 * characters can be achieved.
 	 */
 	public static GeoHash withCharacterPrecision(double latitude, double longitude, int numberOfCharacters) {
+		if (numberOfCharacters > MAX_CHARACTER_PRECISION) {
+			throw new IllegalArgumentException("A geohash can only be " + MAX_CHARACTER_PRECISION + " character long.");
+		}
 		int desiredPrecision = (numberOfCharacters * 5 <= 60) ? numberOfCharacters * 5 : 60;
 		return new GeoHash(latitude, longitude, desiredPrecision);
 	}
@@ -55,6 +61,9 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	 * at the same time defines this hash's bounding box.
 	 */
 	public static GeoHash withBitPrecision(double latitude, double longitude, int numberOfBits) {
+		if (numberOfBits > MAX_BIT_PRECISION) {
+			throw new IllegalArgumentException("A Geohash can only be " + MAX_BIT_PRECISION + " bits long!");
+		}
 		if (Math.abs(latitude) > 90.0 || Math.abs(longitude) > 180.0) {
 			throw new IllegalArgumentException("Can't have lat/lon values out of (-90,90)/(-180/180)");
 		}
@@ -72,7 +81,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 				throw new IllegalArgumentException(binaryString + " is not a valid geohash as a binary string");
 			}
 		}
-		geohash.bits <<= (64 - geohash.significantBits);
+		geohash.bits <<= (MAX_BIT_PRECISION - geohash.significantBits);
 		long[] latitudeBits = geohash.getRightAlignedLatitudeBits();
 		long[] longitudeBits = geohash.getRightAlignedLongitudeBits();
 		return geohash.recombineLatLonBitsToHash(latitudeBits, longitudeBits);
@@ -108,7 +117,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 
 		hash.point = new WGS84Point(latitude, longitude);
 		setBoundingBox(hash, latitudeRange, longitudeRange);
-		hash.bits <<= (64 - hash.significantBits);
+		hash.bits <<= (MAX_BIT_PRECISION - hash.significantBits);
 		return hash;
 	}
 
@@ -120,7 +129,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 		GeoHash hash = new GeoHash();
 
 		String binaryString = Long.toBinaryString(hashVal);
-		while (binaryString.length() < 64) {
+		while (binaryString.length() < MAX_BIT_PRECISION) {
 			binaryString = "0" + binaryString;
 		}
 		for (int j = 0; j < significantBits; j++) {
@@ -137,7 +146,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 
 		hash.point = new WGS84Point(latitude, longitude);
 		setBoundingBox(hash, latitudeRange, longitudeRange);
-		hash.bits <<= (64 - hash.significantBits);
+		hash.bits <<= (MAX_BIT_PRECISION - hash.significantBits);
 		return hash;
 	}
 
@@ -153,7 +162,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 
 	private GeoHash(double latitude, double longitude, int desiredPrecision) {
 		point = new WGS84Point(latitude, longitude);
-		desiredPrecision = Math.min(desiredPrecision, 64);
+		desiredPrecision = Math.min(desiredPrecision, MAX_BIT_PRECISION);
 
 		boolean isEvenBit = true;
 		double[] latitudeRange = { -90, 90 };
@@ -169,7 +178,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 		}
 
 		setBoundingBox(this, latitudeRange, longitudeRange);
-		bits <<= (64 - desiredPrecision);
+		bits <<= (MAX_BIT_PRECISION - desiredPrecision);
 	}
 
 	private static void setBoundingBox(GeoHash hash, double[] latitudeRange, double[] longitudeRange) {
@@ -191,7 +200,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	}
 
 	public long ord() {
-		int insignificantBits = 64 - significantBits;
+		int insignificantBits = MAX_BIT_PRECISION - significantBits;
 		return bits >> insignificantBits;
 	}
 
@@ -211,7 +220,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	}
 
 	public static GeoHash fromOrd(long ord, int significantBits) {
-		int insignificantBits = 64 - significantBits;
+		int insignificantBits = MAX_BIT_PRECISION - significantBits;
 		return fromLongValue(ord << insignificantBits, significantBits);
 	}
 
@@ -351,8 +360,8 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	protected GeoHash recombineLatLonBitsToHash(long[] latBits, long[] lonBits) {
 		GeoHash hash = new GeoHash();
 		boolean isEvenBit = false;
-		latBits[0] <<= (64 - latBits[1]);
-		lonBits[0] <<= (64 - lonBits[1]);
+		latBits[0] <<= (MAX_BIT_PRECISION - latBits[1]);
+		lonBits[0] <<= (MAX_BIT_PRECISION - lonBits[1]);
 		double[] latitudeRange = { -90.0, 90.0 };
 		double[] longitudeRange = { -180.0, 180.0 };
 
@@ -366,7 +375,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 			}
 			isEvenBit = !isEvenBit;
 		}
-		hash.bits <<= (64 - hash.significantBits);
+		hash.bits <<= (MAX_BIT_PRECISION - hash.significantBits);
 		setBoundingBox(hash, latitudeRange, longitudeRange);
 		hash.point = hash.boundingBox.getCenterPoint();
 		return hash;
@@ -508,7 +517,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 
 	private long maskLastNBits(long value, long n) {
 		long mask = 0xffffffffffffffffl;
-		mask >>>= (64 - n);
+		mask >>>= (MAX_BIT_PRECISION - n);
 		return value & mask;
 	}
 

@@ -117,6 +117,21 @@ public class GeoHashTest {
 	}
 
 	@Test
+	public void itShouldCreateAHashWithMaximumPrecisionOf64Bits() {
+		GeoHash.withBitPrecision(10.0, 10.0, 64);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void itShouldThrowWhenTheBitPrecisionIsMoreThan64Bits() {
+		GeoHash.withBitPrecision(46.0, 8.0, 70);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void itShouldThrowWhenTheCharacterPrecisionIsTooBig() {
+		GeoHash.withCharacterPrecision(10.0, 120.0, 14);
+	}
+
+	@Test
 	public void testNotWithin() {
 		hash.bits = 0x6ff0414000000000l;
 		hash.significantBits = 25;
