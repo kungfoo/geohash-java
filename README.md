@@ -7,6 +7,11 @@ to the reference implementation geohash.org.
 
 You can however also encode Geohashes down to the full available precision of a long i.e. 64 bits.
 
+Build status
+------------
+
+<a href="https://travis-ci.org/kungfoo/geohash-java"><img src="https://travis-ci.org/kungfoo/geohash-java.svg"/></a>
+
 
 Getting the library
 -------------------
