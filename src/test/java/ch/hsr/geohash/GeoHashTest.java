@@ -551,4 +551,13 @@ public class GeoHashTest {
 			prevHash = hash;
 		}
 	}
+
+	@Test
+	public void testOrdIsPositive() {
+		double lat = 40.390943;
+		double lon = 75.9375;
+		GeoHash hash = GeoHash.withCharacterPrecision(lat, lon, 12);
+		assertEquals(0xcf6915015410500l, hash.ord());
+		assertTrue(hash.ord() >= 0);
+	}
 }
