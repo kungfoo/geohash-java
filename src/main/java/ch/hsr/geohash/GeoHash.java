@@ -192,7 +192,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 
 	public long ord() {
 		int insignificantBits = 64 - significantBits;
-		return bits >> insignificantBits;
+		return bits >>> insignificantBits;
 	}
 
 	/**
