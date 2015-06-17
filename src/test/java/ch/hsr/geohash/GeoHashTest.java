@@ -560,4 +560,10 @@ public class GeoHashTest {
 		assertEquals(0xcf6915015410500l, hash.ord());
 		assertTrue(hash.ord() >= 0);
 	}
+
+	@Test
+	public void testSecondCaseWhereOrdMustBePositive() {
+		GeoHash hash = GeoHash.withCharacterPrecision(-36.919550434870125,174.71024582237604,7);
+		assertTrue(hash.ord() > 0);
+	}
 }
