@@ -47,10 +47,23 @@ TODO
 Current development involves getting the following things to run:
 
 -	a method to find the n closest hashes to any given point.
+-	refactor tests, might want to add a dependency on hamcrest
+    and provide some custom matchers for fun and profit.
 
 
 Last important changes
 ----------------------
+
+Version 1.1.0
+-----------------------
+
+Important fix 398d048b66e8cff1e5df8aa1a4bdc4c37ca70070
+ord() would return negative longs, which is plain wrong.
+
+Thanks to Graham Dennis and aborochoff for pointing it out.
+
+Also: Raise source level to 1.7.
+Still compiles to 1.6, though.
 
 Version 1.0.13
 -----------------------
