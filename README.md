@@ -10,7 +10,7 @@ You can however also encode Geohashes down to the full available precision of a 
 Build status
 ------------
 
-<a href="https://travis-ci.org/kungfoo/geohash-java"><img src="https://travis-ci.org/kungfoo/geohash-java.svg"/></a>
+<a href="https://travis-ci.org/kungfoo/geohash-java"><img src="https://travis-ci.org/kungfoo/geohash-java.svg?branch=master"/></a>
 
 
 Getting the library
