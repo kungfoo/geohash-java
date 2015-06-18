@@ -25,8 +25,10 @@ public class VincentyGeodesy {
 	 * following distance of the given point.<br>
 	 * Uses Vincenty's formula and the WGS84 ellipsoid.
 	 * 
-	 * @param directionInDegrees
+	 * @param bearingInDegrees
 	 *            : must be within 0 and 360
+	 * @param point : where to start
+	 * @param distanceInMeters: How far to move in the given direction
 	 */
 	public static WGS84Point moveInDirection(WGS84Point point, double bearingInDegrees, double distanceInMeters) {
 
