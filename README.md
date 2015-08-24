@@ -52,6 +52,11 @@ Current development involves getting the following things to run:
 Last important changes
 ----------------------
 
+Version 1.0.14
+----------------------
+
+Fix the code of GeoHash.compareTo() to actually be jdk-6 compatible.
+
 Version 1.0.13
 -----------------------
 
