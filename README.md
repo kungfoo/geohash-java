@@ -63,7 +63,6 @@ ord() would return negative longs, which is plain wrong.
 Thanks to Graham Dennis and aborochoff for pointing it out.
 
 Also: Raise source level to 1.7.
-Still compiles to 1.6, though.
 
 Version 1.0.13
 -----------------------
