@@ -139,6 +139,6 @@ Version 1.0.1
 License
 -------
 
-This code has been placed under the Apache 2 License.
+This code has been placed under the Apache License 2.0.
 See the LICENSE file for more information.
 Please contribute improvements and bug fixes back via github.
