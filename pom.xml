@@ -11,7 +11,7 @@
   <url>https://github.com/kungfoo/geohash-java</url>
   <licenses>
     <license>
-      <name>LGPL 3.0</name>
+      <name>Apache License, Version 2.0</name>
       <url>https://raw.github.com/kungfoo/geohash-java/master/LICENSE</url>
       <distribution>repo</distribution>
     </license>
