@@ -19,7 +19,7 @@ import ch.hsr.geohash.util.GeoHashSizeTable;
 
 /**
  * This class returns the hashes covering a certain bounding box. There are
- * either 1,2 or 4 susch hashes, depending on the position of the bounding box
+ * either 1,2 or 4 such hashes, depending on the position of the bounding box
  * on the geohash grid.
  */
 public class GeoHashBoundingBoxQuery implements GeoHashQuery, Serializable {
