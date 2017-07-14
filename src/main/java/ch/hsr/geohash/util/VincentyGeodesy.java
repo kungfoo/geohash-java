@@ -77,7 +77,7 @@ public class VincentyGeodesy {
 		double newLat = lat2 / degToRad;
 		double newLon = point.getLongitude() + L / degToRad;
 
-		newLon = (newLon > 180.0 ? 360.0 - newLon : newLon);
+		newLon = (newLon > 180.0 ? newLon - 360 : newLon);
 		newLon = (newLon < -180.0 ? 360.0 + newLon : newLon);
 
 		return new WGS84Point(newLat, newLon);
