@@ -3,12 +3,14 @@ package ch.hsr.geohash;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import ch.hsr.geohash.util.RandomWGS84Points;
 import ch.hsr.geohash.util.VincentyGeodesy;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Test;
 
 import ch.hsr.geohash.queries.GeoHashCircleQuery;
@@ -20,6 +22,7 @@ import java.util.Random;
 public class GeoHashCircleQueryTest {
 
 	private static final int NUMBER_OF_RANDOM_POINTS = 1000000;
+	public static final int ONE_HUNDRED_KM = 100 * 1000;
 
 	@Test
 	public void testIssue3WithCircleQuery() throws Exception {
@@ -40,28 +43,37 @@ public class GeoHashCircleQueryTest {
 		List<GeoHash> hashes = createRandomHashes();
 		WGS84Point queryPoint = RandomWGS84Points.get();
 
-		GeoHashCircleQuery oneHundredKilometresQuery = new GeoHashCircleQuery(queryPoint, 100 * 1000);
+		GeoHashCircleQuery oneHundredKilometresQuery = new GeoHashCircleQuery(queryPoint, ONE_HUNDRED_KM);
 		assertThat(oneHundredKilometresQuery.toString(), containsString("100.0km"));
 
 		// filter points/hashes based on prefix, no expensive vincenty math here.
 		long t1 = System.currentTimeMillis();
-		List<GeoHash> contained = new ArrayList<>();
+		List<GeoHash> queryResult = new ArrayList<>();
 		for(GeoHash hash: hashes) {
 			if(oneHundredKilometresQuery.contains(hash)) {
-				contained.add(hash);
+				queryResult.add(hash);
 			}
 		}
 		long t2 = System.currentTimeMillis();
 
 		System.out.println(String.format("Checking %d hashes took %dms", NUMBER_OF_RANDOM_POINTS, t2-t1));
 
-		// let's argue at least one point should have been contained
-		assertThat(contained.size(), is(not(0)));
-		System.out.println(String.format("Number of points matched by query: %d", contained.size()));
+		t1 = System.currentTimeMillis();
+		List<GeoHash> closerThan100km = new ArrayList<>();
+		for(GeoHash hash: hashes)  {
+			if(VincentyGeodesy.distanceInMeters(queryPoint, hash.getPoint()) <= ONE_HUNDRED_KM) {
+				closerThan100km.add(hash);
+			}
+		}
+		t2 = System.currentTimeMillis();
 
-		for(GeoHash hash: contained) {
-			double actualDistanceInMeters = VincentyGeodesy.distanceInMeters(queryPoint, hash.getPoint());
-			System.out.println(String.format("Actual distance: %.2fkm", actualDistanceInMeters / 1000));
+		System.out.println(String.format("Checking points with VincentyGeodesy took %dms", t2-t1));
+		System.out.println(String.format("Number of points actually closer than 100km: %d", closerThan100km.size()));
+		System.out.println(String.format("Number of points matched by query: %d", queryResult.size()));
+
+		// check all positives are matched
+		for(GeoHash shouldBeInResult: closerThan100km) {
+			assertThat(queryResult, hasItem(shouldBeInResult));
 		}
 	}
 
