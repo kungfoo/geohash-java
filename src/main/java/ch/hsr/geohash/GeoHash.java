@@ -14,13 +14,13 @@ import java.util.Map;
 
 @SuppressWarnings("javadoc")
 public final class GeoHash implements Comparable<GeoHash>, Serializable {
-	private static final int MAX_BIT_PRECISION = 64;
-	private static final int MAX_CHARACTER_PRECISION = 12;
+	public static final int MAX_BIT_PRECISION = 64;
+	public static final int MAX_CHARACTER_PRECISION = 12;
 	
 	private static final long serialVersionUID = -8553214249630252175L;
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
 	private static final int BASE32_BITS = 5;
-	public static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
+	private static final long FIRST_BIT_FLAGGED = 0x8000000000000000l;
 	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f',
 			'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
