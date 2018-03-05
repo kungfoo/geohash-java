@@ -54,6 +54,11 @@ Current development involves getting the following things to run:
 Last important changes
 ----------------------
 
+Version 1.3.0
+-----------------------
+
+This version switches the license over to Apache Software License 2.0
+
 Version 1.1.0
 -----------------------
 
