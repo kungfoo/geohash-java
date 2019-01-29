@@ -17,7 +17,7 @@ Getting the library
 -------------------
 
 As of today, new releases are made available via maven Central.
-Thus you can use the artifacts in various build systems like maven, ivy, gradle, sbt and mayn more.
+Thus you can use the artifacts in various build systems like maven, ivy, gradle, sbt and many more.
 
 Find the current versions here:
 
