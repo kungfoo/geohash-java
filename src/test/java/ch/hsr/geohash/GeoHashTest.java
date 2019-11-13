@@ -502,14 +502,14 @@ public class GeoHashTest {
 			}
 			boolean latIsMore = false;
 			boolean latIsLess = false;
-			if (idx.getPoint().getLatitude() > iterBbox.getMaxLat()) {
+			if (idx.getPoint().getLatitude() > iterBbox.getNorthLatitude()) {
 				latIsMore = true;
 				latMore++;
-			} else if (idx.getPoint().getLatitude() < iterBbox.getMinLat()) {
+			} else if (idx.getPoint().getLatitude() < iterBbox.getSouthLatitude()) {
 				latIsLess = true;
 				latLess++;
 			}
-			if (idx.getPoint().getLongitude() > iterBbox.getMaxLon()) {
+			if (idx.getPoint().getLongitude() > iterBbox.getEastLongitude()) {
 				lonMore++;
 				if (latIsMore) {
 					bothMore++;
@@ -517,7 +517,7 @@ public class GeoHashTest {
 				if (latIsLess) {
 					latLessLonMore++;
 				}
-			} else if (idx.getPoint().getLongitude() < iterBbox.getMinLon()) {
+			} else if (idx.getPoint().getLongitude() < iterBbox.getWestLongitude()) {
 				lonLess++;
 				if (latIsLess) {
 					bothLess++;
