@@ -458,10 +458,14 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	@Override
 	public String toString() {
 		if (significantBits % 5 == 0) {
-			return String.format("%s -> %s -> %s", Long.toBinaryString(bits), boundingBox, toBase32());
+			return String.format("%s -> %s -> %s", padLeft(Long.toBinaryString(bits), 64, "0"), boundingBox, toBase32());
 		} else {
-			return String.format("%s -> %s, bits: %d", Long.toBinaryString(bits), boundingBox, significantBits);
+			return String.format("%s -> %s, bits: %d", padLeft(Long.toBinaryString(bits), 64, "0"), boundingBox, significantBits);
 		}
+	}
+
+	private static String padLeft(String s, int n, String pad) {
+		return String.format("%" + n + "s", s).replace(" ", pad);
 	}
 
 	public String toBinaryString() {
