@@ -15,7 +15,7 @@ public class BoundingBoxGeoHashIterator implements Iterator<GeoHash> {
 
 	public BoundingBoxGeoHashIterator(TwoGeoHashBoundingBox bbox) {
 		boundingBox = bbox;
-		current = bbox.getSouthEast();
+		current = bbox.getSouthWest();
 	}
 
 	public TwoGeoHashBoundingBox getBoundingBox() {
@@ -24,7 +24,7 @@ public class BoundingBoxGeoHashIterator implements Iterator<GeoHash> {
 
 	@Override
 	public boolean hasNext() {
-		return current.compareTo(boundingBox.getNorthWest()) <= 0;
+		return current.compareTo(boundingBox.getNorthEast()) <= 0;
 	}
 
 	@Override

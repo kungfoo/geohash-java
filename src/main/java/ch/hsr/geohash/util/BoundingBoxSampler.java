@@ -23,7 +23,7 @@ public class BoundingBoxSampler {
 	 */
 	public BoundingBoxSampler(TwoGeoHashBoundingBox bbox) {
 		boundingBox = bbox;
-		long maxSamplesLong = GeoHash.stepsBetween(bbox.getSouthEast(), bbox.getNorthWest());
+		long maxSamplesLong = GeoHash.stepsBetween(bbox.getSouthWest(), bbox.getNorthEast());
 		if (maxSamplesLong > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("This bounding box is too big too sample using this algorithm");
 		}
@@ -51,7 +51,7 @@ public class BoundingBoxSampler {
 			idx = rand.nextInt(maxSamples + 1);
 		}
 		alreadyUsed.add(idx);
-		GeoHash gh = boundingBox.getSouthEast().next(idx);
+		GeoHash gh = boundingBox.getSouthWest().next(idx);
 		if (!boundingBox.getBoundingBox().contains(gh.getPoint())) {
 			return next();
 		}
