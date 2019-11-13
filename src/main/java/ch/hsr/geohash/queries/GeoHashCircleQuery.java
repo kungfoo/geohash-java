@@ -26,20 +26,17 @@ public class GeoHashCircleQuery implements GeoHashQuery, Serializable {
 	private GeoHashBoundingBoxQuery query;
 	private WGS84Point center;
 
-	/**
-	 * create a {@link GeoHashCircleQuery} with the given center point and a
-	 * radius in meters.
-	 */
-	public GeoHashCircleQuery(WGS84Point center, double radius) {
-		this.radius = radius;
-		this.center = center;
-		WGS84Point northEast = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 0, radius), 90,
-				radius);
-		WGS84Point southWest = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 180, radius),
-				270, radius);
-		BoundingBox bbox = new BoundingBox(northEast, southWest);
-		query = new GeoHashBoundingBoxQuery(bbox);
-	}
+    /**
+     * create a {@link GeoHashCircleQuery} with the given center point and a radius in meters.
+     */
+    public GeoHashCircleQuery(WGS84Point center, double radius) {
+        this.radius = radius;
+        this.center = center;
+        WGS84Point northEast = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 0, radius), 90, radius);
+        WGS84Point southWest = VincentyGeodesy.moveInDirection(VincentyGeodesy.moveInDirection(center, 180, radius), 270, radius);
+        BoundingBox bbox = new BoundingBox(southWest, northEast);
+        query = new GeoHashBoundingBoxQuery(bbox);
+    }
 
 	@Override
 	public boolean contains(GeoHash hash) {
