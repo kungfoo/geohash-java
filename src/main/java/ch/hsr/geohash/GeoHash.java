@@ -182,9 +182,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	}
 
 	private static void setBoundingBox(GeoHash hash, double[] latitudeRange, double[] longitudeRange) {
-		hash.boundingBox = new BoundingBox(new WGS84Point(latitudeRange[0], longitudeRange[0]), new WGS84Point(
-				latitudeRange[1],
-				longitudeRange[1]));
+		hash.boundingBox = new BoundingBox(latitudeRange[0], latitudeRange[1], longitudeRange[0], longitudeRange[1]);
 	}
 
 	public GeoHash next(int step) {

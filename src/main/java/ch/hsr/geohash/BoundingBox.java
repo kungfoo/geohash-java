@@ -12,43 +12,115 @@ import java.io.Serializable;
 
 public class BoundingBox implements Serializable {
 	private static final long serialVersionUID = -7145192134410261076L;
-	private double minLat;
-	private double maxLat;
-	private double minLon;
-	private double maxLon;
+	private double southLatitude;
+	private double northLatitude;
+	private double westLongitude;
+	private double eastLongitude;
+	private boolean intersects180Meridian;
 
 	/**
 	 * create a bounding box defined by two coordinates
 	 */
-	public BoundingBox(WGS84Point p1, WGS84Point p2) {
-		this(p1.getLatitude(), p2.getLatitude(), p1.getLongitude(), p2.getLongitude());
+	public BoundingBox(WGS84Point southWest, WGS84Point northEast) {
+		this(southWest.getLatitude(), northEast.getLatitude(), southWest.getLongitude(), northEast.getLongitude());
 	}
 
-	public BoundingBox(double y1, double y2, double x1, double x2) {
-		minLon = Math.min(x1, x2);
-		maxLon = Math.max(x1, x2);
-		minLat = Math.min(y1, y2);
-		maxLat = Math.max(y1, y2);
+	/**
+	 * Create a bounding box with the specified latitudes and longitudes. This constructor takes the order of the points into account.
+	 *
+	 * @param northLatitude
+	 * @param southLatitude
+	 * @param westLongitude
+	 * @param eastLongitude
+	 *
+	 * @throws IllegalArgumentException
+	 *             When the defined BoundingBox would go over one of the poles. This kind of box is not supported.
+	 */
+	public BoundingBox(double southLatitude, double northLatitude, double westLongitude, double eastLongitude) {
+		if (southLatitude > northLatitude)
+			throw new IllegalArgumentException("The southLatitude must not be greater than the northLatitude");
+
+		if (Math.abs(southLatitude) > 90 || Math.abs(northLatitude) > 90 || Math.abs(westLongitude) > 180 || Math.abs(eastLongitude) > 180) {
+			throw new IllegalArgumentException("The supplied coordinates are out of range.");
+		}
+
+		this.northLatitude = northLatitude;
+		this.westLongitude = westLongitude;
+
+		this.southLatitude = southLatitude;
+		this.eastLongitude = eastLongitude;
+
+		intersects180Meridian = eastLongitude < westLongitude;
 	}
 
+	/**
+	 * Clone constructor
+	 *
+	 * @param that
+	 */
 	public BoundingBox(BoundingBox that) {
-		this(that.minLat, that.maxLat, that.minLon, that.maxLon);
+		this(that.southLatitude, that.northLatitude, that.westLongitude, that.eastLongitude);
 	}
 
-	public WGS84Point getUpperLeft() {
-		return new WGS84Point(maxLat, minLon);
+	/**
+	 * Returns the NorthWestPoint of this BoundingBox as a new Point.
+	 *
+	 * @return
+	 */
+	public WGS84Point getNorthWestPoint() {
+		return new WGS84Point(northLatitude, westLongitude);
 	}
 
-	public WGS84Point getLowerRight() {
-		return new WGS84Point(minLat, maxLon);
+	/**
+	 * Returns the NorthEastPoint of this BoundingBox as a new Point.
+	 *
+	 * @return
+	 */
+	public WGS84Point getNorthEastPoint() {
+		return new WGS84Point(northLatitude, eastLongitude);
 	}
 
+	/**
+	 * Returns the SouthEastPoint of this BoundingBox as a new Point.
+	 *
+	 * @return
+	 */
+	public WGS84Point getSouthEastPoint() {
+		return new WGS84Point(southLatitude, eastLongitude);
+	}
+
+	/**
+	 * Returns the SouthWestPoint of this BoundingBox as a new Point.
+	 *
+	 * @return
+	 */
+	public WGS84Point getSouthWestPoint() {
+		return new WGS84Point(southLatitude, westLongitude);
+	}
+
+	/**
+	 * Returns the size of the bounding box in degrees of latitude. The value returned will always be positive.
+	 *
+	 * @return
+	 */
 	public double getLatitudeSize() {
-		return maxLat - minLat;
+		return northLatitude - southLatitude;
 	}
 
+	/**
+	 * Returns the size of the bounding box in degrees of longitude. The value returned will always be positive.
+	 *
+	 * @return
+	 */
 	public double getLongitudeSize() {
-		return maxLon - minLon;
+		if (eastLongitude == 180.0 && westLongitude == -180.0)
+			return 360.0;
+		double size = (eastLongitude - westLongitude) % 360;
+
+		// Remainder fix for earlier java versions
+		if (size < 0)
+			size += 360.0;
+		return size;
 	}
 
 	@Override
@@ -58,7 +130,7 @@ public class BoundingBox implements Serializable {
 		}
 		if (obj instanceof BoundingBox) {
 			BoundingBox that = (BoundingBox) obj;
-			return minLat == that.minLat && minLon == that.minLon && maxLat == that.maxLat && maxLon == that.maxLon;
+			return southLatitude == that.southLatitude && westLongitude == that.westLongitude && northLatitude == that.northLatitude && eastLongitude == that.eastLongitude;
 		} else {
 			return false;
 		}
@@ -67,10 +139,10 @@ public class BoundingBox implements Serializable {
 	@Override
 	public int hashCode() {
 		int result = 17;
-		result = 37 * result + hashCode(minLat);
-		result = 37 * result + hashCode(maxLat);
-		result = 37 * result + hashCode(minLon);
-		result = 37 * result + hashCode(maxLon);
+		result = 37 * result + hashCode(southLatitude);
+		result = 37 * result + hashCode(northLatitude);
+		result = 37 * result + hashCode(westLongitude);
+		result = 37 * result + hashCode(eastLongitude);
 		return result;
 	}
 
@@ -80,53 +152,130 @@ public class BoundingBox implements Serializable {
 	}
 
 	public boolean contains(WGS84Point point) {
-		return (point.getLatitude() >= minLat) && (point.getLongitude() >= minLon) && (point.getLatitude() <= maxLat)
-				&& (point.getLongitude() <= maxLon);
+		return containsLatitude(point.getLatitude()) && containsLongitude(point.getLongitude());
 	}
 
 	public boolean intersects(BoundingBox other) {
-		return !(other.minLon > maxLon || other.maxLon < minLon || other.minLat > maxLat || other.maxLat < minLat);
+		// Check latitude first cause it's the same for all cases
+		if (other.southLatitude > northLatitude || other.northLatitude < southLatitude) {
+			return false;
+		} else {
+			if (!intersects180Meridian && !other.intersects180Meridian) {
+				return !(other.eastLongitude < westLongitude || other.westLongitude > eastLongitude);
+			} else if (intersects180Meridian && !other.intersects180Meridian) {
+				return !(eastLongitude < other.westLongitude && westLongitude > other.eastLongitude);
+			} else if (!intersects180Meridian && other.intersects180Meridian) {
+				return !(westLongitude > other.eastLongitude && eastLongitude < other.westLongitude);
+			} else
+				return true;
+		}
 	}
 
 	@Override
 	public String toString() {
-		return getUpperLeft() + " -> " + getLowerRight();
+		return getNorthWestPoint() + " -> " + getSouthEastPoint();
 	}
 
 	public WGS84Point getCenterPoint() {
-		double centerLatitude = (minLat + maxLat) / 2;
-		double centerLongitude = (minLon + maxLon) / 2;
+		double centerLatitude = (southLatitude + northLatitude) / 2;
+		double centerLongitude = (westLongitude + eastLongitude) / 2;
+
+		// This can happen if the bBox crosses the 180-Meridian
+		if (centerLongitude > 180)
+			centerLongitude -= 360;
+
 		return new WGS84Point(centerLatitude, centerLongitude);
 	}
 
+	/**
+	 * Expands this bounding box to include the provided bounding box. The expansion is done in the direction with the minimal distance. If both distances are the same it'll expand
+	 * in east direction. It will not cross poles, but it will cross the 180-Meridian, if thats the shortest distance.<br>
+	 * If a precise specification of the northEast and southWest points is needed, please create a new bounding box where you can specify the points separately.
+	 *
+	 * @param other
+	 */
 	public void expandToInclude(BoundingBox other) {
-		if (other.minLon < minLon) {
-			minLon = other.minLon;
+
+		// Expand Latitude
+		if (other.southLatitude < southLatitude) {
+			southLatitude = other.southLatitude;
 		}
-		if (other.maxLon > maxLon) {
-			maxLon = other.maxLon;
+		if (other.northLatitude > northLatitude) {
+			northLatitude = other.northLatitude;
 		}
-		if (other.minLat < minLat) {
-			minLat = other.minLat;
+
+		// Expand Longitude
+		// At first check whether the two boxes contain each other or not
+		boolean thisContainsOther = containsLongitude(other.eastLongitude) && containsLongitude(other.westLongitude);
+		boolean otherContainsThis = other.containsLongitude(eastLongitude) && other.containsLongitude(westLongitude);
+
+		// The new box needs to span the whole globe
+		if (thisContainsOther && otherContainsThis) {
+			eastLongitude = 180.0;
+			westLongitude = -180.0;
+			intersects180Meridian = false;
+			return;
 		}
-		if (other.maxLat > maxLat) {
-			maxLat = other.maxLat;
+		// Already done in this case
+		if (thisContainsOther)
+			return;
+		// Expand to match the bigger box
+		if (otherContainsThis) {
+			eastLongitude = other.eastLongitude;
+			westLongitude = other.westLongitude;
+			intersects180Meridian = eastLongitude < westLongitude;
+			return;
+		}
+
+		// If this is not the case compute the distance between the endpoints in east direction
+		double distanceEastToOtherEast = (other.eastLongitude - eastLongitude) % 360;
+		double distanceOtherWestToWest = (westLongitude - other.westLongitude) % 360;
+
+		// Fix for lower java versions, since the remainder-operator (%) changed in one version, idk which one
+		if (distanceEastToOtherEast < 0)
+			distanceEastToOtherEast += 360;
+		if (distanceOtherWestToWest < 0)
+			distanceOtherWestToWest += 360;
+
+		// The minimal distance needs to be extended
+		if (distanceEastToOtherEast <= distanceOtherWestToWest) {
+			eastLongitude = other.eastLongitude;
+		} else {
+			westLongitude = other.westLongitude;
+		}
+
+		intersects180Meridian = eastLongitude < westLongitude;
+	}
+
+	private boolean containsLatitude(double latitude) {
+		return latitude >= southLatitude && latitude <= northLatitude;
+	}
+
+	private boolean containsLongitude(double longitude) {
+		if (intersects180Meridian) {
+			return longitude <= eastLongitude || longitude >= westLongitude;
+		} else {
+			return longitude >= westLongitude && longitude <= eastLongitude;
 		}
 	}
 
-	public double getMinLon() {
-		return minLon;
+	public double getEastLongitude() {
+		return eastLongitude;
 	}
 
-	public double getMinLat() {
-		return minLat;
+	public double getWestLongitude() {
+		return westLongitude;
 	}
 
-	public double getMaxLat() {
-		return maxLat;
+	public double getNorthLatitude() {
+		return northLatitude;
 	}
 
-	public double getMaxLon() {
-		return maxLon;
+	public double getSouthLatitude() {
+		return southLatitude;
+	}
+
+	public boolean intersects180Meridian() {
+		return intersects180Meridian;
 	}
 }

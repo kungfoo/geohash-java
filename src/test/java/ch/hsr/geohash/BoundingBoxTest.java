@@ -21,12 +21,16 @@ public class BoundingBoxTest {
 	private BoundingBox a;
 	private BoundingBox b;
 	private BoundingBox c;
+	private BoundingBox d;
+	private BoundingBox e;
 
 	@Before
 	public void setUp() {
-		a = new BoundingBox(new WGS84Point(30, 20), new WGS84Point(21, 31));
+		a = new BoundingBox(new WGS84Point(21, 20), new WGS84Point(30, 31));
 		b = new BoundingBox(a);
-		c = new BoundingBox(new WGS84Point(45, -170), new WGS84Point(-45, 170));
+		c = new BoundingBox(new WGS84Point(-45, -170), new WGS84Point(45, 170));
+		d = new BoundingBox(new WGS84Point(-45, 170), new WGS84Point(-45, -170));
+		e = new BoundingBox(d);
 	}
 
 	@Test
@@ -40,13 +44,24 @@ public class BoundingBoxTest {
 		assertEquals(a, b);
 		assertEquals(b, a);
 		assertFalse(a.equals(c));
+		assertEquals(d, e);
+		assertEquals(e, d);
+		assertFalse(c.equals(d));
+		assertFalse(c.equals(a));
 	}
 
 	@Test
 	public void testContains() {
-		BoundingBox bbox = new BoundingBox(45, 46, 121, 120);
+		BoundingBox bbox = new BoundingBox(45, 46, 120, 121);
 		assertContains(bbox, new WGS84Point(45.5, 120.5));
 		assertNotContains(bbox, new WGS84Point(90, 90));
+
+		// Testing bounding box over 180-Meridian
+		bbox = new BoundingBox(45, 46, 170, -170);
+		assertContains(bbox, new WGS84Point(45.5, 175));
+		assertContains(bbox, new WGS84Point(45.5, -175));
+		assertNotContains(bbox, new WGS84Point(45.5, -165));
+		assertNotContains(bbox, new WGS84Point(45.5, 165));
 	}
 
 	@Test
@@ -57,9 +72,14 @@ public class BoundingBoxTest {
 		bbox = new BoundingBox(-45, 45, -22.5, 30);
 		assertHeightIs(bbox, 90);
 		assertWidthIs(bbox, 52.5);
-		bbox = new BoundingBox(-44, -46.1, -127.2, -128);
+		bbox = new BoundingBox(-46.1, -44, -128, -127.2);
 		assertHeightIs(bbox, 2.1);
 		assertWidthIs(bbox, 0.8);
+
+		// Testing bounding box over 180-Meridian
+		bbox = new BoundingBox(45, 90, 170, -170);
+		assertHeightIs(bbox, 45);
+		assertWidthIs(bbox, 20);
 	}
 
 	private void assertWidthIs(BoundingBox bbox, double width) {
@@ -72,9 +92,24 @@ public class BoundingBoxTest {
 
 	@Test
 	public void testIntersects() {
-		BoundingBox bbox = new BoundingBox(10, -10, 41, 40);
-		assertIntersects(bbox, new BoundingBox(5, -15, 40.5, 43));
-		assertDoesNotIntersect(bbox, new BoundingBox(5, -15, 42, 43));
+		BoundingBox bbox = new BoundingBox(-10, 10, 40, 41);
+		assertIntersects(bbox, new BoundingBox(-15, 5, 40.5, 43));
+		assertDoesNotIntersect(bbox, new BoundingBox(-15, 5, 42, 43));
+
+		// Testing bounding box over 180-Meridian
+		bbox = new BoundingBox(45, 90, 170, -170);
+		assertIntersects(bbox, new BoundingBox(50, 55, 175, 176));
+		assertIntersects(bbox, new BoundingBox(50, 55, 160, 176));
+		assertIntersects(bbox, new BoundingBox(50, 55, -175, -176));
+		assertIntersects(bbox, new BoundingBox(50, 55, -160, -176));
+		assertIntersects(bbox, new BoundingBox(50, 55, 175, -175));
+		assertIntersects(bbox, new BoundingBox(50, 55, -175, 175));
+
+		assertDoesNotIntersect(bbox, new BoundingBox(-15, 5, 42, 43));
+		assertDoesNotIntersect(bbox, new BoundingBox(-15, 5, 175, 176));
+		assertDoesNotIntersect(bbox, new BoundingBox(-15, 5, 175, -175));
+		assertDoesNotIntersect(bbox, new BoundingBox(50, 55, 160, 169));
+		assertDoesNotIntersect(bbox, new BoundingBox(50, 55, -169, -160));
 	}
 
 	private void assertDoesNotIntersect(BoundingBox bbox, BoundingBox boundingBox) {
