@@ -63,7 +63,7 @@ public class GeoHashSizeTableTest {
 			// make the bounding box a little smaller than dLat/dLon
 			double dLat = GeoHashSizeTable.dLat(bits) - DELTA;
 			double dLon = GeoHashSizeTable.dLon(bits) - DELTA;
-			return new BoundingBox(45 - dLat, 45, 30, 30 - dLon);
+			return new BoundingBox(45 - dLat, 45, 30 - dLon, 30);
 		}
 
 		@Override
