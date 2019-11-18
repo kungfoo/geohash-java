@@ -21,8 +21,8 @@ public class BoundingBox implements Serializable {
 	/**
 	 * create a bounding box defined by two coordinates
 	 */
-	public BoundingBox(WGS84Point southWest, WGS84Point northEast) {
-		this(southWest.getLatitude(), northEast.getLatitude(), southWest.getLongitude(), northEast.getLongitude());
+	public BoundingBox(WGS84Point southWestCorner, WGS84Point northEastCorner) {
+		this(southWestCorner.getLatitude(), northEastCorner.getLatitude(), southWestCorner.getLongitude(), northEastCorner.getLongitude());
 	}
 
 	/**
@@ -63,38 +63,38 @@ public class BoundingBox implements Serializable {
 	}
 
 	/**
-	 * Returns the NorthWestPoint of this BoundingBox as a new Point.
+	 * Returns the NorthWestCorner of this BoundingBox as a new Point.
 	 *
 	 * @return
 	 */
-	public WGS84Point getNorthWestPoint() {
+	public WGS84Point getNorthWestCorner() {
 		return new WGS84Point(northLatitude, westLongitude);
 	}
 
 	/**
-	 * Returns the NorthEastPoint of this BoundingBox as a new Point.
+	 * Returns the NorthEastCorner of this BoundingBox as a new Point.
 	 *
 	 * @return
 	 */
-	public WGS84Point getNorthEastPoint() {
+	public WGS84Point getNorthEastCorner() {
 		return new WGS84Point(northLatitude, eastLongitude);
 	}
 
 	/**
-	 * Returns the SouthEastPoint of this BoundingBox as a new Point.
+	 * Returns the SouthEastCorner of this BoundingBox as a new Point.
 	 *
 	 * @return
 	 */
-	public WGS84Point getSouthEastPoint() {
+	public WGS84Point getSouthEastCorner() {
 		return new WGS84Point(southLatitude, eastLongitude);
 	}
 
 	/**
-	 * Returns the SouthWestPoint of this BoundingBox as a new Point.
+	 * Returns the SouthWestCorner of this BoundingBox as a new Point.
 	 *
 	 * @return
 	 */
-	public WGS84Point getSouthWestPoint() {
+	public WGS84Point getSouthWestCorner() {
 		return new WGS84Point(southLatitude, westLongitude);
 	}
 
@@ -173,10 +173,10 @@ public class BoundingBox implements Serializable {
 
 	@Override
 	public String toString() {
-		return getNorthWestPoint() + " -> " + getSouthEastPoint();
+		return getNorthWestCorner() + " -> " + getSouthEastCorner();
 	}
 
-	public WGS84Point getCenterPoint() {
+	public WGS84Point getCenter() {
 		double centerLatitude = (southLatitude + northLatitude) / 2;
 		double centerLongitude = (westLongitude + eastLongitude) / 2;
 

@@ -78,7 +78,7 @@ public class GeoHashTest {
 		for (GeoHash gh : RandomGeohashes.fullRange()) {
 			BoundingBox bbox = gh.getBoundingBox();
 			GeoHash decodedHash = GeoHash.fromGeohashString(gh.toBase32());
-			WGS84Point decodedCenter = decodedHash.getBoundingBoxCenterPoint();
+			WGS84Point decodedCenter = decodedHash.getBoundingBoxCenter();
 
 			assertTrue("bbox " + bbox + " should contain the decoded center value " + decodedCenter, bbox
 					.contains(decodedCenter));
@@ -348,8 +348,8 @@ public class GeoHashTest {
 		GeoHash[] adjacentHashes = geohash.getAdjacent();
 		for (GeoHash adjacentHash : adjacentHashes) {
 			assertNotNull(adjacentHash.getBoundingBox());
-			assertNotNull(adjacentHash.getBoundingBoxCenterPoint());
-			assertNotNull(adjacentHash.getPoint());
+			assertNotNull(adjacentHash.getBoundingBoxCenter());
+			assertNotNull(adjacentHash.getOriginatingPoint());
 		}
 	}
 
@@ -405,7 +405,7 @@ public class GeoHashTest {
 	}
 
 	private void printBoundingBox(GeoHash hash) {
-		System.out.println("Bounding Box: \ncenter =" + hash.getBoundingBoxCenterPoint());
+		System.out.println("Bounding Box: \ncenter =" + hash.getBoundingBoxCenter());
 		System.out.print("corners=");
 		System.out.println(hash.getBoundingBox());
 	}
@@ -497,19 +497,19 @@ public class GeoHashTest {
 		while (idx.compareTo(ur) < 0) {
 			idx = idx.next();
 			allHashes++;
-			if (iterBbox.contains(idx.getPoint())) {
+			if (iterBbox.contains(idx.getOriginatingPoint())) {
 				inBbox++;
 			}
 			boolean latIsMore = false;
 			boolean latIsLess = false;
-			if (idx.getPoint().getLatitude() > iterBbox.getNorthLatitude()) {
+			if (idx.getOriginatingPoint().getLatitude() > iterBbox.getNorthLatitude()) {
 				latIsMore = true;
 				latMore++;
-			} else if (idx.getPoint().getLatitude() < iterBbox.getSouthLatitude()) {
+			} else if (idx.getOriginatingPoint().getLatitude() < iterBbox.getSouthLatitude()) {
 				latIsLess = true;
 				latLess++;
 			}
-			if (idx.getPoint().getLongitude() > iterBbox.getEastLongitude()) {
+			if (idx.getOriginatingPoint().getLongitude() > iterBbox.getEastLongitude()) {
 				lonMore++;
 				if (latIsMore) {
 					bothMore++;
@@ -517,7 +517,7 @@ public class GeoHashTest {
 				if (latIsLess) {
 					latLessLonMore++;
 				}
-			} else if (idx.getPoint().getLongitude() < iterBbox.getWestLongitude()) {
+			} else if (idx.getOriginatingPoint().getLongitude() < iterBbox.getWestLongitude()) {
 				lonLess++;
 				if (latIsLess) {
 					bothLess++;

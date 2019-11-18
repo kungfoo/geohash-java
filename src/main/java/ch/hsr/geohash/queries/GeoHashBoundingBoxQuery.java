@@ -87,7 +87,7 @@ public class GeoHashBoundingBoxQuery implements GeoHashQuery, Serializable {
 
 	private void generateSearchHashes(BoundingBox bbox) {
 		int fittingBits = GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(bbox);
-		WGS84Point center = bbox.getCenterPoint();
+		WGS84Point center = bbox.getCenter();
 		GeoHash centerHash = GeoHash.withBitPrecision(center.getLatitude(), center.getLongitude(), fittingBits);
 
 		if (hashContainsBoundingBox(centerHash, bbox)) {
@@ -118,7 +118,7 @@ public class GeoHashBoundingBoxQuery implements GeoHashQuery, Serializable {
 	 * @return
 	 */
 	private boolean hashContainsBoundingBox(GeoHash hash, BoundingBox bbox) {
-		return hash.contains(bbox.getNorthWestPoint()) && hash.contains(bbox.getSouthEastPoint());
+		return hash.contains(bbox.getNorthWestCorner()) && hash.contains(bbox.getSouthEastCorner());
 	}
 
 	@Override

@@ -334,7 +334,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	 * If it was built from a base32-{@link String}, this is the center point of
 	 * the bounding box.
 	 */
-	public WGS84Point getPoint() {
+	public WGS84Point getOriginatingPoint() {
 		return point;
 	}
 
@@ -343,8 +343,8 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	 * the same point that was used to build the hash.
 	 */
 	// TODO: make sure this method works as intented for corner cases!
-	public WGS84Point getBoundingBoxCenterPoint() {
-		return boundingBox.getCenterPoint();
+	public WGS84Point getBoundingBoxCenter() {
+		return boundingBox.getCenter();
 	}
 
 	public BoundingBox getBoundingBox() {
@@ -375,7 +375,7 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 		}
 		hash.bits <<= (MAX_BIT_PRECISION - hash.significantBits);
 		setBoundingBox(hash, latitudeRange, longitudeRange);
-		hash.point = hash.boundingBox.getCenterPoint();
+		hash.point = hash.boundingBox.getCenter();
 		return hash;
 	}
 

@@ -28,7 +28,7 @@ public class BoundingBoxSamplerTest {
 
 		GeoHash prev = null;
 		while (gh != null) {
-			assertTrue(bbox.contains(gh.getPoint()));
+			assertTrue(bbox.contains(gh.getOriginatingPoint()));
 			assertFalse(hashes.contains(gh.toBase32()));
 			hashes.add(gh.toBase32());
 			if (prev != null) {

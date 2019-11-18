@@ -28,7 +28,7 @@ public class BoundingBoxGeoHashIteratorTest {
 			if (prev != null) {
 				Assert.assertTrue(prev.compareTo(gh) < 0);
 			}
-			Assert.assertTrue(newBox.contains(gh.getPoint()));
+			Assert.assertTrue(newBox.contains(gh.getOriginatingPoint()));
 			prev = gh;
 		}
 
@@ -49,7 +49,7 @@ public class BoundingBoxGeoHashIteratorTest {
 			if (prev != null) {
 				Assert.assertTrue(prev.compareTo(gh) < 0);
 			}
-			Assert.assertTrue(newBox.contains(gh.getPoint()));
+			Assert.assertTrue(newBox.contains(gh.getOriginatingPoint()));
 			prev = gh;
 		}
 
