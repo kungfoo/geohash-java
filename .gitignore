@@ -8,3 +8,8 @@ release
 *.new
 *.old
 /.idea
+
+.project/*
+.classpath
+.settings/*
+.vscode
