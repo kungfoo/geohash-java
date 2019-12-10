@@ -54,6 +54,32 @@ Current development involves getting the following things to run:
 Last important changes
 ----------------------
 
+Version 1.4.0
+-----------------------
+
+This version adds support for `BoundingBox`es to go over the 180 meridian, which enables
+searching and querying by covering them with `Geohash`es.
+This was a much requested feature that made it into the library now, but depending on how
+you construct `BoundingBox`es and how you use the library, this is a _breaking change_.
+
+In this version you need to provide `latitude` and `longitude` to `BoundingBox`
+in a specific order for this wo work:
+
+````java
+new BoundingBox(south, north, west, east);
+````
+
+This breaking change enables creating bounding boxes that go over the 180
+meridian which can then be used in coverage queries.
+
+This version also changes the `toString()` implementation of `GeoHash` to
+always include leading zeroes, so if your code actually relies on that,
+you will also need to change things downstream that potentially use a prefix
+query for matching points in a `GeoHash`s `BoundingBox`.
+
+Fo now, we will continue to backport other fixes to the `1.3.x` branch, so you can
+keep on using that version as well.
+
 Version 1.3.0
 -----------------------
 
