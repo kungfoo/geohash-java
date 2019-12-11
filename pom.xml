@@ -16,70 +16,118 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-   <scm>
+  <scm>
     <connection>scm:git:git@github.com:kungfoo/geohash-java.git</connection>
     <developerConnection>scm:git:git@github.com:kungfoo/geohash-java.git</developerConnection>
     <url>git@github.com:kungfoo/geohash-java.git</url>
     <tag>1.4.0</tag>
   </scm>
-   <parent>
-     <groupId>org.sonatype.oss</groupId>
-     <artifactId>oss-parent</artifactId>
-     <version>7</version>
-   </parent>
-   <developers>
-     <developer>
-       <id>kungfoo</id>
-     </developer>
-     <developer>
-       <id>github contributors</id>
-     </developer>
-   </developers>
-   <properties>
-     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-   </properties>
-   <dependencies>
-     <dependency>
-       <groupId>junit</groupId>
-       <artifactId>junit</artifactId>
-       <version>4.12</version>
-       <scope>test</scope>
-     </dependency>
-   </dependencies>
-   <build>
-     <plugins>
-			<plugin>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>2.4.2</version>
+  <developers>
+    <developer>
+      <id>kungfoo</id>
+    </developer>
+    <developer>
+      <id>github contributors</id>
+    </developer>
+  </developers>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
 
-				<configuration>
-					<tagNameFormat>@{project.version}</tagNameFormat>
-					<pushChanges>false</pushChanges>
-					<localCheckout>true</localCheckout>
-					<useReleaseProfile>false</useReleaseProfile>
-					<releaseProfiles>release</releaseProfiles>
-					<goals>deploy</goals>
-				</configuration>
+      <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-source-plugin</artifactId>
+      <version>2.2.1</version>
+      <executions>
+        <execution>
+          <id>attach-sources</id>
+          <goals>
+            <goal>jar-no-fork</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <version>2.9.1</version>
+      <executions>
+        <execution>
+          <id>attach-javadocs</id>
+          <goals>
+            <goal>jar</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-gpg-plugin</artifactId>
+      <version>1.5</version>
+      <executions>
+        <execution>
+          <id>sign-artifacts</id>
+          <phase>verify</phase>
+          <goals>
+            <goal>sign</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
 
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.scm</groupId>
-						<artifactId>maven-scm-provider-gitexe</artifactId>
-						<version>1.8.1</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.4.2</version>
 
-       <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-compiler-plugin</artifactId>
-         <version>3.0</version>
-         <configuration>
-           <source>1.7</source>
-           <target>1.7</target>
-         </configuration>
-       </plugin>
-     </plugins>
-   </build>
- </project>
+        <configuration>
+          <tagNameFormat>@{project.version}</tagNameFormat>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+          <useReleaseProfile>false</useReleaseProfile>
+          <releaseProfiles>release</releaseProfiles>
+          <goals>deploy</goals>
+        </configuration>
+
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>1.8.1</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.0</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
