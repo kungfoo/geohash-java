@@ -1,4 +1,3 @@
 #!/bin/bash
-
-mvn release:clean release:prepare
-mvn release:perform
+mvn clean deploy
+mvn nexus-staging:release
