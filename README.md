@@ -38,7 +38,7 @@ Maven targets are the usual suspects.
 
 Digits and precision in km
 --------------------------
-| geohash length | lat bits | lng bits | lat error | lng error  | km error  |
+| geohash length | lat bits | lng bits | lat error | lng error  | ~km error |
 |----------------|----------|----------|-----------|------------|-----------|
 | 1              | 2        | 3        | ±23       | ±23        | ±2500     |
 | 2              | 5        | 5        | ±2.8      | ±5.6       | ±630      |
