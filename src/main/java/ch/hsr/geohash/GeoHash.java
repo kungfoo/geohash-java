@@ -100,15 +100,19 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 		GeoHash hash = new GeoHash();
 
 		for (int i = 0; i < geohash.length(); i++) {
-			int cd = decodeMap.get(geohash.charAt(i));
-			for (int j = 0; j < BASE32_BITS; j++) {
-				int mask = BITS[j];
-				if (isEvenBit) {
-					divideRangeDecode(hash, longitudeRange, (cd & mask) != 0);
-				} else {
-					divideRangeDecode(hash, latitudeRange, (cd & mask) != 0);
+			if(decodeMap.containsKey(geohash.charAt(i))) {
+				int cd = decodeMap.get(geohash.charAt(i));
+				for (int j = 0; j < BASE32_BITS; j++) {
+					int mask = BITS[j];
+					if (isEvenBit) {
+						divideRangeDecode(hash, longitudeRange, (cd & mask) != 0);
+					} else {
+						divideRangeDecode(hash, latitudeRange, (cd & mask) != 0);
+					}
+					isEvenBit = !isEvenBit;
 				}
-				isEvenBit = !isEvenBit;
+			} else {
+				throw new IllegalArgumentException("Invalid character character '" + geohash.charAt(i) + "' in geohash '"+geohash+"'!");
 			}
 		}
 
