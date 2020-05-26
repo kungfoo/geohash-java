@@ -456,6 +456,11 @@ public class GeoHashTest {
 		hash.getCharacterPrecision();
 	}
 
+    @Test(expected = IllegalArgumentException.class)
+	public void itShouldThrowANiceExceptionOnIllegalCharacters() {
+		GeoHash.fromGeohashString("abba");
+	}
+
 	@Test
 	public void testGetCharacterPrecisionWorksWhenPrecisionIsMultipleOfFive() throws Exception {
 		GeoHash hash = GeoHash.withBitPrecision(37.7, -122.52, 60);
