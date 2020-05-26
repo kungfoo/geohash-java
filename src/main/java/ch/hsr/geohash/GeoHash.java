@@ -14,8 +14,8 @@ import java.util.Map;
 
 @SuppressWarnings("javadoc")
 public final class GeoHash implements Comparable<GeoHash>, Serializable {
-	private static final int MAX_BIT_PRECISION = 64;
-	private static final int MAX_CHARACTER_PRECISION = 12;
+	public static final int MAX_BIT_PRECISION = 64;
+	public static final int MAX_CHARACTER_PRECISION = 12;
 	
 	private static final long serialVersionUID = -8553214249630252175L;
 	private static final int[] BITS = { 16, 8, 4, 2, 1 };
