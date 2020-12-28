@@ -9,8 +9,7 @@
 package ch.hsr.geohash;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 @SuppressWarnings("javadoc")
 public final class GeoHash implements Comparable<GeoHash>, Serializable {
@@ -24,12 +23,13 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f',
 			'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
-	private final static Map<Character, Integer> decodeMap = new HashMap<>();
+	private static final int[] decodeArray = new int['z' + 1];
 
 	static {
+		Arrays.fill(decodeArray, -1);
 		int sz = base32.length;
 		for (int i = 0; i < sz; i++) {
-			decodeMap.put(base32[i], i);
+			decodeArray[base32[i]] = i;
 		}
 	}
 
@@ -100,19 +100,19 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 		GeoHash hash = new GeoHash();
 
 		for (int i = 0; i < geohash.length(); i++) {
-			if(decodeMap.containsKey(geohash.charAt(i))) {
-				int cd = decodeMap.get(geohash.charAt(i));
-				for (int j = 0; j < BASE32_BITS; j++) {
-					int mask = BITS[j];
-					if (isEvenBit) {
-						divideRangeDecode(hash, longitudeRange, (cd & mask) != 0);
-					} else {
-						divideRangeDecode(hash, latitudeRange, (cd & mask) != 0);
-					}
-					isEvenBit = !isEvenBit;
+			char c = geohash.charAt(i);
+			int cd;
+			if (c >= decodeArray.length || (cd = decodeArray[c]) < 0) {
+				throw new IllegalArgumentException("Invalid character character '" + c + "' in geohash '"+geohash+"'!");
+			}
+			for (int j = 0; j < BASE32_BITS; j++) {
+				int mask = BITS[j];
+				if (isEvenBit) {
+					divideRangeDecode(hash, longitudeRange, (cd & mask) != 0);
+				} else {
+					divideRangeDecode(hash, latitudeRange, (cd & mask) != 0);
 				}
-			} else {
-				throw new IllegalArgumentException("Invalid character character '" + geohash.charAt(i) + "' in geohash '"+geohash+"'!");
+				isEvenBit = !isEvenBit;
 			}
 		}
 
