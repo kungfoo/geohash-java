@@ -9,6 +9,7 @@
 package ch.hsr.geohash;
 
 import java.io.Serializable;
+import ch.hsr.geohash.util.DoubleUtil;
 
 public class BoundingBox implements Serializable {
 	private static final long serialVersionUID = -7145192134410261076L;
@@ -186,6 +187,37 @@ public class BoundingBox implements Serializable {
 
 		return new WGS84Point(centerLatitude, centerLongitude);
 	}
+	
+	/**
+	 * Expands this bounding box to include the provided point. The expansion is done in the direction with the minimal distance. If both distances are the same it'll expand
+	 * in east direction. It will not cross poles, but it will cross the 180-Meridian, if thats the shortest distance.<br>
+	 *
+	 * @param point The point to include
+	 */
+	public void expandToInclude(WGS84Point point) {
+		
+		// Expand Latitude
+		if(point.getLatitude() < southLatitude)
+			southLatitude = point.getLatitude();
+		else if(point.getLatitude() > northLatitude)
+			northLatitude = point.getLatitude();
+		
+		// Already done in this case
+		if(containsLongitude(point.getLongitude()))
+			return;
+		
+		// If this is not the case compute the distance between the endpoints in east direction
+		double distanceEastToPoint = DoubleUtil.remainderWithFix(point.getLongitude() - eastLongitude, 360);
+		double distancePointToWest = DoubleUtil.remainderWithFix(westLongitude - point.getLongitude(), 360);
+
+		// The minimal distance needs to be extended
+		if(distanceEastToPoint <= distancePointToWest)
+			eastLongitude = point.getLongitude();
+		else
+			westLongitude = point.getLongitude();
+		
+		intersects180Meridian = eastLongitude < westLongitude;
+	}
 
 	/**
 	 * Expands this bounding box to include the provided bounding box. The expansion is done in the direction with the minimal distance. If both distances are the same it'll expand
@@ -228,14 +260,8 @@ public class BoundingBox implements Serializable {
 		}
 
 		// If this is not the case compute the distance between the endpoints in east direction
-		double distanceEastToOtherEast = (other.eastLongitude - eastLongitude) % 360;
-		double distanceOtherWestToWest = (westLongitude - other.westLongitude) % 360;
-
-		// Fix for lower java versions, since the remainder-operator (%) changed in one version, idk which one
-		if (distanceEastToOtherEast < 0)
-			distanceEastToOtherEast += 360;
-		if (distanceOtherWestToWest < 0)
-			distanceOtherWestToWest += 360;
+		double distanceEastToOtherEast = DoubleUtil.remainderWithFix(other.eastLongitude - eastLongitude, 360);
+		double distanceOtherWestToWest = DoubleUtil.remainderWithFix(westLongitude - other.westLongitude, 360);
 
 		// The minimal distance needs to be extended
 		if (distanceEastToOtherEast <= distanceOtherWestToWest) {

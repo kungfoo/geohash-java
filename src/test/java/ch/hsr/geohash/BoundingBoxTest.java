@@ -111,6 +111,58 @@ public class BoundingBoxTest {
 		assertDoesNotIntersect(bbox, new BoundingBox(50, 55, 160, 169));
 		assertDoesNotIntersect(bbox, new BoundingBox(50, 55, -169, -160));
 	}
+	
+	@Test
+	public void testExpandToIncludePoint() {		
+		// expand east
+		BoundingBox bbox = new BoundingBox(-10, 10, 40, 41);
+		WGS84Point point = new WGS84Point(0, 45);
+		bbox.expandToInclude(point);
+		assertContains(bbox, point);
+		assertExpandToInclude(bbox, -10, 10, 40, 45);
+		
+		bbox = new BoundingBox(-10, 10, 40, 41);
+		point = new WGS84Point(0, -140);
+		bbox.expandToInclude(point);
+		assertContains(bbox, point);
+		assertExpandToInclude(bbox, -10, 10, 40, -140);
+		assertEquals(true, bbox.intersects180Meridian());
+
+		// expand west
+		bbox = new BoundingBox(-10, 10, 40, 41);
+		point = new WGS84Point(0, 35);
+		bbox.expandToInclude(point);
+		assertContains(bbox, point);
+		assertExpandToInclude(bbox, -10, 10, 35, 41);
+		
+		bbox = new BoundingBox(-10, 10, 40, 41);
+		point = new WGS84Point(0, -139);
+		bbox.expandToInclude(point);
+		assertContains(bbox, point);
+		assertExpandToInclude(bbox, -10, 10, -139, 41);
+		assertEquals(false, bbox.intersects180Meridian());
+
+		// expand south
+		bbox = new BoundingBox(-10, 10, 40, 41);
+		point = new WGS84Point(-20, 40);
+		bbox.expandToInclude(point);
+		assertContains(bbox, point);
+		assertExpandToInclude(bbox, -20, 10, 40, 41);
+		
+		// expand north
+		bbox = new BoundingBox(-10, 10, 40, 41);
+		point = new WGS84Point(20, 40);
+		bbox.expandToInclude(point);
+		assertContains(bbox, point);
+		assertExpandToInclude(bbox, -10, 20, 40, 41);
+	}
+	
+	private void assertExpandToInclude(BoundingBox bbox, double southLatitude, double northLatitude, double westLongitude, double eastLongitude) {
+		assertEquals(southLatitude, bbox.getSouthLatitude(), DELTA);
+		assertEquals(northLatitude, bbox.getNorthLatitude(), DELTA);
+		assertEquals(westLongitude, bbox.getWestLongitude(), DELTA);
+		assertEquals(eastLongitude, bbox.getEastLongitude(), DELTA);
+	}
 
 	private void assertDoesNotIntersect(BoundingBox bbox, BoundingBox boundingBox) {
 		assertFalse(bbox + " should NOT intersect " + boundingBox, bbox.intersects(boundingBox));
