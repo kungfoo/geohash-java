@@ -3,3 +3,6 @@ jdk:
   - openjdk8
 
 install: mvn install -DskipTests -Dgpg.skip
+
+git:
+  depth: 1
