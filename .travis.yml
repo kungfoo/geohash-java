@@ -3,3 +3,7 @@ jdk:
   - openjdk8
 
 install: mvn install -DskipTests -Dgpg.skip
+
+cache:
+  directories:
+  - $HOME/.m2
