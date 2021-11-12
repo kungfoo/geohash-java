@@ -68,6 +68,12 @@ Current development involves getting the following things to run:
 Last important changes
 ----------------------
 
+Version 1.5.0
+-----------------------
+
+This version adds support to expand `BoundingBox` to include another `Wgs84Point`.
+It also merges a bunch of fixes in bounding box iterators.
+
 Version 1.4.0
 -----------------------
 
