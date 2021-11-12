@@ -1,9 +1,10 @@
 package ch.hsr.geohash.util;
 
+import ch.hsr.geohash.GeoHash;
+import ch.hsr.geohash.util.TwoGeoHashBoundingBox;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import ch.hsr.geohash.GeoHash;
 
 /**
  * Iterate over all of the values within a bounding box at a particular
@@ -24,19 +25,25 @@ public class BoundingBoxGeoHashIterator implements Iterator<GeoHash> {
 
 	@Override
 	public boolean hasNext() {
-		return current.compareTo(boundingBox.getNorthEastCorner()) <= 0;
+		return current != null;
 	}
 
 	@Override
 	public GeoHash next() {
-		GeoHash rv = current;
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
-		current = rv.next();
-		while (hasNext() && !boundingBox.getBoundingBox().contains(current.getOriginatingPoint())) {
-			current = current.next();
-		}
+
+		GeoHash rv = current;
+		if (rv.equals(boundingBox.getNorthEastCorner())) {
+		    current = null;
+        } else {
+			current = rv.next();
+            while (hasNext() && !boundingBox.getBoundingBox().contains(current.getOriginatingPoint())) {
+                current = current.next();
+            }
+        }
+
 		return rv;
 	}
 

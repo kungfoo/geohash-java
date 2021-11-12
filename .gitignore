@@ -13,3 +13,4 @@ release
 .classpath
 .settings/*
 .vscode
+.project
