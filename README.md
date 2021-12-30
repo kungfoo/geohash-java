@@ -11,7 +11,7 @@ Build status
 ------------
 
 <a href="https://travis-ci.org/kungfoo/geohash-java"><img src="https://travis-ci.org/kungfoo/geohash-java.svg?branch=master"/></a>
-
+[<img src="https://img.shields.io/maven-central/v/ch.hsr/geohash.svg?label=latest%20release"/>](https://search.maven.org/search?q=g:ch.hsr%20AND%20a:geohash)
 
 Getting the library
 -------------------
