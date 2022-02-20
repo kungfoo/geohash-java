@@ -61,6 +61,9 @@ public final class GeoHash implements Comparable<GeoHash>, Serializable {
 	 * at the same time defines this hash's bounding box.
 	 */
 	public static GeoHash withBitPrecision(double latitude, double longitude, int numberOfBits) {
+		if (numberOfBits < 0) {
+			throw new IllegalArgumentException("A Geohash can't be of negative bits long!");
+		}
 		if (numberOfBits > MAX_BIT_PRECISION) {
 			throw new IllegalArgumentException("A Geohash can only be " + MAX_BIT_PRECISION + " bits long!");
 		}
