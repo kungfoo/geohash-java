@@ -117,8 +117,24 @@ public class GeoHashTest {
 	}
 
 	@Test
+	public void itShouldCreateAHashWithMinimumPrecisionOf0Bits() {
+		GeoHash geoHash = GeoHash.withBitPrecision(10.0, 10.0, 0);
+		assertEquals(0, geoHash.significantBits());
+		assertEquals(0, geoHash.longValue());
+		assertEquals(new WGS84Point(10.0, 10.0), geoHash.getOriginatingPoint());
+	}
+
+	@Test
 	public void itShouldCreateAHashWithMaximumPrecisionOf64Bits() {
-		GeoHash.withBitPrecision(10.0, 10.0, 64);
+		GeoHash geoHash = GeoHash.withBitPrecision(10.0, 10.0, 64);
+		assertEquals(64, geoHash.significantBits());
+		assertEquals(0xc07e07e07e07e07eL, geoHash.longValue());
+		assertEquals(new WGS84Point(10.0, 10.0), geoHash.getOriginatingPoint());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void itShouldThrowWhenTheBitPrecisionIsLessThan0Bits() {
+		GeoHash.withBitPrecision(46.0, 8.0, -1);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
