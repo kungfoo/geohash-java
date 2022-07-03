@@ -274,14 +274,14 @@ public class BoundingBox implements Serializable {
 	}
 
 	private boolean containsLatitude(double latitude) {
-		return latitude >= southLatitude && latitude <= northLatitude;
+		return latitude > southLatitude && latitude < northLatitude;
 	}
 
 	private boolean containsLongitude(double longitude) {
 		if (intersects180Meridian) {
-			return longitude <= eastLongitude || longitude >= westLongitude;
+			return longitude < eastLongitude || longitude > westLongitude;
 		} else {
-			return longitude >= westLongitude && longitude <= eastLongitude;
+			return longitude > westLongitude && longitude < eastLongitude;
 		}
 	}
 
